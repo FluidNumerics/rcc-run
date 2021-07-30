@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/python3
 
 import argparse
@@ -38,18 +39,17 @@ def clusterRun(cmd):
     proc = subprocess.Popen(command,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
+
     # Poll process.stdout to show stdout live
     while True:
         output = proc.stdout.readline()
         if proc.poll() is not None:
             break
         if output:
-            print(output.decode('utf-8'))
+            print(output.decode('utf-8').rstrip())
+    checkReturnCode(proc.returncode,proc.stderr)
 
-    rc = proc.poll()
-    checkReturnCode(rc,proc.stderr)
-
-    return rc
+    return proc.returncode
 
 #END clusterRun
 
@@ -68,12 +68,10 @@ def localRun(cmd):
         if proc.poll() is not None:
             break
         if output:
-            print(output.decode('utf-8'))
+            print(output.decode('utf-8').rstrip())
+    checkReturnCode(proc.returncode,proc.stderr)
 
-    rc = proc.poll()
-    checkReturnCode(rc,proc.stderr)
-
-    return rc
+    return proc.returncode
 
 #END localRun
 
