@@ -35,7 +35,7 @@ def clusterRun(cmd):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     stdout, stderr = proc.communicate()
-    print(stdout)
+    print(stdout.decode('utf-8'))
 
     return proc.returncode, stdout, stderr
 
@@ -51,7 +51,7 @@ def localRun(cmd):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     stdout, stderr = proc.communicate()
-    print(stdout)
+    print(stdout.decode('utf-8'))
 
     return proc.returncode, stdout, stderr
 
@@ -90,12 +90,13 @@ def createSettingsJson(args):
 
 def concretizeTfvars():
 
+    print('Concretizing tfvars')
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
     with open(TFPATH+'/fluid.tfvars.tmpl', 'r') as f:
         tfvars = f.read()
-
+    
     tfvars = tfvars.replace('<project>',settings['project'])
     tfvars = tfvars.replace('<machine_type>',settings['machine_type'])
     tfvars = tfvars.replace('<node_count>',str(settings['node_count']))
@@ -108,6 +109,8 @@ def concretizeTfvars():
     tfvars = tfvars.replace('<tags>','fluid-cicb')
     tfvars = tfvars.replace('<service_account>',settings['service_account'])
 
+    print(tfvars)
+
     with open(TFPATH+'/fluid.auto.tfvars', 'w') as f:
         f.write(tfvars)
 
@@ -116,6 +119,7 @@ def concretizeTfvars():
 def provisionCluster():
     """Use Terraform and the provided module to create a GCE cluster to execute work on"""
 
+    print('Provisioning Cluster')
     os.chdir(TFPATH)
     exit_code,stdout,stderr = localRun('terraform init')
     # TO DO : Add error checking #
@@ -127,6 +131,7 @@ def provisionCluster():
 def createSSHKey():
     """Create an ssh key that can be used to connect with the cluster"""
 
+    
     exit_code,stdout,stderr = localRun('ssh-keygen -b 2048 -t rsa -f /workspace/sshkey -q -N ""')
     # TO DO : Add error checking #
 
