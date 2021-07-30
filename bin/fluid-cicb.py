@@ -44,11 +44,10 @@ def clusterRun(cmd):
         if proc.poll() is not None:
             break
         if output:
-            print(output.strip())
+            print(output.decode('utf-8'))
 
     rc = proc.poll()
     stdout, stderr = proc.communicate()
-    print(stdout.decode('utf-8'))
 
     checkReturnCode(rc,stderr)
 
@@ -71,11 +70,10 @@ def localRun(cmd):
         if proc.poll() is not None:
             break
         if output:
-            print(output.decode('utf-8').strip())
+            print(output.decode('utf-8'))
 
     rc = proc.poll()
     stdout, stderr = proc.communicate()
-    #print(stdout.decode('utf-8'))
 
     checkReturnCode(rc,stderr)
 
