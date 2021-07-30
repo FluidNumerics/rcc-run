@@ -8,9 +8,13 @@ import shutil
 import shlex
 from datetime import datetime
 import sys
+import time
 
 WORKSPACE='/workspace/'
 TFPATH='/opt/fluid-cicb/tf'
+SLEEP_INTERVAL=5
+SSH_TIMEOUT=300
+N_RETRIES=SSH_TIMEOUT/SLEEP_INTERVAL
 
 
 def clusterRun(cmd):
@@ -56,6 +60,26 @@ def localRun(cmd):
     return proc.returncode, stdout, stderr
 
 #END localRun
+
+def testSSHConnection():
+    """Attempts to connect to the head ssh node in a while loop until a connection is made or until timeout"""
+
+    k = 1
+    while True:
+        
+        if k < N_RETRIES :
+            print('Waiting for SSH Connection...')
+            exit_code,stdout,stderr = clusterRun('hostname')
+            if exit_code == 0:
+                break
+            else:
+                time.sleep(SLEEP_INTERVAL)
+        else:
+            exit_code == -1
+
+    return exit_code
+
+#END testSSHConnection
 
 def createSettingsJson(args):
     """Converts the args namespace to a json dictionary for use in the Cloud Build environment and on the cluster"""
@@ -125,6 +149,8 @@ def provisionCluster():
     # TO DO : Add error checking #
     exit_code,stdout,stderr = localRun('terraform apply --auto-approve')
     # TO DO : Add error checking #
+
+    exit_code = testSSHConnection()
 
 #END provisionCluster
 
