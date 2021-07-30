@@ -1,0 +1,10 @@
+*.o
+*.mod
+.terraform
+*.backup
+.terraform.lock.hcl
+*.gcno
+*.gcda
+*.tfstate
+*.tfstate.backup
+*.tfplan
