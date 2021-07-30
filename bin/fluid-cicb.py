@@ -200,7 +200,7 @@ def uploadDirectory(localdir,remotedir):
     command += 'scp '
     command += '--recurse '
     command += '{}/* '.format(localdir)
-    command += '{}:{}/ '.format(hostnameremotedir)
+    command += '{}:{}/ '.format(hostname,remotedir)
     command += '--zone={} '.format(zone)
     command += '--ssh-key-file=/workspace/sshkey '
 
@@ -246,7 +246,7 @@ def downloadDirectory(localdir,remotedir):
     command += 'compute '
     command += 'scp '
     command += '--recurse '
-    command += '{}:{}/* '.format(hostnameremotedir)
+    command += '{}:{}/* '.format(hostname,remotedir)
     command += '{}/ '.format(localdir)
     command += '--zone={} '.format(zone)
     command += '--ssh-key-file=/workspace/sshkey '
