@@ -35,7 +35,7 @@ def clusterRun(cmd):
                '--ssh-key-file=/workspace/sshkey']
 
 
-    proc = subprocess.run(command, capture_output=True)
+    proc = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print(proc.stdout.decode('utf-8'))
 
     return proc.returncode, proc.stdout, proc.stderr
@@ -48,7 +48,7 @@ def localRun(cmd):
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
-    proc = subprocess.run(shlex.split(cmd), capture_output=True)
+    proc = subprocess.run(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print(proc.stdout.decode('utf-8'))
 
     return proc.returncode, proc.stdout, proc.stderr
