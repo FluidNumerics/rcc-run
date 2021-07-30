@@ -23,7 +23,7 @@ def main():
     utc = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
 
     k=0
-    for test in tests :
+    for test in tests['tests'] :
 
         workdir=WORKSPACE+test['output_directory']
         print('Making directory {}\n'.format(workdir))

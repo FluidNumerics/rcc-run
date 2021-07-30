@@ -28,6 +28,7 @@ steps:
   - '--image=${_IMAGE}'
   - '--project=${PROJECT_ID}'
   - '--zone=${_ZONE}'
+  - '--cifile=demo/.fluidci.json'
 
 substitutions:
   _NODE_COUNT: '1'

@@ -132,6 +132,7 @@ def createSettingsJson(args):
                 'task_affinity':args.task_affinity,
                 'vpc_subnet':args.vpc_subnet,
                 'zone':args.zone,
+                'cifile':args.cifile,
                 'hostname':'fcicb-{}-0'.format(args.build_id[0:7])}
 
     with open(WORKSPACE+'settings.json','w')as f: 
@@ -194,18 +195,17 @@ def uploadDirectory(localdir,remotedir):
     hostname = settings['hostname']
     zone = settings['zone']
 
-    command = ['gcloud',
-               'compute',
-               'scp',
-               '--recurse',
-               '{}/*'.format(localdir),
-               '{}:{}/'.format(hostname,remotedir),
-               hostname,
-               '--zone={}'.format(zone),
-               '--ssh-key-file=/workspace/sshkey']
-
+    command = 'gcloud '
+    command += 'compute '
+    command += 'scp '
+    command += '--recurse '
+    command += '{}/* '.format(localdir)
+    command += '{}:{}/ '.format(hostnameremotedir)
+    command += '--zone={} '.format(zone)
+    command += '--ssh-key-file=/workspace/sshkey '
 
     proc = subprocess.Popen(command,
+                            shell=True,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
 
@@ -226,8 +226,6 @@ def uploadDirectory(localdir,remotedir):
 
 #END uploadDirectory
 
-#END
-
 def runExeCommands():
     """Runs the ciRun.py application on the remote cluster"""
 
@@ -244,17 +242,17 @@ def downloadDirectory(localdir,remotedir):
     hostname = settings['hostname']
     zone = settings['zone']
 
-    command = ['gcloud',
-               'compute',
-               'scp',
-               '--recurse',
-               '{}:{}/*'.format(hostname,remotedir),
-               '{}/'.format(localdir),
-               '--zone={}'.format(zone),
-               '--ssh-key-file=/workspace/sshkey']
-
+    command = 'gcloud '
+    command += 'compute '
+    command += 'scp '
+    command += '--recurse '
+    command += '{}:{}/* '.format(hostnameremotedir)
+    command += '{}/ '.format(localdir)
+    command += '--zone={} '.format(zone)
+    command += '--ssh-key-file=/workspace/sshkey '
 
     proc = subprocess.Popen(command,
+                            shell=True,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
 
@@ -356,6 +354,7 @@ def parseCli():
     parser.add_argument('--project', help='Google Cloud project ID to deploy the GCE cluster to', type=str)
     parser.add_argument('--zone', help='Google Cloud zone to deploy the GCE cluster to', type=str, default="us-west1-b")
     parser.add_argument('--slurm-controller', help='The name of a slurm controller to schedule CI tasks as jobs on', type=str)
+    parser.add_argument('--cifile', help='Path to tests file in your repository', type=str, default="./fluidci.json")
 
     return parser.parse_args()
 
