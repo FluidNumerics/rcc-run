@@ -4,8 +4,8 @@ provider "google" {
 
 resource "google_service_account" "gce_service_account" {
   count = var.service_account == "" ? 1:0
-  account_id = "${var.name_prefix}-sa"
-  display_name = "SELF Service account"
+  account_id = "${var.name_prefix}"
+  display_name = "Fluid CICB service account"
   project = var.project
 }
 

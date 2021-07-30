@@ -30,7 +30,7 @@ variable "tags" {
 variable "image" {
   type = string
   description = "VM image used to launch your HPC application"
-  default = "projects/hpc-apps/global/images/singularity-fluid-gcp-latest"
+  default = "projects/hpc-apps/global/images/fluid-cicb-gcp-foss-latest"
 }
 
 variable "disk_size_gb" {
@@ -48,13 +48,13 @@ variable "disk_type" {
 variable "labels" {
   type = map
   description = "Resource labels to apply to each GCE instance in your cluster."
-  default = {"hpc-app"="gromacs"}
+  default = {"hpc-app"="fluid-cicb"}
 }
 
 variable "name_prefix" {
   type = string
   description = "The name to prefix all GCE instances in your cluster"
-  default = "gromacs"
+  default = "fluid-cicb"
 }
 
 variable "gpu_type" {

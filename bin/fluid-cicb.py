@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import argparse
 import json
 import os
 import subprocess
@@ -9,92 +10,136 @@ from datetime import datetime
 import sys
 
 WORKSPACE='/workspace/'
+TFPATH='/opt/fluid-cicb/tf'
 
 
-#def createSettingsJson()
-#
-##END
-#
-#def concretizeTfvars():
-#
-##END
-#
-#def provisionCluster():
-#
-##END
-#
+def clusterRun(cmd):
+    """Runs a command over ssh on the head node for the cluster"""
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    hostname = settings['hostname']
+    zone = settings['zone']
+
+    command = ['gcloud',
+               'compute',
+               'ssh',
+               hostname,
+               '--command="{}"'.format(cmd),
+               '--zone={}'.format(zone),
+               '--ssh-key-file=/workspace/sshkey']
+
+
+    proc = subprocess.Popen(command,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    print(stdout)
+
+    return proc.returncode, stdout, stderr
+
+#END clusterRun
+
+def localRun(cmd):
+    """Runs a command in the local environment and returns exit code, stdout, and stderr"""
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    proc = subprocess.Popen(shlex.split(cmd),
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    print(stdout)
+
+    return proc.returncode, stdout, stderr
+
+#END localRun
+
+def createSettingsJson(args):
+    """Converts the args namespace to a json dictionary for use in the Cloud Build environment and on the cluster"""
+
+    settings = {'artifact_type':args.artifact_type,
+                'build_id':args.build_id,
+                'docker_image':args.docker_image,
+                'git_sha':args.git_sha,
+                'gpu_count':args.gpu_count,
+                'gpu_type':args.gpu_type,
+                'image':args.image,
+                'machine_type':args.machine_type,
+                'mpi':args.mpi,
+                'node_count':args.node_count,
+                'nproc':args.nproc,
+                'profile':args.profile,
+                'project':args.project,
+                'service_account':args.service_account,
+                'singularity_image':args.singularity_image,
+                'slurm_controller':args.slurm_controller,
+                'surface_nonzero_exit_code':args.surface_nonzero_exit_code,
+                'task_affinity':args.task_affinity,
+                'vpc_subnet':args.vpc_subnet,
+                'zone':args.zone,
+                'hostname':'fcicb-{}-0'.format(args.build_id[0:7])}
+
+    with open(WORKSPACE+'settings.json','w')as f: 
+        f.write(json.dumps(settings))
+
+
+#END createSettingsJson
+
+def concretizeTfvars():
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    with open(TFPATH+'/fluid.tfvars.tmpl', 'r') as f:
+        tfvars = f.read()
+
+    tfvars = tfvars.replace('<project>',settings['project'])
+    tfvars = tfvars.replace('<machine_type>',settings['machine_type'])
+    tfvars = tfvars.replace('<node_count>',str(settings['node_count']))
+    tfvars = tfvars.replace('<zone>',settings['zone'])
+    tfvars = tfvars.replace('<image>',settings['image'])
+    tfvars = tfvars.replace('<gpu_type>',settings['gpu_type'])
+    tfvars = tfvars.replace('<gpu_count>',str(settings['gpu_count']))
+    tfvars = tfvars.replace('<build_id>',settings['build_id'][0:7])
+    tfvars = tfvars.replace('<vpc_subnet>',settings['vpc_subnet'])
+    tfvars = tfvars.replace('<tags>','fluid-cicb')
+    tfvars = tfvars.replace('<service_account>',settings['service_account'])
+
+    with open(TFPATH+'/fluid.auto.tfvars', 'w') as f:
+        f.write(tfvars)
+
+#END concretizeTfvars
+
+def provisionCluster():
+    """Use Terraform and the provided module to create a GCE cluster to execute work on"""
+
+    os.chdir(TFPATH)
+    exit_code,stdout,stderr = localRun('terraform init')
+    # TO DO : Add error checking #
+    exit_code,stdout,stderr = localRun('terraform apply --auto-approve')
+    # TO DO : Add error checking #
+
+#END provisionCluster
+
+def createSSHKey():
+    """Create an ssh key that can be used to connect with the cluster"""
+
+    exit_code,stdout,stderr = localRun('ssh-keygen -b 2048 -t rsa -f /workspace/sshkey -q -N ""')
+    # TO DO : Add error checking #
+
+#END createSSHKey
+
 #def uploadWorkspace():
 #
 ##END
 
 def runExeCommands():
+    """Runs the ciRun.py application on the remote cluster"""
 
-    with open(WORKSPACE+'settings.json','r')as f: 
-        settings = json.load(f)
-
-    with open(WORKSPACE+'.fluidci.json','r')as f: 
-        tests = json.load(f)
-
-    utc = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
-
-    k=0
-    for test in tests :
-
-        workdir=WORKSPACE+test['output_directory']
-        print('Making directory {}\n'.format(workdir))
-        os.makedirs(workdir)
-
-        os.chdir(workdir)
-
-        if settings['artifact_type'] == 'singularity':
-            if settings['mpi'] :
-  
-                cmd = 'mpirun -np {NPROC} {AFFINITY} singularity exec --bind /workspace:/workspace {IMAGE} {CMD}'.format(NPROC=settings['nproc'],
-                        AFFINITY=settings['affinity'],
-                        IMAGE=settings['image'],
-                        CMD=test['execution_command'])
-
-            else:
-  
-                if int(settings['gpu_count']) > 0:
-                    cmd = 'singularity exec --nv --bind /workspace:/workspace {IMAGE} {CMD}'.format(IMAGE=settings['image'],CMD=test['execution_command'])
-                else:
-                    cmd = 'singularity exec --bind /workspace:/workspace {IMAGE} {CMD}'.format(IMAGE=settings['image'],CMD=test['execution_command'])
-
-       
-        else:
-            cmd = test['execution_command']
-
-
-        print('Running {}\n'.format(cmd))
-        proc = subprocess.Popen(shlex.split(cmd),
-                                shell=True,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-        stdout, stderr = proc.communicate()
-        print(stdout.decode("utf-8"))
-        print(stderr.decode("utf-8"))
-        tests[k]['stdout'] = stdout.decode("utf-8")
-        tests[k]['stderr'] = stderr.decode("utf-8")
-        tests[k]['exit_code'] = proc.returncode
-        tests[k]['build_id'] = settings['build_id']
-        tests[k]['machine_type'] = settings['machine_type']
-        tests[k]['node_count'] =int(settings['node_count'])
-        tests[k]['gpu_type'] = settings['gpu_type']
-        tests[k]['gpu_count'] =int(settings['gpu_count'])
-        tests[k]['git_sha'] = settings['git_sha']
-        tests[k]['datetime'] = utc
-
-        k+=1
-                                        
-    # Change working directory back to /workspace
-    os.chdir(WORKSPACE)
-
-    with open(WORKSPACE+'/results.json','w')as f:          
-        for res in tests:
-            f.write(json.dumps(res))
-            f.write('\n')
-
+    clusterRun('hostname')
 
 #END runExeCommands
 
@@ -102,9 +147,14 @@ def runExeCommands():
 #
 ##END
 #
-#def deprovisionCluster():
-#
-##END
+def deprovisionCluster():
+    """Use Terraform and the provided module to delete the existing cluster"""
+
+    os.chdir(TFPATH)
+    exit_code,stdout,stderr = localRun('terraform destroy --auto-approve')
+    # TO DO : Add error checking #
+
+#END deprovisionCluster
 
 def checkExitCodes():
     """Parses the results.json output and reports exit code statistics"""
@@ -157,15 +207,42 @@ def checkExitCodes():
 
 #END checkExitCodes
 
+def parseCli():
+    parser = argparse.ArgumentParser(description='Provision remote resources and test HPC/RC applications')
+    parser.add_argument('--build-id', help='Cloud Build build ID', type=str)
+    parser.add_argument('--git-sha', help='Git sha for your application', type=str)
+    parser.add_argument('--node-count', help='Number of nodes to provision for testing', type=int, default=1)
+    parser.add_argument('--machine-type', help='GCE Machine type for each node', type=str, default='n1-standard-2')
+    parser.add_argument('--gpu-count', help='The number of GPUs per node', type=int, default=0)
+    parser.add_argument('--gpu-type', help='The type of GPU to attach to each compute node', type=str, default='')
+    parser.add_argument('--nproc', help='The number of processes to launch (MPI)', type=int, default=1)
+    parser.add_argument('--task-affinity', help='Task affinity flags to send to MPI.', type=str)
+    parser.add_argument('--mpi', help='Boolean flag to indicate whether or not MPI is used', type=bool, default=False)
+    parser.add_argument('--profile', help='Boolean flag to enable (true) or disable (false) profiling with the hpc toolkit', type=bool, default=False)
+    parser.add_argument('--surface-nonzero-exit-code', help='Boolean flag to surface a nonzero exit code (true) if any of the tests fail', type=bool, default=True)
+    parser.add_argument('--vpc-subnet', help='Link to VPC Subnet to use for deployment. If not provided, an ephemeral subnet is created', type=str, default='')
+    parser.add_argument('--service-account', help='Service account email address to attach to GCE instance. If not provided, an ephemeral service account is created', type=str, default='')
+    parser.add_argument('--artifact-type', help='Identifies the type of artifact used to deploy your application. Currently only "gce-vm-image", "docker", and "singularity" are supported.', type=str, default='singularity')
+    parser.add_argument('--docker-image', help='The name of the docker image. Only used if --artifact-type=docker', type=str)
+    parser.add_argument('--singularity-image', help='The name of the singularity image. Only used if --artifact-type=singularity', type=str)
+    parser.add_argument('--image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='projects/hpc-apps/global/images/family/fluid-cicb-gcp-foss-latest')
+    parser.add_argument('--project', help='Google Cloud project ID to deploy the GCE cluster to', type=str)
+    parser.add_argument('--zone', help='Google Cloud zone to deploy the GCE cluster to', type=str, default="us-west1-b")
+    parser.add_argument('--slurm-controller', help='The name of a slurm controller to schedule CI tasks as jobs on', type=str)
+
+    return parser.parse_args()
+
 def main():
 
-#    args = parseCli()
-#
-#    createSettingsJson()
-#    
-#    concretizeTfvars()
-#    
-#    provisionCluster()
+    args = parseCli()
+
+    createSettingsJson(args)
+    
+    concretizeTfvars()
+    
+    createSSHKey()
+
+    provisionCluster()
 #    
 #    uploadWorkspace()
 
@@ -173,9 +250,9 @@ def main():
     
 #    downloadWorkspace()
 #    
-#    deprovisionCluster()
+    deprovisionCluster()
 
-    checkExitCodes()
+#    checkExitCodes()
 
 #END main
 
