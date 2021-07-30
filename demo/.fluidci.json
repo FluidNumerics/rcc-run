@@ -1,0 +1,6 @@
+{
+  "tests":[
+    {"command_group":"cowsay","execution_command":"cowsay \"Great. I'm self aware.\"","output_directory":"dir1"},
+    {"command_group":"cowsay","execution_command":"cowsay \"Looks like you're ready for continuous integration and continuous benchmarking!\"","output_directory":"dir1"}
+   ]
+}
