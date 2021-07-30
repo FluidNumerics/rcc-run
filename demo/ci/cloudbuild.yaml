@@ -1,11 +1,11 @@
 
 steps:
 
-- id: Build Singularity Image
-  name: 'quay.io/singularity/singularity:v3.7.1'
-  args: ['build',
-         'cowsay.sif',
-         'docker://grycap/cowsay']
+        #- id: Build Singularity Image
+        #  name: 'quay.io/singularity/singularity:v3.7.1'
+        #  args: ['build',
+        #         'cowsay.sif',
+        #         'docker://grycap/cowsay']
 
 - id: Fluid CI/CB
   name: 'gcr.io/hpc-apps/fluid-cicb:latest'
