@@ -21,7 +21,7 @@ steps:
   - '--mpi=${_MPI}'
   - '--profile=${_PROFILE}'
   - '--surface-nonzero-exit-code=True'
-  - '--vpc-subnet=https://www.googleapis.com/compute/v1/projects/${PROJECT_ID}/regions/${REGION}/subnetworks/fluidcicb'
+  - '--vpc-subnet=https://www.googleapis.com/compute/v1/projects/${PROJECT_ID}/regions/${_REGION}/subnetworks/fluidcicb'
   - '--service-account=fluid-cicb@${PROJECT_ID}.iam.gserviceaccount.com'
   - '--artifact-type=singularity'
   - '--singularity-image=cowsay.sif'
@@ -40,3 +40,4 @@ substitutions:
   _PROFILE: 'False'
   _IMAGE: 'projects/hpc-apps/global/images/family/fluid-cicb-gcp-foss'
   _ZONE: 'us-west1-b'
+  _REGION: 'us-west1'

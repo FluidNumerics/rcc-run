@@ -93,6 +93,7 @@ resource "google_cloudbuild_trigger" "builds" {
   _PROFILE = var.builds[count.index].profile
   _IMAGE = var.gce_image
   _ZONE = var.zone
+  _REGION = local.region
   }
   filename = var.cloudbuild_path
 }
