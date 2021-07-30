@@ -38,12 +38,21 @@ def clusterRun(cmd):
     proc = subprocess.Popen(command,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
+    # Poll process.stdout to show stdout live
+    while True:
+        output = proc.stdout.readline()
+        if proc.poll() is not None:
+            break
+        if output:
+            print(output.strip())
+
+    rc = proc.poll()
     stdout, stderr = proc.communicate()
     print(stdout.decode('utf-8'))
 
-    checkReturnCode(proc.returncode,stderr)
+    checkReturnCode(rc,stderr)
 
-    return proc.returncode, stdout, stderr
+    return rc, stdout, stderr
 
 #END clusterRun
 
@@ -56,12 +65,21 @@ def localRun(cmd):
     proc = subprocess.Popen(shlex.split(cmd),
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
+    # Poll process.stdout to show stdout live
+    while True:
+        output = proc.stdout.readline()
+        if proc.poll() is not None:
+            break
+        if output:
+            print(output.strip())
+
+    rc = proc.poll()
     stdout, stderr = proc.communicate()
     print(stdout.decode('utf-8'))
 
-    checkReturnCode(proc.returncode,stderr)
+    checkReturnCode(rc,stderr)
 
-    return proc.returncode, stdout, stderr
+    return rc, stdout, stderr
 
 #END localRun
 
