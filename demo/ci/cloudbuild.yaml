@@ -21,7 +21,7 @@ steps:
   - '--mpi=${_MPI}'
   - '--profile=${_PROFILE}'
   - '--surface-nonzero-exit-code=True'
-  - '--vpc-subnet=https://www.googleapis.com/compute/v1/projects/${PROJECT_ID}/regions/${_REGION}/subnetworks/fluidcicb'
+  - '--vpc-subnet=https://www.googleapis.com/compute/v1/projects/${PROJECT_ID}/regions/${_REGION}/subnetworks/fluid-cicb'
   - '--service-account=fluid-cicb@${PROJECT_ID}.iam.gserviceaccount.com'
   - '--artifact-type=singularity'
   - '--singularity-image=cowsay.sif'
