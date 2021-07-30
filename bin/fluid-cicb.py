@@ -47,11 +47,9 @@ def clusterRun(cmd):
             print(output.decode('utf-8'))
 
     rc = proc.poll()
-    stdout, stderr = proc.communicate()
+    checkReturnCode(rc,proc.stderr)
 
-    checkReturnCode(rc,stderr)
-
-    return rc, stdout, stderr
+    return rc
 
 #END clusterRun
 
@@ -73,11 +71,9 @@ def localRun(cmd):
             print(output.decode('utf-8'))
 
     rc = proc.poll()
-    stdout, stderr = proc.communicate()
+    checkReturnCode(rc,proc.stderr)
 
-    checkReturnCode(rc,stderr)
-
-    return rc, stdout, stderr
+    return rc
 
 #END localRun
 
@@ -88,25 +84,25 @@ def checkReturnCode(returncode,stderr):
         print(stderr)
         sys.exit(1)
 
-def testSSHConnection():
-    """Attempts to connect to the head ssh node in a while loop until a connection is made or until timeout"""
-
-    k = 1
-    while True:
-        
-        if k < N_RETRIES :
-            print('Waiting for SSH Connection...')
-            exit_code,stdout,stderr = clusterRun('hostname')
-            if exit_code == 0:
-                break
-            else:
-                time.sleep(SLEEP_INTERVAL)
-        else:
-            exit_code == -1
-
-    return exit_code
-
-#END testSSHConnection
+#def testSSHConnection():
+#    """Attempts to connect to the head ssh node in a while loop until a connection is made or until timeout"""
+#
+#    k = 1
+#    while True:
+#        
+#        if k < N_RETRIES :
+#            print('Waiting for SSH Connection...')
+#            exit_code,stdout,stderr = clusterRun('hostname')
+#            if exit_code == 0:
+#                break
+#            else:
+#                time.sleep(SLEEP_INTERVAL)
+#        else:
+#            exit_code == -1
+#
+#    return exit_code
+#
+##END testSSHConnection
 
 def createSettingsJson(args):
     """Converts the args namespace to a json dictionary for use in the Cloud Build environment and on the cluster"""
@@ -173,10 +169,9 @@ def provisionCluster():
     print('Provisioning Cluster')
     os.chdir(TFPATH)
     localRun('terraform init')
-
     localRun('terraform apply --auto-approve')
 
-    exit_code = testSSHConnection()
+#    exit_code = testSSHConnection()
 
 #END provisionCluster
 
