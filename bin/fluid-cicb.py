@@ -9,6 +9,7 @@ import shlex
 from datetime import datetime
 import sys
 import time
+from python_terraform import *
 
 WORKSPACE='/workspace/'
 TFPATH='/opt/fluid-cicb/tf'
@@ -66,7 +67,6 @@ def testSSHConnection():
 
     k = 1
     while True:
-        
         if k < N_RETRIES :
             print('Waiting for SSH Connection...')
             exit_code,stdout,stderr = clusterRun('hostname')
@@ -84,6 +84,7 @@ def testSSHConnection():
 def createSettingsJson(args):
     """Converts the args namespace to a json dictionary for use in the Cloud Build environment and on the cluster"""
 
+    print('Initialize environment settings')
     settings = {'artifact_type':args.artifact_type,
                 'build_id':args.build_id,
                 'docker_image':args.docker_image,
@@ -144,13 +145,15 @@ def provisionCluster():
     """Use Terraform and the provided module to create a GCE cluster to execute work on"""
 
     print('Provisioning Cluster')
-    os.chdir(TFPATH)
-    exit_code,stdout,stderr = localRun('terraform init')
+    tf = Terraform(working_dir=TFPATH)
+    exit_code,stdout,stderr = tf.init() 
     # TO DO : Add error checking #
-    exit_code,stdout,stderr = localRun('terraform apply --auto-approve')
+    exit_code,stdout,stderr = tf.plan('terraform apply --auto-approve')
+    # TO DO : Add error checking #
+    exit_code,stdout,stderr = tf.apply('--auto-approve')
     # TO DO : Add error checking #
 
-    exit_code = testSSHConnection()
+    #exit_code = testSSHConnection()
 
 #END provisionCluster
 
@@ -182,7 +185,8 @@ def deprovisionCluster():
     """Use Terraform and the provided module to delete the existing cluster"""
 
     os.chdir(TFPATH)
-    exit_code,stdout,stderr = localRun('terraform destroy --auto-approve')
+    tf = Terraform(working_dir=TFPATH)
+    exit_code,stdout,stderr = tf.destroy('--auto-approve')
     # TO DO : Add error checking #
 
 #END deprovisionCluster
