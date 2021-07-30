@@ -68,7 +68,7 @@ def localRun(cmd):
 def checkReturnCode(returncode,stderr):
     """Checks the return code. If return code is nonzero, stderr is printed to screen and code is halted with nonzero exit code"""
 
-    if returncode /= 0:
+    if returncode != 0:
         print(stderr.decode('utf-8'))
         sys.exit(1)
 
