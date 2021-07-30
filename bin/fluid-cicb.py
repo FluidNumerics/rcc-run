@@ -185,9 +185,48 @@ def createSSHKey():
 
 #END createSSHKey
 
-#def uploadWorkspace():
-#
-##END
+def uploadDirectory(localdir,remotedir):
+    """Recursively copies the local:{localdir} to cluster:{remotedir}"""
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    hostname = settings['hostname']
+    zone = settings['zone']
+
+    command = ['gcloud',
+               'compute',
+               'scp',
+               '--recurse',
+               '{}/*'.format(localdir),
+               '{}:{}/'.format(hostname,remotedir),
+               hostname,
+               '--zone={}'.format(zone),
+               '--ssh-key-file=/workspace/sshkey']
+
+
+    proc = subprocess.Popen(command,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+
+    # Poll process.stdout to show stdout live
+    while True:
+        output = proc.stdout.readline()
+        if proc.poll() is not None:
+            break
+        if output:
+            try:
+                print(output.decode('utf-8').rstrip())
+            except:
+                print(output)
+
+    checkReturnCode(proc.returncode,proc.stderr)
+
+    return proc.returncode
+
+#END uploadDirectory
+
+#END
 
 def runExeCommands():
     """Runs the ciRun.py application on the remote cluster"""
@@ -196,9 +235,45 @@ def runExeCommands():
 
 #END runExeCommands
 
-#def downloadWorkspace():
-#
-##END
+def downloadDirectory(localdir,remotedir):
+    """Recursively copies the cluster:{remotedir} to local:{localdir}"""
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    hostname = settings['hostname']
+    zone = settings['zone']
+
+    command = ['gcloud',
+               'compute',
+               'scp',
+               '--recurse',
+               '{}:{}/*'.format(hostname,remotedir),
+               '{}/'.format(localdir),
+               '--zone={}'.format(zone),
+               '--ssh-key-file=/workspace/sshkey']
+
+
+    proc = subprocess.Popen(command,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+
+    # Poll process.stdout to show stdout live
+    while True:
+        output = proc.stdout.readline()
+        if proc.poll() is not None:
+            break
+        if output:
+            try:
+                print(output.decode('utf-8').rstrip())
+            except:
+                print(output)
+
+    checkReturnCode(proc.returncode,proc.stderr)
+
+    return proc.returncode
+
+#END downloadDirectory
 #
 def deprovisionCluster():
     """Use Terraform and the provided module to delete the existing cluster"""
@@ -295,13 +370,14 @@ def main():
     createSSHKey()
 
     provisionCluster()
-#    
-#    uploadWorkspace()
+
+    uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
+    uploadDirectory(localdir='/workspace',remotedir='/workspace')
 
     runExeCommands()
+
+    downloadDirectory(localdir='/workspace',remotedir='/workspace')
     
-#    downloadWorkspace()
-#    
     deprovisionCluster()
 
 #    checkExitCodes()
