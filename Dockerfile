@@ -16,6 +16,6 @@ COPY --from=builder /usr/local/bin/terraform /usr/local/bin/terraform
 # Install fluid-cicb
 RUN mkdir -p /opt/fluid-cicb/etc
 COPY bin /opt/fluid-cicb/bin
-COPY tf /opt/fluid-cib/tf
+COPY tf /opt/fluid-cicb/tf
 
 ENTRYPOINT ["python3","/opt/fluid-cicb/bin/fluid-cicb.py"]
