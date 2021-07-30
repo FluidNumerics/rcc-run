@@ -13,10 +13,6 @@ FROM gcr.io/cloud-builders/gcloud
 # Install terraform
 COPY --from=builder /usr/local/bin/terraform /usr/local/bin/terraform
 
-RUN apt-get update -y &&\
-    apt-get -y install python3-pip &&\
-    pip3 install python-terraform
-
 # Install fluid-cicb
 RUN mkdir -p /opt/fluid-cicb/etc
 COPY bin /opt/fluid-cicb/bin
