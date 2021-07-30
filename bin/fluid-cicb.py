@@ -71,11 +71,11 @@ def localRun(cmd):
         if proc.poll() is not None:
             break
         if output:
-            print(output.strip())
+            print(output.decode('utf-8').strip())
 
     rc = proc.poll()
     stdout, stderr = proc.communicate()
-    print(stdout.decode('utf-8'))
+    #print(stdout.decode('utf-8'))
 
     checkReturnCode(rc,stderr)
 
@@ -87,7 +87,7 @@ def checkReturnCode(returncode,stderr):
     """Checks the return code. If return code is nonzero, stderr is printed to screen and code is halted with nonzero exit code"""
 
     if returncode != 0:
-        print(stderr.decode('utf-8'))
+        print(stderr)
         sys.exit(1)
 
 def testSSHConnection():
