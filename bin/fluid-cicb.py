@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/python3
 
 import argparse
@@ -46,7 +45,11 @@ def clusterRun(cmd):
         if proc.poll() is not None:
             break
         if output:
-            print(output.decode('utf-8').rstrip())
+            try:
+                print(output.decode('utf-8').rstrip())
+            except:
+                print(output)
+
     checkReturnCode(proc.returncode,proc.stderr)
 
     return proc.returncode
@@ -68,7 +71,11 @@ def localRun(cmd):
         if proc.poll() is not None:
             break
         if output:
-            print(output.decode('utf-8').rstrip())
+            try:
+                print(output.decode('utf-8').rstrip())
+            except:
+                print(output)
+
     checkReturnCode(proc.returncode,proc.stderr)
 
     return proc.returncode
@@ -168,8 +175,6 @@ def provisionCluster():
     os.chdir(TFPATH)
     localRun('terraform init')
     localRun('terraform apply --auto-approve')
-
-#    exit_code = testSSHConnection()
 
 #END provisionCluster
 
