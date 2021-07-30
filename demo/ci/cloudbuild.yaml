@@ -11,7 +11,7 @@ steps:
   name: 'gcr.io/hpc-apps/fluid-cicb:latest'
   args: 
   - '--build-id=${BUILD_ID}'
-  - '--git-sha=${GIT_SHA}'
+  - '--git-sha=${COMMIT_SHA}'
   - '--node-count=${_NODE_COUNT}'
   - '--machine-type=${_MACHINE_TYPE}'
   - '--gpu-count=${_GPU_COUNT}'
