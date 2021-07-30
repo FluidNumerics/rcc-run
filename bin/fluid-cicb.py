@@ -41,6 +41,8 @@ def clusterRun(cmd):
     stdout, stderr = proc.communicate()
     print(stdout.decode('utf-8'))
 
+    checkReturnCode(proc.returncode,stderr)
+
     return proc.returncode, stdout, stderr
 
 #END clusterRun
@@ -57,9 +59,18 @@ def localRun(cmd):
     stdout, stderr = proc.communicate()
     print(stdout.decode('utf-8'))
 
+    checkReturnCode(proc.returncode,stderr)
+
     return proc.returncode, stdout, stderr
 
 #END localRun
+
+def checkReturnCode(returncode,stderr):
+    """Checks the return code. If return code is nonzero, stderr is printed to screen and code is halted with nonzero exit code"""
+
+    if returncode /= 0:
+        print(stderr.decode('utf-8'))
+        sys.exit(1)
 
 def testSSHConnection():
     """Attempts to connect to the head ssh node in a while loop until a connection is made or until timeout"""
@@ -145,10 +156,9 @@ def provisionCluster():
 
     print('Provisioning Cluster')
     os.chdir(TFPATH)
-    exit_code,stdout,stderr = localRun('terraform init')
-    # TO DO : Add error checking #
-    exit_code,stdout,stderr = localRun('terraform apply --auto-approve')
-    # TO DO : Add error checking #
+    localRun('terraform init')
+
+    localRun('terraform apply --auto-approve')
 
     exit_code = testSSHConnection()
 
@@ -157,9 +167,7 @@ def provisionCluster():
 def createSSHKey():
     """Create an ssh key that can be used to connect with the cluster"""
 
-    
-    exit_code,stdout,stderr = localRun('ssh-keygen -b 2048 -t rsa -f /workspace/sshkey -q -N ""')
-    # TO DO : Add error checking #
+    localRun('ssh-keygen -b 2048 -t rsa -f /workspace/sshkey -q -N ""')
 
 #END createSSHKey
 
@@ -182,8 +190,7 @@ def deprovisionCluster():
     """Use Terraform and the provided module to delete the existing cluster"""
 
     os.chdir(TFPATH)
-    exit_code,stdout,stderr = localRun('terraform destroy --auto-approve')
-    # TO DO : Add error checking #
+    localRun('terraform destroy --auto-approve')
 
 #END deprovisionCluster
 
