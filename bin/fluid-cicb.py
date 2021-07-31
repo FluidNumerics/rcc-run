@@ -176,6 +176,7 @@ def provisionCluster():
     os.chdir(TFPATH)
     localRun('terraform init')
     localRun('terraform apply --auto-approve')
+    print('Done provisioning cluster')
 
 #END provisionCluster
 
@@ -189,6 +190,7 @@ def createSSHKey():
 def uploadDirectory(localdir,remotedir):
     """Recursively copies the local:{localdir} to cluster:{remotedir}"""
 
+    print('Transferring local workspace to cluster...')
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
@@ -222,6 +224,7 @@ def uploadDirectory(localdir,remotedir):
 
     checkReturnCode(proc.returncode,proc.stderr)
 
+    print('Done transferring local workspace to cluster ')
     return proc.returncode
 
 #END uploadDirectory
