@@ -230,6 +230,9 @@ def runExeCommands():
     """Runs the ciRun.py application on the remote cluster"""
 
     clusterRun('hostname')
+    clusterRun('ls /tmp/')
+    clusterRun('ls /workspace/')
+    clusterRun('ls /workspace/demo/')
 
 #END runExeCommands
 
