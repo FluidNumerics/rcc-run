@@ -39,18 +39,20 @@ def clusterRun(cmd):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
 
-    # Poll process.stdout to show stdout live
-    while True:
-        output = proc.stdout.readline()
-        if proc.poll() is not None:
-            break
-        if output:
-            try:
-                print(output.decode('utf-8').rstrip())
-            except:
-                print(output)
+    stdout, stderr = proc.communicate()
 
-    checkReturnCode(proc.returncode,proc.stderr)
+#    # Poll process.stdout to show stdout live
+#    while True:
+#        output = proc.stdout.readline()
+#        if proc.poll() is not None:
+#            break
+#        if output:
+#            try:
+#                print(output.decode('utf-8').rstrip())
+#            except:
+#                print(output)
+
+    checkReturnCode(proc.returncode,stderr)
 
     return proc.returncode
 
@@ -65,18 +67,21 @@ def localRun(cmd):
     proc = subprocess.Popen(shlex.split(cmd),
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
-    # Poll process.stdout to show stdout live
-    while True:
-        output = proc.stdout.readline()
-        if proc.poll() is not None:
-            break
-        if output:
-            try:
-                print(output.decode('utf-8').rstrip())
-            except:
-                print(output)
 
-    checkReturnCode(proc.returncode,proc.stderr)
+    stdout, stderr = proc.communicate()
+
+#    # Poll process.stdout to show stdout live
+#    while True:
+#        output = proc.stdout.readline()
+#        if proc.poll() is not None:
+#            break
+#        if output:
+#            try:
+#                print(output.decode('utf-8').rstrip())
+#            except:
+#                print(output)
+
+    checkReturnCode(proc.returncode,stderr)
 
     return proc.returncode
 
@@ -211,18 +216,19 @@ def uploadDirectory(localdir,remotedir):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
 
-    # Poll process.stdout to show stdout live
-    while True:
-        output = proc.stdout.readline()
-        if proc.poll() is not None:
-            break
-        if output:
-            try:
-                print(output.decode('utf-8').rstrip())
-            except:
-                print(output)
+    stdout, stderr = proc.communicate()
+    ## Poll process.stdout to show stdout live
+    #while True:
+    #    output = proc.stdout.readline()
+    #    if proc.poll() is not None:
+    #        break
+    #    if output:
+    #        try:
+    #            print(output.decode('utf-8').rstrip())
+    #        except:
+    #            print(output)
 
-    checkReturnCode(proc.returncode,proc.stderr)
+    checkReturnCode(proc.returncode,stderr)
 
     print('Done transferring local workspace to cluster ')
     return proc.returncode
@@ -262,18 +268,20 @@ def downloadDirectory(localdir,remotedir):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
 
-    # Poll process.stdout to show stdout live
-    while True:
-        output = proc.stdout.readline()
-        if proc.poll() is not None:
-            break
-        if output:
-            try:
-                print(output.decode('utf-8').rstrip())
-            except:
-                print(output)
+    stdout, stderr = proc.communicate()
 
-    checkReturnCode(proc.returncode,proc.stderr)
+#    # Poll process.stdout to show stdout live
+#    while True:
+#        output = proc.stdout.readline()
+#        if proc.poll() is not None:
+#            break
+#        if output:
+#            try:
+#                print(output.decode('utf-8').rstrip())
+#            except:
+#                print(output)
+
+    checkReturnCode(proc.returncode,stderr)
 
     return proc.returncode
 
