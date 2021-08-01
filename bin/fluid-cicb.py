@@ -25,6 +25,7 @@ def waitForSSH():
 
     hostname = settings['hostname']
     zone = settings['zone']
+    project = settings['project']
 
     command = ['gcloud',
                'compute',
@@ -32,6 +33,7 @@ def waitForSSH():
                hostname,
                '--command="hostname"',
                '--zone={}'.format(zone),
+               '--project={}'.format(project),
                '--ssh-key-file=/workspace/sshkey']
 
     k = 1
@@ -68,16 +70,28 @@ def clusterRun(cmd):
 
     hostname = settings['hostname']
     zone = settings['zone']
+    project = settings['project']
 
-    command = ['gcloud',
-               'compute',
-               'ssh',
-               hostname,
-               '--command="{}"'.format(cmd),
-               '--zone={}'.format(zone),
-               '--ssh-key-file=/workspace/sshkey']
+   # command = ['gcloud',
+   #            'compute',
+   #            'ssh',
+   #            hostname,
+   #            '--command="{}"'.format(cmd),
+   #            '--zone={}'.format(zone),
+   #            '--project={}'.format(project),
+   #            '--ssh-key-file=/workspace/sshkey']
+
+    command = 'gcloud'
+    command += ' compute'
+    command += ' ssh '
+    command += hostname
+    command += ' --command="{}"'.format(cmd)
+    command += ' --zone={}'.format(zone)
+    command += ' --project={}'.format(project)
+    command += ' --ssh-key-file=/workspace/sshkey'
 
     proc = subprocess.Popen(command,
+                            shell=True,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
 
@@ -360,26 +374,26 @@ def parseCli():
 
 def main():
 
-    args = parseCli()
+    #args = parseCli()
 
-    createSettingsJson(args)
-    
-    concretizeTfvars()
-    
-    createSSHKey()
+    #createSettingsJson(args)
+    #
+    #concretizeTfvars()
+    #
+    #createSSHKey()
 
-    provisionCluster()
+    #provisionCluster()
 
-    waitForSSH()
+    #waitForSSH()
 
-    uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
-    uploadDirectory(localdir='/workspace',remotedir='/workspace')
+    #uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
+    #uploadDirectory(localdir='/workspace',remotedir='/workspace')
 
     runExeCommands()
 
-    downloadDirectory(localdir='/workspace',remotedir='/workspace')
+    #downloadDirectory(localdir='/workspace',remotedir='/workspace')
     
-    deprovisionCluster()
+    #deprovisionCluster()
 
 #    checkExitCodes()
 

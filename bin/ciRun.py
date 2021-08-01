@@ -40,7 +40,7 @@ def main():
         if settings['artifact_type'] == 'singularity':
             if settings['mpi'] :
   
-                cmd = 'mpirun -np {NPROC} {AFFINITY} singularity --bind /workspace:/workspace exec {IMAGE} {CMD}'.format(NPROC=settings['nproc'],
+                cmd = 'mpirun -np {NPROC} {AFFINITY} singularity exec --bind /workspace:/workspace {IMAGE} {CMD}'.format(NPROC=settings['nproc'],
                         AFFINITY=settings['task_affinity'],
                         IMAGE=settings['singularity_image'],
 
@@ -49,7 +49,7 @@ def main():
             else:
   
                 if int(settings['gpu_count']) > 0:
-                    cmd = 'singularity --nv --bind /workspace:/workspace exec {IMAGE} {CMD}'.format(IMAGE=settings['singularity_image'],CMD=test['execution_command'])
+                    cmd = 'singularity exec --nv --bind /workspace:/workspace {IMAGE} {CMD}'.format(IMAGE=settings['singularity_image'],CMD=test['execution_command'])
                 else:
                     cmd = 'singularity exec --bind /workspace:/workspace {IMAGE} {CMD}'.format(IMAGE=settings['singularity_image'],CMD=test['execution_command'])
 
