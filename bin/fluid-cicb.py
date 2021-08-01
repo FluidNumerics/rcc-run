@@ -241,7 +241,6 @@ def uploadDirectory(localdir,remotedir):
 
     stdout, stderr = proc.communicate()
     checkReturnCode(proc.returncode,stderr)
-    time.sleep(SLEEP_INTERVAL)
 
     print('Done transferring local workspace to cluster ',flush=True)
     return proc.returncode
@@ -281,7 +280,6 @@ def downloadDirectory(localdir,remotedir):
     stdout, stderr = proc.communicate()
 
     checkReturnCode(proc.returncode,stderr)
-    time.sleep(SLEEP_INTERVAL)
 
     return proc.returncode
 
@@ -374,28 +372,28 @@ def parseCli():
 
 def main():
 
-    #args = parseCli()
+    args = parseCli()
 
-    #createSettingsJson(args)
-    #
-    #concretizeTfvars()
-    #
-    #createSSHKey()
+    createSettingsJson(args)
+    
+    concretizeTfvars()
+    
+    createSSHKey()
 
-    #provisionCluster()
+    provisionCluster()
 
-    #waitForSSH()
+    waitForSSH()
 
-    #uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
-    #uploadDirectory(localdir='/workspace',remotedir='/workspace')
+    uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
+    uploadDirectory(localdir='/workspace',remotedir='/workspace')
 
     runExeCommands()
 
-    #downloadDirectory(localdir='/workspace',remotedir='/workspace')
+    downloadDirectory(localdir='/workspace',remotedir='/workspace')
     
-    #deprovisionCluster()
+    deprovisionCluster()
 
-#    checkExitCodes()
+    checkExitCodes()
 
 #END main
 
