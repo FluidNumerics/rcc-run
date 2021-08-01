@@ -17,6 +17,49 @@ SSH_TIMEOUT=300
 N_RETRIES=SSH_TIMEOUT/SLEEP_INTERVAL
 
 
+def waitForSSH():
+    """Repeatedly checks for SSH connection"""
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    hostname = settings['hostname']
+    zone = settings['zone']
+
+    command = ['gcloud',
+               'compute',
+               'ssh',
+               hostname,
+               '--command="hostname"',
+               '--zone={}'.format(zone),
+               '--ssh-key-file=/workspace/sshkey']
+
+    k = 1
+    rc = 1
+    while True:
+
+        if k > N_RETRIES:
+            deprovisionCluster()
+            sys.exit(rc)
+
+        print('Waiting for ssh connection...')
+        proc = subprocess.Popen(command,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+
+        stdout, stderr = proc.communicate()
+        if proc.returncode == 0:
+            print('SSH connection successful!')
+            rc = 0
+            break
+        else:
+            time.sleep(SLEEP_INTERVAL)
+            k+=1
+
+    return rc
+
+#END waitForSSH
+
 def clusterRun(cmd):
     """Runs a command over ssh on the head node for the cluster"""
 
@@ -324,6 +367,8 @@ def main():
     createSSHKey()
 
     provisionCluster()
+
+    waitForSSH()
 
     uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
     uploadDirectory(localdir='/workspace',remotedir='/workspace')
