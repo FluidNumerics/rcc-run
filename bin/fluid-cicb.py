@@ -34,23 +34,15 @@ def clusterRun(cmd):
                '--zone={}'.format(zone),
                '--ssh-key-file=/workspace/sshkey']
 
-
     proc = subprocess.Popen(command,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
 
     stdout, stderr = proc.communicate()
-
-#    # Poll process.stdout to show stdout live
-#    while True:
-#        output = proc.stdout.readline()
-#        if proc.poll() is not None:
-#            break
-#        if output:
-#            try:
-#                print(output.decode('utf-8').rstrip())
-#            except:
-#                print(output)
+    try:
+        print(stdout.decode('utf-8').rstrip())
+    except:
+        print(stdout)
 
     checkReturnCode(proc.returncode,stderr)
 
@@ -69,17 +61,10 @@ def localRun(cmd):
                             stderr=subprocess.PIPE)
 
     stdout, stderr = proc.communicate()
-
-#    # Poll process.stdout to show stdout live
-#    while True:
-#        output = proc.stdout.readline()
-#        if proc.poll() is not None:
-#            break
-#        if output:
-#            try:
-#                print(output.decode('utf-8').rstrip())
-#            except:
-#                print(output)
+    try:
+        print(stdout.decode('utf-8').rstrip())
+    except:
+        print(stdout)
 
     checkReturnCode(proc.returncode,stderr)
 
@@ -94,25 +79,7 @@ def checkReturnCode(returncode,stderr):
         print(stderr)
         sys.exit(1)
 
-#def testSSHConnection():
-#    """Attempts to connect to the head ssh node in a while loop until a connection is made or until timeout"""
-#
-#    k = 1
-#    while True:
-#        
-#        if k < N_RETRIES :
-#            print('Waiting for SSH Connection...')
-#            exit_code,stdout,stderr = clusterRun('hostname')
-#            if exit_code == 0:
-#                break
-#            else:
-#                time.sleep(SLEEP_INTERVAL)
-#        else:
-#            exit_code == -1
-#
-#    return exit_code
-#
-##END testSSHConnection
+#END checkReturnCode
 
 def createSettingsJson(args):
     """Converts the args namespace to a json dictionary for use in the Cloud Build environment and on the cluster"""
@@ -137,12 +104,11 @@ def createSettingsJson(args):
                 'task_affinity':args.task_affinity,
                 'vpc_subnet':args.vpc_subnet,
                 'zone':args.zone,
-                'cifile':args.cifile,
+                'ci_file':args.ci_file,
                 'hostname':'fcicb-{}-0'.format(args.build_id[0:7])}
 
     with open(WORKSPACE+'settings.json','w')as f: 
         f.write(json.dumps(settings))
-
 
 #END createSettingsJson
 
@@ -217,17 +183,6 @@ def uploadDirectory(localdir,remotedir):
                             stderr=subprocess.PIPE)
 
     stdout, stderr = proc.communicate()
-    ## Poll process.stdout to show stdout live
-    #while True:
-    #    output = proc.stdout.readline()
-    #    if proc.poll() is not None:
-    #        break
-    #    if output:
-    #        try:
-    #            print(output.decode('utf-8').rstrip())
-    #        except:
-    #            print(output)
-
     checkReturnCode(proc.returncode,stderr)
 
     print('Done transferring local workspace to cluster ')
@@ -238,10 +193,7 @@ def uploadDirectory(localdir,remotedir):
 def runExeCommands():
     """Runs the ciRun.py application on the remote cluster"""
 
-    clusterRun('hostname')
-    clusterRun('ls /tmp/')
-    clusterRun('ls /workspace/')
-    clusterRun('ls /workspace/demo/')
+    clusterRun('python3 /tmp/bin/ciRun.py')
 
 #END runExeCommands
 
@@ -270,23 +222,12 @@ def downloadDirectory(localdir,remotedir):
 
     stdout, stderr = proc.communicate()
 
-#    # Poll process.stdout to show stdout live
-#    while True:
-#        output = proc.stdout.readline()
-#        if proc.poll() is not None:
-#            break
-#        if output:
-#            try:
-#                print(output.decode('utf-8').rstrip())
-#            except:
-#                print(output)
-
     checkReturnCode(proc.returncode,stderr)
 
     return proc.returncode
 
 #END downloadDirectory
-#
+
 def deprovisionCluster():
     """Use Terraform and the provided module to delete the existing cluster"""
 
@@ -368,7 +309,7 @@ def parseCli():
     parser.add_argument('--project', help='Google Cloud project ID to deploy the GCE cluster to', type=str)
     parser.add_argument('--zone', help='Google Cloud zone to deploy the GCE cluster to', type=str, default="us-west1-b")
     parser.add_argument('--slurm-controller', help='The name of a slurm controller to schedule CI tasks as jobs on', type=str)
-    parser.add_argument('--cifile', help='Path to tests file in your repository', type=str, default="./fluidci.json")
+    parser.add_argument('--ci-file', help='Path to tests file in your repository', type=str, default="./fluidci.json")
 
     return parser.parse_args()
 
