@@ -257,6 +257,8 @@ def runExeCommands():
 def downloadDirectory(localdir,remotedir):
     """Recursively copies the cluster:{remotedir} to local:{localdir}"""
 
+    print('Transferring cluster workspace to local workspace...',flush=True)
+
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
@@ -281,6 +283,8 @@ def downloadDirectory(localdir,remotedir):
 
     checkReturnCode(proc.returncode,stderr)
 
+    print('Done transferring cluster workspace to local workspace...',flush=True)
+
     return proc.returncode
 
 #END downloadDirectory
@@ -288,8 +292,10 @@ def downloadDirectory(localdir,remotedir):
 def deprovisionCluster():
     """Use Terraform and the provided module to delete the existing cluster"""
 
+    print('Deprovisioning cluster...',flush=True)
     os.chdir(TFPATH)
     localRun('terraform destroy --auto-approve')
+    print('Done deprovisioning cluster',flush=True)
 
 #END deprovisionCluster
 
@@ -304,8 +310,8 @@ def checkExitCodes():
 
     results = {}
     sysExitCode = 0
-    for test in tests :
-        cli_command = test['cli_command']
+    for test in tests['tests'] :
+        cli_command = test['command_group']
         if cli_command in results.keys():
             if test['exit_code'] == 0:
                 results[cli_command]['npass'] += 1
@@ -339,10 +345,22 @@ def checkExitCodes():
 
     if settings['exit_on_failure']:
         sys.exit(sysExitCode) 
-    else:
-        sys.exit(0)
 
 #END checkExitCodes
+
+def formatResults():
+    """Formats the results.json to Newline Delimited JSON for loading into big query"""
+
+    with open(WORKSPACE+'results.json','r')as f:          
+        tests = json.load(f)
+
+    with open(WORKSPACE+'bq-results.json','r')as f:          
+        for test in tests['tests'] :
+            f.write(test)
+            print(test,flush=True)
+            f.write('\n')
+        
+#END formatResults
 
 def parseCli():
     parser = argparse.ArgumentParser(description='Provision remote resources and test HPC/RC applications')
@@ -370,6 +388,8 @@ def parseCli():
 
     return parser.parse_args()
 
+#END parseCli
+
 def main():
 
     args = parseCli()
@@ -394,6 +414,10 @@ def main():
     deprovisionCluster()
 
     checkExitCodes()
+
+    formatResults()
+
+    #publishToBQ()
 
 #END main
 
