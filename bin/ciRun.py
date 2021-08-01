@@ -42,16 +42,16 @@ def main():
   
                 cmd = 'mpirun -np {NPROC} {AFFINITY} singularity exec --bind /workspace:/workspace {IMAGE} {CMD}'.format(NPROC=settings['nproc'],
                         AFFINITY=settings['task_affinity'],
-                        IMAGE=settings['singularity_image'],
+                        IMAGE=WORKSPACE+settings['singularity_image'],
 
                         CMD=test['execution_command'])
 
             else:
   
                 if int(settings['gpu_count']) > 0:
-                    cmd = 'singularity exec --nv --bind /workspace:/workspace {IMAGE} {CMD}'.format(IMAGE=settings['singularity_image'],CMD=test['execution_command'])
+                    cmd = 'singularity exec --nv --bind /workspace:/workspace {IMAGE} {CMD}'.format(IMAGE=WORKSPACE+settings['singularity_image'],CMD=test['execution_command'])
                 else:
-                    cmd = 'singularity exec --bind /workspace:/workspace {IMAGE} {CMD}'.format(IMAGE=settings['singularity_image'],CMD=test['execution_command'])
+                    cmd = 'singularity exec --bind /workspace:/workspace {IMAGE} {CMD}'.format(IMAGE=WORKSPACE+settings['singularity_image'],CMD=test['execution_command'])
 
        
         else:
@@ -81,11 +81,8 @@ def main():
                                         
     # Change working directory back to /workspace
     os.chdir(WORKSPACE)
-
     with open(WORKSPACE+'/results.json','w')as f:          
-        for res in tests['tests']:
-            f.write(json.dumps(res))
-            f.write('\n')
+        f.write(json.dumps(tests))
 
 #END main
 
