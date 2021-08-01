@@ -42,14 +42,14 @@ def waitForSSH():
             deprovisionCluster()
             sys.exit(rc)
 
-        print('Waiting for ssh connection...')
+        print('Waiting for ssh connection...',flush=True)
         proc = subprocess.Popen(command,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
 
         stdout, stderr = proc.communicate()
         if proc.returncode == 0:
-            print('SSH connection successful!')
+            print('SSH connection successful!',flush=True)
             rc = 0
             break
         else:
@@ -83,9 +83,9 @@ def clusterRun(cmd):
 
     stdout, stderr = proc.communicate()
     try:
-        print(stdout.decode('utf-8').rstrip())
+        print(stdout.decode('utf-8').rstrip(),flush=True)
     except:
-        print(stdout)
+        print(stdout,flush=True)
 
     checkReturnCode(proc.returncode,stderr)
 
@@ -105,9 +105,9 @@ def localRun(cmd):
 
     stdout, stderr = proc.communicate()
     try:
-        print(stdout.decode('utf-8').rstrip())
+        print(stdout.decode('utf-8').rstrip(),flush=True)
     except:
-        print(stdout)
+        print(stdout,flush=True)
 
     checkReturnCode(proc.returncode,stderr)
 
@@ -119,7 +119,7 @@ def checkReturnCode(returncode,stderr):
     """Checks the return code. If return code is nonzero, stderr is printed to screen and code is halted with nonzero exit code"""
 
     if returncode != 0:
-        print(stderr)
+        print(stderr,flush=True)
         sys.exit(1)
 
 #END checkReturnCode
@@ -157,7 +157,7 @@ def createSettingsJson(args):
 
 def concretizeTfvars():
 
-    print('Concretizing tfvars')
+    print('Concretizing tfvars',flush=True)
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
@@ -176,7 +176,7 @@ def concretizeTfvars():
     tfvars = tfvars.replace('<tags>','fluid-cicb')
     tfvars = tfvars.replace('<service_account>',settings['service_account'])
 
-    print(tfvars)
+    print(tfvars,flush=True)
 
     with open(TFPATH+'/fluid.auto.tfvars', 'w') as f:
         f.write(tfvars)
@@ -186,11 +186,11 @@ def concretizeTfvars():
 def provisionCluster():
     """Use Terraform and the provided module to create a GCE cluster to execute work on"""
 
-    print('Provisioning Cluster')
+    print('Provisioning Cluster',flush=True)
     os.chdir(TFPATH)
     localRun('terraform init')
     localRun('terraform apply --auto-approve')
-    print('Done provisioning cluster')
+    print('Done provisioning cluster',flush=True)
 
 #END provisionCluster
 
@@ -204,7 +204,7 @@ def createSSHKey():
 def uploadDirectory(localdir,remotedir):
     """Recursively copies the local:{localdir} to cluster:{remotedir}"""
 
-    print('Transferring local workspace to cluster...')
+    print('Transferring local workspace to cluster...',flush=True)
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
@@ -229,7 +229,7 @@ def uploadDirectory(localdir,remotedir):
     checkReturnCode(proc.returncode,stderr)
     time.sleep(SLEEP_INTERVAL)
 
-    print('Done transferring local workspace to cluster ')
+    print('Done transferring local workspace to cluster ',flush=True)
     return proc.returncode
 
 #END uploadDirectory
@@ -308,22 +308,22 @@ def checkExitCodes():
                 results[cli_command]['nfail'] += 1
                 sysExitCode = 1
 
-    print('============================')
-    print('')
-    print('Exit Code Check')
+    print('============================',flush=True)
+    print('',flush=True)
+    print('Exit Code Check',flush=True)
     print('')
     for cli in results.keys():
       npass = results[cli]['npass']
       nfail = results[cli]['nfail']
-      print('============================')
-      print('                        ')
-      print('  {}'.format(cli))
-      print('  > PASS : {}/{}'.format(str(npass),str(npass+nfail)))
-      print('  > FAIL : {}/{}'.format(str(nfail),str(npass+nfail)))
-      print('  > PASS RATE : {}%'.format(str(npass/(npass+nfail)*100)))
-      print('                        ')
+      print('============================',flush=True)
+      print('                        ',flush=True)
+      print('  {}'.format(cli),flush=True)
+      print('  > PASS : {}/{}'.format(str(npass),str(npass+nfail)),flush=True)
+      print('  > FAIL : {}/{}'.format(str(nfail),str(npass+nfail)),flush=True)
+      print('  > PASS RATE : {}%'.format(str(npass/(npass+nfail)*100)),flush=True)
+      print('                        ',flush=True)
 
-    print('============================')
+    print('============================',flush=True)
 
     if settings['exit_on_failure']:
         sys.exit(sysExitCode) 
