@@ -227,6 +227,7 @@ def uploadDirectory(localdir,remotedir):
 
     stdout, stderr = proc.communicate()
     checkReturnCode(proc.returncode,stderr)
+    time.sleep(SLEEP_INTERVAL)
 
     print('Done transferring local workspace to cluster ')
     return proc.returncode
@@ -266,6 +267,7 @@ def downloadDirectory(localdir,remotedir):
     stdout, stderr = proc.communicate()
 
     checkReturnCode(proc.returncode,stderr)
+    time.sleep(SLEEP_INTERVAL)
 
     return proc.returncode
 
