@@ -10,8 +10,8 @@ variable "builds" {
     gpu_type = string
     nproc = number 
     task_affinity = string
-    mpi = bool
-    profile = bool}))
+    mpi = string
+    profile = string}))
   default = []
   description = "List of build triggers and their settings to configure"
 }

@@ -14,6 +14,6 @@ builds = [{name="main-build-demo",
            gpu_type="",
            nproc=1,
            task_affinity="",
-           mpi=false,
-           profile=false}]
+           mpi="",
+           profile=""}]
 
