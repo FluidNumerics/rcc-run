@@ -141,6 +141,7 @@ def checkReturnCode(returncode,stderr):
 def createSettingsJson(args):
     """Converts the args namespace to a json dictionary for use in the Cloud Build environment and on the cluster"""
 
+    print(args,flush=True)
     settings = {'artifact_type':args.artifact_type,
                 'build_id':args.build_id,
                 'docker_image':args.docker_image,
@@ -343,7 +344,7 @@ def checkExitCodes():
 
     print('============================',flush=True)
 
-    if settings['exit_on_failure']:
+    if settings['surface_nonzero_exit_code']:
         sys.exit(sysExitCode) 
 
 #END checkExitCodes
