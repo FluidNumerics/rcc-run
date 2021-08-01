@@ -1,11 +1,20 @@
 
 steps:
 
+- id: Build Docker Image
+  name: 'gcr.io/cloud-builders/docker'
+  args: ['build',
+         '-f','demo/Dockerfile',
+         '.',
+         '-t',
+         'gcr.io/${PROJECT_ID}/cowsay:latest'
+  ]
+
 - id: Build Singularity Image
   name: 'quay.io/singularity/singularity:v3.7.1'
   args: ['build',
          'cowsay.sif',
-         'docker://grycap/cowsay']
+         'docker-daemon://gcr.io/${PROJECT_ID}/cowsay:latest']
 
 - id: Fluid CI/CB
   name: 'gcr.io/hpc-apps/fluid-cicb:latest'
@@ -28,7 +37,7 @@ steps:
   - '--image=${_IMAGE}'
   - '--project=${PROJECT_ID}'
   - '--zone=${_ZONE}'
-  - '--cifile=demo/.fluidci.json'
+  - '--ci_file=demo/.fluidci.json'
 
 substitutions:
   _NODE_COUNT: '1'
