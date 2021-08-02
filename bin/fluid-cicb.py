@@ -348,7 +348,7 @@ def formatResults():
     with open(WORKSPACE+'results.json','r')as f:          
         tests = json.load(f)
 
-    with open(WORKSPACE+'bq-results.json','r')as f:          
+    with open(WORKSPACE+'bq-results.json','w')as f:          
         for test in tests['tests'] :
             f.write(test)
             print(test,flush=True)
