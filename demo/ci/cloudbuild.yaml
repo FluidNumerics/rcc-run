@@ -38,6 +38,7 @@ steps:
   - '--project=${PROJECT_ID}'
   - '--zone=${_ZONE}'
   - '--ci-file=demo/.fluidci.json'
+  - '--bq-table=hpc-apps:fluid_cicb.cloud_build_data'
 
 substitutions:
   _NODE_COUNT: '1'
