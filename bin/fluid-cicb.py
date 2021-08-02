@@ -364,7 +364,7 @@ def publishToBQ():
 
     if settings['bq_table']:
         print('Publishing results to Big Query Table',flush=True)
-        localRun('bq load --source=NEWLINE_DELIMITED_JSON {} {}bq-results.json'.format(settings['bq_table'],WORKSPACE))
+        localRun('bq load --source_format=NEWLINE_DELIMITED_JSON {} {}bq-results.json'.format(settings['bq_table'],WORKSPACE))
 
 
 #END publishToBQ
