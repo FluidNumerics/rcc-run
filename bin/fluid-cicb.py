@@ -337,7 +337,8 @@ def checkExitCodes():
     print('============================',flush=True)
 
     if settings['surface_nonzero_exit_code']:
-        sys.exit(sysExitCode) 
+        if sysExitCode != 0:
+            sys.exit(sysExitCode) 
 
 #END checkExitCodes
 
