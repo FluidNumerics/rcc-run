@@ -72,15 +72,6 @@ def clusterRun(cmd):
     zone = settings['zone']
     project = settings['project']
 
-   # command = ['gcloud',
-   #            'compute',
-   #            'ssh',
-   #            hostname,
-   #            '--command="{}"'.format(cmd),
-   #            '--zone={}'.format(zone),
-   #            '--project={}'.format(project),
-   #            '--ssh-key-file=/workspace/sshkey']
-
     command = 'gcloud'
     command += ' compute'
     command += ' ssh '
@@ -163,6 +154,7 @@ def createSettingsJson(args):
                 'vpc_subnet':args.vpc_subnet,
                 'zone':args.zone,
                 'ci_file':args.ci_file,
+                'bq_table':args.bq_table,
                 'hostname':'fcicb-{}-0'.format(args.build_id[0:7])}
 
     with open(WORKSPACE+'settings.json','w')as f: 
@@ -363,6 +355,19 @@ def formatResults():
         
 #END formatResults
 
+def publishToBQ(): 
+    """Publish bq-results.json to Big Query dataset if provided"""
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    if settings['bq_table']:
+        print('Publishing results to Big Query Table',flush=True)
+        localRun('bq load --source=NEWLINE_DELIMITED_JSON {} {}bq-results.json'.format(settings['bq_table'],WORKSPACE))
+
+
+#END publishToBQ
+
 def parseCli():
     parser = argparse.ArgumentParser(description='Provision remote resources and test HPC/RC applications')
     parser.add_argument('--build-id', help='Cloud Build build ID', type=str)
@@ -386,6 +391,7 @@ def parseCli():
     parser.add_argument('--zone', help='Google Cloud zone to deploy the GCE cluster to', type=str, default="us-west1-b")
     parser.add_argument('--slurm-controller', help='The name of a slurm controller to schedule CI tasks as jobs on', type=str)
     parser.add_argument('--ci-file', help='Path to tests file in your repository', type=str, default="./fluidci.json")
+    parser.add_argument('--bq-table', help='Big Query table to load results in the format {project}:{dataset}.{table}', type=str, default="")
 
     return parser.parse_args()
 
@@ -418,7 +424,7 @@ def main():
 
     formatResults()
 
-    #publishToBQ()
+    publishToBQ()
 
 #END main
 
