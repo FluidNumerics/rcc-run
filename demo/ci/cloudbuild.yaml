@@ -38,6 +38,7 @@ steps:
   - '--project=${PROJECT_ID}'
   - '--zone=${_ZONE}'
   - '--ci-file=demo/.fluidci.json'
+  - '--slurm-controller=${_SLURM_CONTROLLER}'
   - '--bq-table=hpc-apps:fluid_cicb.cloud_build_data'
 
 substitutions:
@@ -52,3 +53,4 @@ substitutions:
   _IMAGE: 'projects/hpc-apps/global/images/family/fluid-cicb-gcp-foss'
   _ZONE: 'us-west1-b'
   _REGION: 'us-west1'
+  _SLURM_CONTROLLER: 'fluid-cicb-controller'
