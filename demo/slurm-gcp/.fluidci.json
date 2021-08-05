@@ -1,6 +1,13 @@
 {
   "tests":[
-    {"command_group":"cowsay","execution_command":"/usr/games/cowsay \"Great. I'm self aware.\"","output_directory":"dir1"},
-    {"command_group":"cowsay","execution_command":"/usr/games/cowsay \"Looks like you're ready for continuous integration and continuous benchmarking!\"","output_directory":"dir1"}
+    {"command_group":"cowsay","execution_command":"/usr/games/cowsay \"Great. I'm self aware.\"","output_directory":"dir1","partition":"c2-standard-16"},
+    {"command_group":"cowsay","execution_command":"/usr/games/cowsay \"Looks like you're ready for continuous integration and continuous benchmarking!\"","output_directory":"dir1","partition":"c2-standard-16"},
+    {"command_group":"cowsay","execution_command":"/usr/games/cowsay \"Great. I'm self aware.\"","output_directory":"dir1","partition":"n1-standard-16"},
+    {"command_group":"cowsay","execution_command":"/usr/games/cowsay \"Looks like you're ready for continuous integration and continuous benchmarking!\"","output_directory":"dir1","partition":"n1-standard-16"},
+    {"command_group":"cowsay","execution_command":"/usr/games/cowsay \"Great. I'm self aware.\"","output_directory":"dir1","partition":"n2d-standard-16"},
+    {"command_group":"cowsay","execution_command":"/usr/games/cowsay \"Looks like you're ready for continuous integration and continuous benchmarking!\"","output_directory":"dir1","partition":"n2d-standard-16"},
+    {"command_group":"sleep","execution_command":"sleep 10","output_directory":"dir1","partition":"c2-standard-16"},
+    {"command_group":"sleep","execution_command":"sleep 30","output_directory":"dir1","partition":"n1-standard-16"},
+    {"command_group":"sleep","execution_command":"sleep 12","output_directory":"dir1","partition":"n2d-standard-16"}
    ]
 }
