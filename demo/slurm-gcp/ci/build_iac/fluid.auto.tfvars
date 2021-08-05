@@ -2,7 +2,7 @@ project = "hpc-apps"
 zone = "us-west1-b"
 github_owner = "FluidNumerics"
 github_repo = "fluid-cicb"
-cloudbuild_path = "demo/ci/cloudbuild.yaml"
+cloudbuild_path = "demo/slurm-gcp/ci/cloudbuild.yaml"
 
 builds = [{name="main-build-demo",
            description="Demo build of a main branch",

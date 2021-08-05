@@ -1,0 +1,56 @@
+
+steps:
+
+- id: Build Docker Image
+  name: 'gcr.io/cloud-builders/docker'
+  args: ['build',
+         '-f','demo/Dockerfile',
+         '.',
+         '-t',
+         'gcr.io/${PROJECT_ID}/cowsay:latest'
+  ]
+
+- id: Build Singularity Image
+  name: 'quay.io/singularity/singularity:v3.7.1'
+  args: ['build',
+         'cowsay.sif',
+         'docker-daemon://gcr.io/${PROJECT_ID}/cowsay:latest']
+
+- id: Fluid CI/CB
+  name: 'gcr.io/hpc-apps/fluid-cicb:latest'
+  args: 
+  - '--build-id=${BUILD_ID}'
+  - '--git-sha=${COMMIT_SHA}'
+  - '--node-count=${_NODE_COUNT}'
+  - '--machine-type=${_MACHINE_TYPE}'
+  - '--gpu-count=${_GPU_COUNT}'
+  - '--gpu-type=${_GPU_TYPE}'
+  - '--nproc=${_NPROC}'
+  - '--task-affinity=${_TASK_AFFINITY}'
+  - '--mpi=${_MPI}'
+  - '--profile=${_PROFILE}'
+  - '--surface-nonzero-exit-code=True'
+  - '--vpc-subnet=https://www.googleapis.com/compute/v1/projects/${PROJECT_ID}/regions/${_REGION}/subnetworks/fluid-cicb'
+  - '--service-account=fluid-cicb@${PROJECT_ID}.iam.gserviceaccount.com'
+  - '--artifact-type=singularity'
+  - '--singularity-image=cowsay.sif'
+  - '--image=${_IMAGE}'
+  - '--project=${PROJECT_ID}'
+  - '--zone=${_ZONE}'
+  - '--ci-file=demo/.fluidci.json'
+  - '--slurm-controller=${_SLURM_CONTROLLER}'
+  - '--bq-table=hpc-apps:fluid_cicb.cloud_build_data'
+
+substitutions:
+  _NODE_COUNT: '1'
+  _MACHINE_TYPE: 'n1-standard-2'
+  _GPU_COUNT: '0'
+  _GPU_TYPE: 'nvidia-tesla-v100'
+  _NPROC: '1'
+  _TASK_AFFINITY: ''
+  _MPI: 'False'
+  _PROFILE: 'False'
+  _IMAGE: 'projects/hpc-apps/global/images/family/fluid-cicb-gcp-foss'
+  _ZONE: 'us-west1-b'
+  _REGION: 'us-west1'
+  _SLURM_CONTROLLER: 'fluid-cicb-controller'
