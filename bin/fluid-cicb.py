@@ -350,6 +350,7 @@ def formatResults():
 
     with open(WORKSPACE+'bq-results.json','w')as f:          
         for test in tests['tests'] :
+            del test['output_directory']
             f.write(json.dumps(test))
             print(json.dumps(test),flush=True)
             f.write('\n')
