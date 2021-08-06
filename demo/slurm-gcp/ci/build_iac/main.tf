@@ -99,6 +99,12 @@ resource "google_bigquery_table" "benchmarks" {
   schema = <<EOF
 [
   {
+    "name": "allocated_cpus",
+    "type": "INT64",
+    "mode": "NULLABLE",
+    "description": "The number of CPUs that are allocated to run the execution_command."
+  },
+  {
     "name": "command_group",
     "type": "STRING",
     "mode": "REQUIRED",
