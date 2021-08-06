@@ -19,8 +19,8 @@ builds = [{name="main-build-demo",
            profile=""}]
 
 partitions = [
-  { name                 = "n1-standard-16"
-    machine_type         = "n1-standard-16"
+  { name                 = "n1-standard-4"
+    machine_type         = "n1-standard-4"
     static_node_count    = 0
     max_node_count       = 10
     zone                 = "us-west1-b"
@@ -41,8 +41,8 @@ partitions = [
     regional_policy      = {}
     instance_template    = null
   },
-  { name                 = "c2-standard-16"
-    machine_type         = "c2-standard-16"
+  { name                 = "c2-standard-8"
+    machine_type         = "c2-standard-8"
     static_node_count    = 0
     max_node_count       = 10
     zone                 = "us-west1-b"
@@ -63,8 +63,8 @@ partitions = [
     regional_policy      = {}
     instance_template    = null
   },
-  { name                 = "n2-standard-16"
-    machine_type         = "n2-standard-16"
+  { name                 = "n2-standard-8"
+    machine_type         = "n2-standard-8"
     static_node_count    = 0
     max_node_count       = 10
     zone                 = "us-west1-b"
@@ -85,8 +85,8 @@ partitions = [
     regional_policy      = {}
     instance_template    = null
   },
-  { name                 = "n2d-standard-16"
-    machine_type         = "n2d-standard-16"
+  { name                 = "n2d-standard-8"
+    machine_type         = "n2d-standard-8"
     static_node_count    = 0
     max_node_count       = 10
     zone                 = "us-west1-b"
