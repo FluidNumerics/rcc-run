@@ -41,6 +41,8 @@ steps:
   - '--slurm-controller=${_SLURM_CONTROLLER}'
   - '--bq-table=hpc-apps:fluid_cicb.cloud_build_data'
 
+timeout: 1800s
+
 substitutions:
   _NODE_COUNT: '1'
   _MACHINE_TYPE: 'n1-standard-2'
