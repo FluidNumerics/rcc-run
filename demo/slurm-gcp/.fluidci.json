@@ -1,7 +1,7 @@
 {
   "tests":[
     {"command_group":"sleep","execution_command":"demo/slurm-gcp/test/sleep10.sh","output_directory":"sleep","partition":"c2-standard-16"},
-    {"command_group":"sleep","execution_command":"demo/slurm-gcp/test/sleep30.sh","output_directory":"sleep","partition":"n1-standard-16"},
+    {"command_group":"sleep","execution_command":"demo/slurm-gcp/test/sleep25.sh","output_directory":"sleep","partition":"n1-standard-16"},
     {"command_group":"sleep","execution_command":"demo/slurm-gcp/test/sleep12.sh","output_directory":"sleep","partition":"n2d-standard-16"},
     {"command_group":"cowsay","execution_command":"demo/slurm-gcp/test/hello.sh","output_directory":"nosleep","partition":"c2-standard-16"},
     {"command_group":"cowsay","execution_command":"demo/slurm-gcp/test/ready.sh","output_directory":"nosleep","partition":"n1-standard-16"}
