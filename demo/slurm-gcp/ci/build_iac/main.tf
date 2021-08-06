@@ -105,6 +105,12 @@ resource "google_bigquery_table" "benchmarks" {
     "description": "The number of CPUs that are allocated to run the execution_command."
   },
   {
+    "name": "allocated_gpus",
+    "type": "INT64",
+    "mode": "NULLABLE",
+    "description": "The number of GPUs that are allocated to run the execution_command."
+  },
+  {
     "name": "command_group",
     "type": "STRING",
     "mode": "REQUIRED",
