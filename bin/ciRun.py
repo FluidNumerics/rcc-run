@@ -232,6 +232,7 @@ def slurmgcpRun(settings,tests):
                         cmd = 'sacct -j {} --format=nodelist%30'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
                         instance = '-'.join(stdout.decode('utf-8').split('\n')[-2].strip().split('-')[:-2])
+                        print(instance,flush=True)
                         with open(SLURMGCP_CONFIG, 'r') as stream:
                             try:
                                 slurmConfig = yaml.safe_load(stream)
@@ -242,6 +243,8 @@ def slurmgcpRun(settings,tests):
                             tests['tests'][index]['machine_type'] = slurmConfig['instance_defs'][instance]['machine_type']
                             tests['tests'][index]['gpu_type'] = slurmConfig['instance_defs'][instance]['gpu_type']
                             tests['tests'][index]['gpu_count'] =int(slurmConfig['instance_defs'][instance]['gpu_count'])
+                        else:
+                            print('Cannot find {} in instance_defs'.format(instance))
 
                 k+=1
 
