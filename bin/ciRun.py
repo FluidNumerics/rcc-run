@@ -58,11 +58,13 @@ def gceClusterRun(settings,tests):
 
 
         print('Running {}\n'.format(cmd),flush=True)
+        t0 = time.time()
         proc = subprocess.Popen(cmd,
                                 shell=True,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate()
+        t1 = time.time()
         print(stdout.decode("utf-8"),flush=True)
         print(stderr.decode("utf-8"),flush=True)
         tests['tests'][k]['stdout'] = stdout.decode("utf-8")
@@ -75,6 +77,10 @@ def gceClusterRun(settings,tests):
         tests['tests'][k]['gpu_count'] =int(settings['gpu_count'])
         tests['tests'][k]['git_sha'] = settings['git_sha']
         tests['tests'][k]['datetime'] = utc
+        tests['tests'][index]['runtime'] = float(t1-t0)
+        tests['tests'][index]['allocated_cpus'] = settings['nproc']
+        #tests['tests'][index]['max_memory_gb'] = float(max_memory)
+
 
         k+=1
                                         
