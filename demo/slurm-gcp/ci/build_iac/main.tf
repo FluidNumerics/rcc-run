@@ -53,91 +53,6 @@ resource "google_project_iam_member" "service_account_user" {
   member = "serviceAccount:${google_service_account.slurm_controller.email}"
 }
 
-// **** Create the Shared VPC Network **** //
-resource "google_compute_network" "vpc_network" {
-  name = "fluid-cicb"
-  project = var.project
-  auto_create_subnetworks = false
-}
-
-resource "google_compute_subnetwork" "fluid-cicb" {
-  name = "fluid-cicb"
-  ip_cidr_range = var.subnet_cidr
-  region = local.region
-  network = google_compute_network.vpc_network.self_link
-  project = var.project
-}
-
-resource "google_compute_firewall" "default_ssh_firewall_rules" {
-  name = "fluid-cicb-ssh"
-  network = google_compute_network.vpc_network.self_link
-  target_tags = ["fluid-cicb","controller","compute"]
-  source_ranges = var.whitelist_ssh_ips
-  project = var.project
-
-  allow {
-    protocol = "tcp"
-    ports = ["22"]
-  }
-}
-
-resource "google_compute_firewall" "default_internal_firewall_rules" {
-  name = "fluid-cicb-all-internal"
-  network = google_compute_network.vpc_network.self_link
-  source_tags = ["fluid-cicb","compute","controller"]
-  target_tags = ["fluid-cicb","compute","controller"]
-  project = var.project
-
-  allow {
-    protocol = "tcp"
-    ports = ["0-65535"]
-  }
-  allow {
-    protocol = "udp"
-    ports = ["0-65535"]
-  }
-  allow {
-    protocol = "icmp"
-    ports = []
-  }
-}
-
-//locals {
-//  region_router_list = [for part in var.partitions : trimsuffix(part.zone,substr(part.zone,-2,-2))]
-//}
-
-resource "google_compute_router" "cluster_router" {
-  //count = length(local.region_router_list)
-  name = "fluid-cicb-router"
-  project=var.project
-  //region = local.region_router_list[count.index]
-  region = local.region
-  network =  google_compute_network.vpc_network.self_link
-}
-
-resource "google_compute_router_nat" "cluster_nat" {
-//  count = length(google_compute_router.cluster_router)
-  project=var.project
-  depends_on = [google_compute_subnetwork.fluid-cicb]
-  name = "fluid-cicb-nat"
-//  router                             = google_compute_router.cluster_router[count.index].name
-//  region                             = google_compute_router.cluster_router[count.index].region
-  router                             = google_compute_router.cluster_router.name
-  region                             = google_compute_router.cluster_router.region
-  nat_ip_allocate_option             = "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-  subnetwork {
-//    name                    = local.region_router_list[count.index].subnet
-    name                    = google_compute_subnetwork.fluid-cicb.self_link
-    source_ip_ranges_to_nat = ["PRIMARY_IP_RANGE"]
-  }
-
-  log_config {
-    enable = true
-    filter = "ERRORS_ONLY"
-  }
-}
-
 resource "google_cloudbuild_trigger" "builds" {
   count = length(var.builds)
   name = var.builds[count.index].name
@@ -265,6 +180,20 @@ resource "google_bigquery_table" "benchmarks" {
 EOF
 }
 
+module "slurm_cluster_network" {
+  source = "github.com/FluidNumerics/slurm-gcp//tf/modules/network"
+  cluster_name                  = "fluid-cicb"
+  disable_login_public_ips      = false
+  disable_controller_public_ips = var.disable_controller_public_ips
+  disable_compute_public_ips    = true
+  network_name                  = null
+  partitions                    = var.partitions
+  shared_vpc_host_project       = null
+  subnetwork_name               = null
+  project = var.project
+  region  = local.region
+}
+
 module "slurm_cluster_controller" {
   source = "github.com/FluidNumerics/slurm-gcp//tf/modules/controller"
   boot_disk_size                = var.controller_disk_size_gb
@@ -292,8 +221,8 @@ module "slurm_cluster_controller" {
   shared_vpc_host_project       = var.project
   scopes                        = ["https://www.googleapis.com/auth/cloud-platform"]
   service_account               = google_service_account.slurm_controller.email
-  subnet_depend                 = google_compute_subnetwork.fluid-cicb.name
-  subnetwork_name               = google_compute_subnetwork.fluid-cicb.name
+  subnet_depend                 = module.slurm_cluster_network.subnet_depend
+  subnetwork_name               = null
   suspend_time                  = var.suspend_time
   zone                          = var.zone
 }
