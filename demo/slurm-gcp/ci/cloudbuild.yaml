@@ -4,7 +4,7 @@ steps:
 - id: Build Docker Image
   name: 'gcr.io/cloud-builders/docker'
   args: ['build',
-         '-f','demo/Dockerfile',
+         '-f','demo/slurm-gcp/Dockerfile',
          '.',
          '-t',
          'gcr.io/${PROJECT_ID}/cowsay:latest'
