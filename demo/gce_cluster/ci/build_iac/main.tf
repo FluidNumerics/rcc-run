@@ -175,6 +175,12 @@ resource "google_bigquery_table" "benchmarks" {
     "description": "The git SHA associated with the version / commit being tested." 
   },
   {
+    "name": "max_memory_gb",
+    "type": "FLOAT64",
+    "mode": "NULLABLE",
+    "description": "The maximum amount of memory used for the execution_command in GB."
+  },
+  {
     "name": "stderr",
     "type": "STRING",
     "mode": "NULLABLE",
@@ -191,6 +197,12 @@ resource "google_bigquery_table" "benchmarks" {
     "type": "STRING",
     "mode": "NULLABLE",
     "description": "(Optional) The name of the scheduler partition to run the job under. If provided, the execution_command is interpreted as the path to a batch script." 
+  },
+  {
+    "name": "runtime",
+    "type": "FLOAT64",
+    "mode": "NULLABLE",
+    "description": "The runtime for the execution_command in seconds."
   }
 ]
 EOF
