@@ -228,6 +228,32 @@ def slurmgcpRun(settings,tests):
                         nnodes = stdout.decode('utf-8').split('\n')[-2].strip()
                         tests['tests'][index]['node_count'] = int(nnodes)
 
+                        # Get the elapsed time in seconds
+                        cmd = 'sacct -j {} --format=ElapsedRaw'.format(str(jobid))
+                        stdout, stderr, returncode = run(cmd)
+                        runtime = stdout.decode('utf-8').split('\n')[-2].strip()
+                        tests['tests'][index]['runtime'] = float(runtime)
+
+                        # Get the number of CPUs used
+                        cmd = 'sacct -j {} --format=AllocCPUs'.format(str(jobid))
+                        stdout, stderr, returncode = run(cmd)
+                        alloc_cpus = stdout.decode('utf-8').split('\n')[-2].strip()
+                        tests['tests'][index]['allocated_cpus'] = int(alloc_cpus)
+
+                        # Get the max memory used
+                        cmd = 'sacct -j {} --format=MaxRSS'.format(str(jobid))
+                        stdout, stderr, returncode = run(cmd)
+                        maxRss = stdout.decode('utf-8').split('\n')[-2].strip()
+                        unit = maxRss[-1]
+                        if unit == 'K':
+                            max_memory = float(maxRss[:-1])/1024.0/1024.0
+                        elif unit == 'M':
+                            max_memory = float(maxRss[:-1])/1024.0
+                        elif unit == 'G' :
+                            max_memory = float(maxRss[:-1])
+
+                        tests['tests'][index]['max_memory_gb'] = float(max_memory)
+
                         # Get the node list and record the machine information
                         cmd = 'sacct -j {} --format=nodelist%30'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)

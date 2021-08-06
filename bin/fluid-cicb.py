@@ -415,6 +415,7 @@ def gceClusterWorkflow():
     waitForSSH()
 
     uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
+
     uploadDirectory(localdir='/workspace',remotedir='/workspace')
 
     runExeCommands()
