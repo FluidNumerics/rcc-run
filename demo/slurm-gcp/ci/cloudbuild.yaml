@@ -37,7 +37,7 @@ steps:
   - '--image=${_IMAGE}'
   - '--project=${PROJECT_ID}'
   - '--zone=${_ZONE}'
-  - '--ci-file=demo/.fluidci.json'
+  - '--ci-file=demo/slurm-gcp/.fluidci.json'
   - '--slurm-controller=${_SLURM_CONTROLLER}'
   - '--bq-table=hpc-apps:fluid_cicb.cloud_build_data'
 

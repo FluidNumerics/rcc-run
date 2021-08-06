@@ -3,6 +3,7 @@ zone = "us-west1-b"
 github_owner = "FluidNumerics"
 github_repo = "fluid-cicb"
 cloudbuild_path = "demo/slurm-gcp/ci/cloudbuild.yaml"
+disable_controller_public_ips = false
 
 builds = [{name="main-build-demo",
            description="Demo build of a main branch",
