@@ -231,7 +231,7 @@ def slurmgcpRun(settings,tests):
                         # Get the node list and record the machine information
                         cmd = 'sacct -j {} --format=nodelist%30'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
-                        instance = '-'.join(stdout.decode('utf-8').split('\n')[-2].strip().split('-')[:-2])
+                        instance = '-'.join(stdout.decode('utf-8').split('\n')[-2].strip().split('-')[:-1])
                         print(instance,flush=True)
                         with open(SLURMGCP_CONFIG, 'r') as stream:
                             try:
