@@ -157,6 +157,9 @@ def createSettingsJson(args):
                 'bq_table':args.bq_table,
                 'hostname':'fcicb-{}-0'.format(args.build_id[0:7])}
 
+    if args.slurm_controller:
+        settings['hostname'] = args.slurm_controller
+
     with open(WORKSPACE+'settings.json','w')as f: 
         f.write(json.dumps(settings))
 
@@ -399,12 +402,8 @@ def parseCli():
 
 #END parseCli
 
-def main():
+def gceClusterWorkflow():
 
-    args = parseCli()
-
-    createSettingsJson(args)
-    
     concretizeTfvars()
     
     createSSHKey()
@@ -427,6 +426,40 @@ def main():
     formatResults()
 
     publishToBQ()
+
+#END gceClusterWorkflow
+
+def slurmgcpWorkflow():
+
+    createSSHKey()
+
+    waitForSSH()
+
+    uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
+    uploadDirectory(localdir='/workspace',remotedir='/apps/workspace')
+
+    runExeCommands()
+
+    downloadDirectory(localdir='/workspace',remotedir='/apps/workspace')
+
+    checkExitCodes()
+
+    formatResults()
+
+    publishToBQ()
+
+#END slurmgcpWorkflow
+
+def main():
+
+    args = parseCli()
+
+    createSettingsJson(args)
+
+    if args.slurm_controller:
+        slurmgcpWorkflow()
+    else:
+        gceClusterWorkflow()
 
 #END main
 
