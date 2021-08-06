@@ -246,7 +246,9 @@ def uploadDirectory(localdir,remotedir):
 def runExeCommands():
     """Runs the ciRun.py application on the remote cluster"""
 
+    print('Running CI tests...',flush=True)
     clusterRun('python3 /tmp/bin/ciRun.py')
+    print('Done running CI tests.',flush=True)
 
 #END runExeCommands
 
@@ -436,11 +438,14 @@ def slurmgcpWorkflow():
     waitForSSH()
 
     uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
+
     uploadDirectory(localdir='/workspace',remotedir='/apps/workspace')
 
     runExeCommands()
 
     downloadDirectory(localdir='/workspace',remotedir='/apps/workspace')
+
+    clusterRun('rm -r /apps/workspace/*')
 
     checkExitCodes()
 

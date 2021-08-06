@@ -26,7 +26,7 @@ def gceClusterRun(settings,tests):
     for test in tests['tests'] :
 
         workdir=WORKSPACE+test['output_directory']
-        print('Making directory {}\n'.format(workdir))
+        print('Making directory {}\n'.format(workdir),flush=True)
         try:
             os.makedirs(workdir)
         except OSError as exc:
@@ -57,14 +57,14 @@ def gceClusterRun(settings,tests):
             cmd = test['execution_command']
 
 
-        print('Running {}\n'.format(cmd))
+        print('Running {}\n'.format(cmd),flush=True)
         proc = subprocess.Popen(cmd,
                                 shell=True,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate()
-        print(stdout.decode("utf-8"))
-        print(stderr.decode("utf-8"))
+        print(stdout.decode("utf-8"),flush=True)
+        print(stderr.decode("utf-8"),flush=True)
         tests['tests'][k]['stdout'] = stdout.decode("utf-8")
         tests['tests'][k]['stderr'] = stderr.decode("utf-8")
         tests['tests'][k]['exit_code'] = proc.returncode
@@ -114,7 +114,7 @@ def slurmgcpRun(settings,tests):
     for test in tests['tests'] :
 
         workdir=WORKSPACE+test['output_directory']
-        print('Making directory {}\n'.format(workdir))
+        print('Making directory {}\n'.format(workdir),flush=True)
         try:
             os.makedirs(workdir)
         except OSError as exc:
@@ -134,10 +134,10 @@ def slurmgcpRun(settings,tests):
 
         # Add partition flag to job submission
         if 'partition' in test.keys():
-            print('Submitting {} to partition {}'.format(test['execution_command'],test['partition']))
+            print('Submitting {} to partition {}'.format(test['execution_command'],test['partition']),flush=True)
             cmd += '--partition={} '.format(test['partition'])
         else:
-            print('Submitting {} to default partition'.format(test['execution_command']))
+            print('Submitting {} to default partition'.format(test['execution_command']),flush=True)
 
 
         # Add stdout/stderr for later parsing
@@ -232,12 +232,11 @@ def slurmgcpRun(settings,tests):
                         cmd = 'sacct -j {} --format=nodelist%30'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
                         instance = '-'.join(stdout.decode('utf-8').split('\n')[-2].strip().split('-')[:-2])
-                        print(instance)
                         with open(SLURMGCP_CONFIG, 'r') as stream:
                             try:
                                 slurmConfig = yaml.safe_load(stream)
                             except yaml.YAMLError as exc:
-                                print(exc)
+                                print(exc,flush=True)
 
                         if instance in slurmConfig['instance_defs'].keys():
                             tests['tests'][index]['machine_type'] = slurmConfig['instance_defs'][instance]['machine_type']
