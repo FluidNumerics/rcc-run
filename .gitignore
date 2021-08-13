@@ -1,10 +1,4 @@
-*.o
-*.mod
-.terraform
-*.backup
+.terraform/
 .terraform.lock.hcl
-*.gcno
-*.gcda
-*.tfstate
-*.tfstate.backup
-*.tfplan
+terraform.tfstate
+terraform.tfstate.backup
