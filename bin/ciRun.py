@@ -316,6 +316,8 @@ def main():
         print('Workspace on cluster not found. Quitting',flush=True)
         sys.exit(1)
 
+    # Append build subdirectory to WORKSPACE
+
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 

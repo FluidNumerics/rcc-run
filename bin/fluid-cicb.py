@@ -62,7 +62,7 @@ def waitForSSH():
 
 #END waitForSSH
 
-def clusterRun(cmd):
+def clusterRun(cmd,streamOutput=False):
     """Runs a command over ssh on the head node for the cluster"""
 
     with open(WORKSPACE+'settings.json','r')as f: 
@@ -86,15 +86,28 @@ def clusterRun(cmd):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
 
-    stdout, stderr = proc.communicate()
-    try:
-        print(stdout.decode('utf-8').rstrip(),flush=True)
-    except:
-        print(stdout,flush=True)
+    if streamOutput:
+        # Poll process.stdout to show stdout live
+        while True:
+            output = proc.stdout.readline()
+            if proc.poll() is not None:
+                break
+            if output:
+                print(output.strip())
+#                time.sleep(1)
 
-    checkReturnCode(proc.returncode,stderr)
+            checkReturnCode(proc.returncode,proc.stderr)
 
-    return proc.returncode
+    else:
+        stdout, stderr = proc.communicate()
+        try:
+            print(stdout.decode('utf-8').rstrip(),flush=True)
+        except:
+            print(stdout,flush=True)
+
+        checkReturnCode(proc.returncode,stderr)
+
+        return proc.returncode
 
 #END clusterRun
 
@@ -424,11 +437,11 @@ def gceClusterWorkflow():
     
     deprovisionCluster()
 
-    checkExitCodes()
-
     formatResults()
 
     publishToBQ()
+
+    checkExitCodes()
 
 #END gceClusterWorkflow
 
@@ -438,9 +451,13 @@ def slurmgcpWorkflow():
 
     waitForSSH()
 
+#    packDockerImage()
+
     uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
 
     uploadDirectory(localdir='/workspace',remotedir='/apps/workspace')
+
+#    unpackDockerImage()
 
     runExeCommands()
 
@@ -448,11 +465,11 @@ def slurmgcpWorkflow():
 
     clusterRun('rm -r /apps/workspace/*')
 
-    checkExitCodes()
-
     formatResults()
 
     publishToBQ()
+
+    checkExitCodes()
 
 #END slurmgcpWorkflow
 
