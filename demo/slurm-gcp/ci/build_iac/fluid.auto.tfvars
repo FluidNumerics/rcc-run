@@ -1,4 +1,4 @@
-project = "hpc-apps"
+project = "research-computing-cloud"
 zone = "us-west1-b"
 github_owner = "FluidNumerics"
 github_repo = "fluid-cicb"
