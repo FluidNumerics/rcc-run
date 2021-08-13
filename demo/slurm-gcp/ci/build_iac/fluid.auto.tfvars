@@ -5,9 +5,9 @@ github_repo = "fluid-cicb"
 cloudbuild_path = "demo/slurm-gcp/ci/cloudbuild.yaml"
 disable_controller_public_ips = false
 
-builds = [{name="main-build-demo",
-           description="Demo build of a main branch",
-           branch="main",
+builds = [{name="demo-build",
+           description="Demo build",
+           branch="demo",
            zone="us-west1-b",
            node_count=1,
            machine_type="n1-standard-2",

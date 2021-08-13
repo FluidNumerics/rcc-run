@@ -17,7 +17,7 @@ steps:
          'docker-daemon://gcr.io/${PROJECT_ID}/cowsay:latest']
 
 - id: Fluid CI/CB
-  name: 'gcr.io/hpc-apps/fluid-cicb:latest'
+  name: 'gcr.io/hpc-apps/fluid-cicb'
   args: 
   - '--build-id=${BUILD_ID}'
   - '--git-sha=${COMMIT_SHA}'
