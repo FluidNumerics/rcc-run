@@ -165,7 +165,7 @@ def createSettingsJson(args):
                 'surface_nonzero_exit_code':args.surface_nonzero_exit_code,
                 'task_affinity':args.task_affinity,
                 'vpc_subnet':args.vpc_subnet,
-                'workspace':'/apps/workspace/{}'.format(args.build_id[0:7]),
+                'workspace':'/apps/workspace/{}/'.format(args.build_id[0:7]),
                 'zone':args.zone,
                 'ci_file':args.ci_file,
                 'bq_table':args.bq_table,
@@ -482,6 +482,8 @@ def slurmgcpWorkflow():
     runExeCommands()
 
     downloadDirectory(localdir='/workspace',remotedir='{}'.format(workspace))
+
+    time.sleep(5)
 
     clusterRun('rm -rf {}'.format(workspace))
 
