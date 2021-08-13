@@ -317,6 +317,10 @@ def main():
 
     args = parseCli()
 
+    # Set the WORKSPACE environment variable so that users can reference this
+    # in test scripts as the top of their directory tree.
+    os.environ["WORKSPACE"] = args.workspace
+
     if os.path.isdir(args.workspace):
         print('Found settings in {}'.format(args.workspace),flush=True)
         WORKSPACE = args.workspace
