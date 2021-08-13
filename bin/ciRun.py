@@ -117,6 +117,7 @@ def slurmgcpRun(settings,tests):
    
     command_groups = {}
     k=0
+    nSubmitFailures = 0
     for test in tests['tests'] :
 
         workdir=WORKSPACE+test['output_directory']
@@ -185,12 +186,25 @@ def slurmgcpRun(settings,tests):
             tests['tests'][k]['stderr'] = 'sbatch stderr : '+stderr.decode("utf-8")
             tests['tests'][k]['exit_code'] = returncode
 
+            # Record the failure in the command_group
+            if test['command_group'] in command_groups.keys():
+                command_groups[test['command_group']].append({'job_id':-1,'index':k,'complete':True})
+            else:
+                command_groups[test['command_group']] = [{'job_id':-1,'index':k,'complete':True}]
+
+            # Increment the submission failue
+            nSubmitFailures += 1
+
         k+=1
         time.sleep(0.5)
 
 
-    njobs = k
+    # Number of jobs thar were successfully submitted
+    njobs = k - nSubmitFailures
+
+    # Initialize a counter for the number of complete jobs
     ncomplete = 0
+
     # Monitor Jobs
     while True:
 
