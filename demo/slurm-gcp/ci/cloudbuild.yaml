@@ -17,7 +17,7 @@ steps:
          'docker-daemon://gcr.io/${PROJECT_ID}/cowsay:latest']
 
 - id: Fluid CI/CB
-  name: 'gcr.io/hpc-apps/fluid-cicb'
+  name: 'gcr.io/research-computing-cloud/fluid-cicb'
   args: 
   - '--build-id=${BUILD_ID}'
   - '--git-sha=${COMMIT_SHA}'
@@ -39,7 +39,7 @@ steps:
   - '--zone=${_ZONE}'
   - '--ci-file=demo/slurm-gcp/.fluidci.json'
   - '--slurm-controller=${_SLURM_CONTROLLER}'
-  - '--bq-table=hpc-apps:fluid_cicb.cloud_build_data'
+  - '--bq-table=${PROJECT_ID}:fluid_cicb.cloud_build_data'
 
 timeout: 1800s
 
