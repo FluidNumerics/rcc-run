@@ -5,7 +5,7 @@ steps:
   args: ['build',
          '.',
          '-t',
-         'gcr.io/${PROJECT_ID}/fluid-cicb:${SHORT_SHA}'
+         'gcr.io/${PROJECT_ID}/fluid-cicb:${SHORT_SHA}',
          '-t',
          'gcr.io/${PROJECT_ID}/fluid-cicb:latest'
   ]
