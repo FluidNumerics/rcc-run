@@ -20,7 +20,7 @@ SLURMGCP_CONFIG = "/slurm/scripts/config.yaml"
 def gceClusterRun(settings,tests):
     """Executes all execution_commands sequentially on GCE Cluster"""
 
-    WORKSPACE='/workspace/'
+    WORKSPACE=settings['workspace']
     utc = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
     k=0
     for test in tests['tests'] :
@@ -77,8 +77,8 @@ def gceClusterRun(settings,tests):
         tests['tests'][k]['gpu_count'] =int(settings['gpu_count'])
         tests['tests'][k]['git_sha'] = settings['git_sha']
         tests['tests'][k]['datetime'] = utc
-        tests['tests'][index]['runtime'] = float(t1-t0)
-        tests['tests'][index]['allocated_cpus'] = settings['nproc']
+        tests['tests'][k]['runtime'] = float(t1-t0)
+        tests['tests'][k]['allocated_cpus'] = settings['nproc']
         #tests['tests'][index]['max_memory_gb'] = float(max_memory)
 
 
@@ -108,7 +108,7 @@ def run(cmd):
 def slurmgcpRun(settings,tests):
     """Executes command_groups sequentially on a Slurm-GPC cluster"""
 
-    WORKSPACE='/apps/workspace/'
+    WORKSPACE=settings['workspace']
     sbatch = '/usr/local/bin/sbatch '
     squeue = '/usr/local/bin/squeue '
     sacct = '/usr/local/bin/sacct '
@@ -304,19 +304,25 @@ def slurmgcpRun(settings,tests):
 
 #END slurmgcpRun
 
+def parseCli():
+
+    parser = argparse.ArgumentParser(description='Manage execution of CICB workflows using fluid-cicb settings and workspace')
+    parser.add_argument('workspace', help='Path to workspace directory for carrying out fluid-cicb workflow', type=str)
+
+    return parser.parse_args()
+
+#END parseCli
+
 def main():
 
-    if os.path.isdir('/workspace'):
-        print('Found settings in /workspace',flush=True)
-        WORKSPACE = '/workspace/'
-    elif os.path.isdir('/apps/workspace'):
-        print('Found settings in /apps/workspace',flush=True)
-        WORKSPACE = '/apps/workspace/'
+    args = parseCli()
+
+    if os.path.isdir(args.workspace):
+        print('Found settings in {}'.format(args.workspace),flush=True)
+        WORKSPACE = args.workspace
     else:
         print('Workspace on cluster not found. Quitting',flush=True)
         sys.exit(1)
-
-    # Append build subdirectory to WORKSPACE
 
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)

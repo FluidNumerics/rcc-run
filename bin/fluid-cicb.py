@@ -165,6 +165,7 @@ def createSettingsJson(args):
                 'surface_nonzero_exit_code':args.surface_nonzero_exit_code,
                 'task_affinity':args.task_affinity,
                 'vpc_subnet':args.vpc_subnet,
+                'workspace':'/apps/workspace/{}'.format(args.build_id[0:7]),
                 'zone':args.zone,
                 'ci_file':args.ci_file,
                 'bq_table':args.bq_table,
@@ -259,8 +260,11 @@ def uploadDirectory(localdir,remotedir):
 def runExeCommands():
     """Runs the ciRun.py application on the remote cluster"""
 
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
     print('Running CI tests...',flush=True)
-    clusterRun('python3 /tmp/bin/ciRun.py')
+    clusterRun('python3 /tmp/bin/ciRun.py {}'.format(settings['workspace']))
     print('Done running CI tests.',flush=True)
 
 #END runExeCommands
@@ -419,6 +423,11 @@ def parseCli():
 
 def gceClusterWorkflow():
 
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    workspace = settings['workspace']
+
     concretizeTfvars()
     
     createSSHKey()
@@ -427,14 +436,18 @@ def gceClusterWorkflow():
 
     waitForSSH()
 
-    uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
+#    packDockerImage()
 
-    uploadDirectory(localdir='/workspace',remotedir='/workspace')
+    clusterRun('mkdir -p {}'.format(workspace))
+
+    uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
+
+#    unpackDockerImage()
 
     runExeCommands()
 
-    downloadDirectory(localdir='/workspace',remotedir='/workspace')
-    
+    downloadDirectory(localdir='/workspace',remotedir='{}'.format(workspace))
+
     deprovisionCluster()
 
     formatResults()
@@ -447,6 +460,11 @@ def gceClusterWorkflow():
 
 def slurmgcpWorkflow():
 
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    workspace = settings['workspace']
+
     createSSHKey()
 
     waitForSSH()
@@ -455,15 +473,17 @@ def slurmgcpWorkflow():
 
     uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
 
-    uploadDirectory(localdir='/workspace',remotedir='/apps/workspace')
+    clusterRun('mkdir -p {}'.format(workspace))
+
+    uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
 
 #    unpackDockerImage()
 
     runExeCommands()
 
-    downloadDirectory(localdir='/workspace',remotedir='/apps/workspace')
+    downloadDirectory(localdir='/workspace',remotedir='{}'.format(workspace))
 
-    clusterRun('rm -r /apps/workspace/*')
+    clusterRun('rm -rf {}'.format(workspace))
 
     formatResults()
 
