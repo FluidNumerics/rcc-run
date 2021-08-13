@@ -6,6 +6,9 @@ steps:
          '.',
          '-t',
          'gcr.io/${PROJECT_ID}/fluid-cicb:${SHORT_SHA}'
+         '-t',
+         'gcr.io/${PROJECT_ID}/fluid-cicb:latest'
   ]
 
-images: ['gcr.io/${PROJECT_ID}/fluid-cicb:${SHORT_SHA}']
+images: ['gcr.io/${PROJECT_ID}/fluid-cicb:${SHORT_SHA}',
+         'gcr.io/${PROJECT_ID}/fluid-cicb:latest']
