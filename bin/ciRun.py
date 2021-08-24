@@ -146,6 +146,8 @@ def slurmgcpRun(settings,tests):
         else:
             print('Submitting {} to default partition'.format(test['execution_command']),flush=True)
 
+        if int(settings['gpu_count']) > 0:
+            cmd += '--gres=gpu:{} '.format(settings['gpu_count'])
 
         # Add stdout/stderr for later parsing
         cmd += '-o {}/{}/stdout '.format(WORKSPACE,test['output_directory'])
