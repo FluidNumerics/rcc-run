@@ -331,6 +331,8 @@ def main():
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
+    os.environ['SINGULARITY_IMAGE'] = settings['singularity_image']
+
     with open(WORKSPACE+settings['ci_file'],'r')as f: 
         tests = json.load(f)
 
