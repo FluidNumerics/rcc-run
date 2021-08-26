@@ -135,8 +135,9 @@ def slurmgcpRun(settings,tests):
 
         # Create job dependency for job submissions
         if test['command_group'] in command_groups.keys():
-            dependent_job = command_groups[test['command_group']][-1]['job_id']
-            cmd += '--dependency=afterany:{} '.format(str(dependent_job))
+            if not settings['ignore_job_dependencies']:
+                dependent_job = command_groups[test['command_group']][-1]['job_id']
+                cmd += '--dependency=afterany:{} '.format(str(dependent_job))
 
 
         # Add partition flag to job submission
@@ -160,6 +161,9 @@ def slurmgcpRun(settings,tests):
 
         # Submit the job
         stdout, stderr, returncode = run(cmd)
+
+
+        # Get the machine type for the partition
 
         # Log information
         tests['tests'][k]['stdout'] = ''

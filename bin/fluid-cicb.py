@@ -153,6 +153,7 @@ def createSettingsJson(args):
                 'gpu_count':args.gpu_count,
                 'gpu_type':args.gpu_type,
                 'image':args.image,
+                'ignore_job_dependencies':args.ignore_job_dependencies,
                 'machine_type':args.machine_type,
                 'mpi':args.mpi,
                 'node_count':args.node_count,
@@ -416,6 +417,7 @@ def parseCli():
     parser.add_argument('--slurm-controller', help='The name of a slurm controller to schedule CI tasks as jobs on', type=str)
     parser.add_argument('--ci-file', help='Path to tests file in your repository', type=str, default="./fluidci.json")
     parser.add_argument('--bq-table', help='Big Query table to load results in the format {project}:{dataset}.{table}', type=str, default="")
+    parser.add_argument('--ignore-job-dependencies', help='Boolean flag to enable ignorance of job dependencies assumed within a command_group (True). Default: False', type=bool, default=False)
 
     return parser.parse_args()
 
