@@ -41,8 +41,12 @@ def waitForSSH():
     while True:
 
         if k > N_RETRIES:
-            deprovisionCluster()
-            sys.exit(rc)
+            if not settings['slurm_controller']:
+                deprovisionCluster()
+
+            writePassFail(rc)
+            if settings['surface_nonzero_exit_code']:
+                sys.exit(rc)
 
         print('Waiting for ssh connection...',flush=True)
         proc = subprocess.Popen(command,
@@ -362,6 +366,8 @@ def checkExitCodes():
     if settings['surface_nonzero_exit_code']:
         if sysExitCode != 0:
             sys.exit(sysExitCode) 
+    else:
+        writePassFail(sysExitCode)
 
 #END checkExitCodes
 
@@ -423,6 +429,13 @@ def parseCli():
 
 #END parseCli
 
+def writePassFail(exitCode):
+
+    with open(WORKSPACE+'pass-fail.result','w')as f:          
+        f.write(exitCode)
+
+#END writePassFail
+
 def gceClusterWorkflow():
 
     with open(WORKSPACE+'settings.json','r')as f: 
@@ -436,27 +449,29 @@ def gceClusterWorkflow():
 
     provisionCluster()
 
-    waitForSSH()
+    rc = waitForSSH()
+
+    if rc == 0:
 
 #    packDockerImage()
 
-    clusterRun('mkdir -p {}'.format(workspace))
+        clusterRun('mkdir -p {}'.format(workspace))
 
-    uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
+        uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
 
-#    unpackDockerImage()
+#        unpackDockerImage()
 
-    runExeCommands()
+        runExeCommands()
 
-    downloadDirectory(localdir='/workspace',remotedir='{}'.format(workspace))
+        downloadDirectory(localdir='/workspace',remotedir='{}'.format(workspace))
 
-    deprovisionCluster()
+        deprovisionCluster()
 
-    formatResults()
+        formatResults()
 
-    publishToBQ()
+        publishToBQ()
 
-    checkExitCodes()
+        checkExitCodes()
 
 #END gceClusterWorkflow
 
@@ -469,31 +484,33 @@ def slurmgcpWorkflow():
 
     createSSHKey()
 
-    waitForSSH()
+    rc = waitForSSH()
 
-#    packDockerImage()
+    if rc == 0:
 
-    uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
+#        packDockerImage()
 
-    clusterRun('mkdir -p {}'.format(workspace))
+        uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
 
-    uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
+        clusterRun('mkdir -p {}'.format(workspace))
 
-#    unpackDockerImage()
+        uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
 
-    runExeCommands()
+#        unpackDockerImage()
 
-    downloadDirectory(localdir='/workspace',remotedir='{}'.format(workspace))
+        runExeCommands()
 
-    time.sleep(5)
+        downloadDirectory(localdir='/workspace',remotedir='{}'.format(workspace))
 
-    clusterRun('rm -rf {}'.format(workspace))
+        time.sleep(5)
 
-    formatResults()
+        clusterRun('rm -rf {}'.format(workspace))
 
-    publishToBQ()
+        formatResults()
 
-    checkExitCodes()
+        publishToBQ()
+
+        checkExitCodes()
 
 #END slurmgcpWorkflow
 
