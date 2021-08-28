@@ -432,7 +432,7 @@ def parseCli():
 def writePassFail(exitCode):
 
     with open(WORKSPACE+'pass-fail.result','w')as f:          
-        f.write(exitCode)
+        f.write(str(exitCode))
 
 #END writePassFail
 
