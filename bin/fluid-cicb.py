@@ -173,7 +173,7 @@ def createSettingsJson(args):
                 'workspace':'/apps/workspace/{}/'.format(args.build_id[0:7]),
                 'zone':args.zone,
                 'ci_file':args.ci_file,
-                'bq_table':args.bq_table,
+                'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
                 'hostname':'fcicb-{}-0'.format(args.build_id[0:7])}
 
     if args.slurm_controller:
@@ -422,7 +422,6 @@ def parseCli():
     parser.add_argument('--zone', help='Google Cloud zone to deploy the GCE cluster to', type=str, default="us-west1-b")
     parser.add_argument('--slurm-controller', help='The name of a slurm controller to schedule CI tasks as jobs on', type=str)
     parser.add_argument('--ci-file', help='Path to tests file in your repository', type=str, default="./fluidci.json")
-    parser.add_argument('--bq-table', help='Big Query table to load results in the format {project}:{dataset}.{table}', type=str, default="")
     parser.add_argument('--ignore-job-dependencies', help='Boolean flag to enable ignorance of job dependencies assumed within a command_group (True). Default: False', type=bool, default=False)
 
     return parser.parse_args()
