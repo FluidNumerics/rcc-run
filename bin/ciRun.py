@@ -21,6 +21,9 @@ def gceClusterRun(settings,tests):
     """Executes all execution_commands sequentially on GCE Cluster"""
 
     WORKSPACE=settings['workspace']
+    # Set the WORKSPACE environment variable so that users can reference this
+    # in test scripts as the top of their directory tree.
+    os.environ["WORKSPACE"] = WORKSPACE
     utc = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
     k=0
     for test in tests['tests'] :
@@ -121,6 +124,10 @@ def slurmgcpRun(settings,tests):
     for test in tests['tests'] :
 
         workdir=WORKSPACE+test['output_directory']
+        # Set the WORKSPACE environment variable so that users can reference this
+        # in test scripts as the top of their directory tree.
+        os.environ["WORKSPACE"] = workdir
+
         print('Making directory {}\n'.format(workdir),flush=True)
         try:
             os.makedirs(workdir)
@@ -323,9 +330,6 @@ def main():
 
     args = parseCli()
 
-    # Set the WORKSPACE environment variable so that users can reference this
-    # in test scripts as the top of their directory tree.
-    os.environ["WORKSPACE"] = args.workspace
 
     if os.path.isdir(args.workspace):
         print('Found settings in {}'.format(args.workspace),flush=True)
