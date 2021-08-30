@@ -153,6 +153,8 @@ def createSettingsJson(args):
     settings = {'artifact_type':args.artifact_type,
                 'build_id':args.build_id,
                 'docker_image':args.docker_image,
+                'compiler':args.compiler,
+                'target_arch':args.target_arch,
                 'git_sha':args.git_sha,
                 'gpu_count':args.gpu_count,
                 'gpu_type':args.gpu_type,
@@ -405,6 +407,8 @@ def parseCli():
     parser.add_argument('--git-sha', help='Git sha for your application', type=str)
     parser.add_argument('--node-count', help='Number of nodes to provision for testing', type=int, default=1)
     parser.add_argument('--machine-type', help='GCE Machine type for each node', type=str, default='n1-standard-2')
+    parser.add_argument('--compiler', help='The compiler used to build the application (optional)', type=str, default='')
+    parser.add_argument('--target-arch', help='The architecture targeted by the application build (optional)', type=str, default='')
     parser.add_argument('--gpu-count', help='The number of GPUs per node', type=int, default=0)
     parser.add_argument('--gpu-type', help='The type of GPU to attach to each compute node', type=str, default='')
     parser.add_argument('--nproc', help='The number of processes to launch (MPI)', type=int, default=1)
