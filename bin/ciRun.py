@@ -11,7 +11,7 @@ from datetime import datetime
 import sys
 import time
 import yaml
-import urllib
+import urllib.request
 
 
 DEFAULT_RETURN_CODE=999
@@ -34,7 +34,7 @@ def get_instance_metadata(key):
 def get_partition(name='default'):
     """Gets the compute partition metadata given the partition name"""
 
-    config = get_instance_metadata('config')
+    config = json.loads(get_instance_metadata('config'))
     partitions = config['partitions']
     partition = {}
     if name == 'default':
