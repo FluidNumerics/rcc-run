@@ -16,7 +16,6 @@ import urllib.request
 
 DEFAULT_RETURN_CODE=999
 SLEEP_INTERVAL=5
-SLURMGCP_CONFIG = "/slurm/scripts/config.yaml"
 
 def get_instance_metadata(key):
     """Gets instance metadata given a metadata key"""
@@ -319,24 +318,6 @@ def slurmgcpRun(settings,tests):
                             max_memory = float(maxRss[:-1])
 
                         tests['tests'][index]['max_memory_gb'] = float(max_memory)
-
-                        # Get the node list and record the machine information
-                        cmd = 'sacct -j {} --format=nodelist%30'.format(str(jobid))
-                        stdout, stderr, returncode = run(cmd)
-                        instance = '-'.join(stdout.decode('utf-8').split('\n')[-2].strip().split('-')[:-1])
-                        print(instance,flush=True)
-                        with open(SLURMGCP_CONFIG, 'r') as stream:
-                            try:
-                                slurmConfig = yaml.safe_load(stream)
-                            except yaml.YAMLError as exc:
-                                print(exc,flush=True)
-
-                        if instance in slurmConfig['instance_defs'].keys():
-                            tests['tests'][index]['machine_type'] = slurmConfig['instance_defs'][instance]['machine_type']
-                            tests['tests'][index]['gpu_type'] = slurmConfig['instance_defs'][instance]['gpu_type']
-                            tests['tests'][index]['gpu_count'] =int(slurmConfig['instance_defs'][instance]['gpu_count'])
-                        else:
-                            print('Cannot find {} in instance_defs'.format(instance))
 
                 k+=1
 
