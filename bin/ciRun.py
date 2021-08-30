@@ -11,11 +11,43 @@ from datetime import datetime
 import sys
 import time
 import yaml
+import urllib
 
 
 DEFAULT_RETURN_CODE=999
 SLEEP_INTERVAL=5
 SLURMGCP_CONFIG = "/slurm/scripts/config.yaml"
+
+def get_instance_metadata(key):
+    """Gets instance metadata given a metadata key"""
+
+    GOOGLE_URL = "http://metadata.google.internal/computeMetadata/v1/instance/attributes"
+    req = urllib.request.Request("{}/{}".format(GOOGLE_URL, key))
+    req.add_header('Metadata-Flavor', 'Google')
+    resp = urllib.request.urlopen(req)
+
+    value = resp.read().decode('utf-8').replace('\t','')
+    return value
+
+#END get_instance_metadata
+
+def get_partition(name='default'):
+    """Gets the compute partition metadata given the partition name"""
+
+    config = get_instance_metadata('config')
+    partitions = config['partitions']
+    partition = {}
+    if name == 'default':
+        partition = partitions[0]
+    else:
+        for p in partitions:
+            if p['name'] == name :
+                partition = p
+                break
+    return partition
+
+#END get_partition
+
 
 def gceClusterRun(settings,tests):
     """Executes all execution_commands sequentially on GCE Cluster"""
@@ -116,6 +148,7 @@ def slurmgcpRun(settings,tests):
     squeue = '/usr/local/bin/squeue '
     sacct = '/usr/local/bin/sacct '
 
+
     utc = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
    
     command_groups = {}
@@ -146,13 +179,15 @@ def slurmgcpRun(settings,tests):
                 dependent_job = command_groups[test['command_group']][-1]['job_id']
                 cmd += '--dependency=afterany:{} '.format(str(dependent_job))
 
-
         # Add partition flag to job submission
         if 'partition' in test.keys():
             print('Submitting {} to partition {}'.format(test['execution_command'],test['partition']),flush=True)
             cmd += '--partition={} '.format(test['partition'])
+            # Get the partition metadata
+            partition = get_partition(test['partition'])
         else:
             print('Submitting {} to default partition'.format(test['execution_command']),flush=True)
+            partition = get_partition("default")
 
         if int(settings['gpu_count']) > 0:
             cmd += '--gres=gpu:{} '.format(settings['gpu_count'])
@@ -170,8 +205,6 @@ def slurmgcpRun(settings,tests):
         stdout, stderr, returncode = run(cmd)
 
 
-        # Get the machine type for the partition
-
         # Log information
         tests['tests'][k]['stdout'] = ''
         tests['tests'][k]['stderr'] = ''
@@ -180,9 +213,9 @@ def slurmgcpRun(settings,tests):
         tests['tests'][k]['git_sha'] = settings['git_sha']
         tests['tests'][k]['datetime'] = utc
         tests['tests'][k]['node_count'] =int(settings['node_count'])
-        tests['tests'][k]['machine_type'] = settings['machine_type']
-        tests['tests'][k]['gpu_type'] = settings['gpu_type']
-        tests['tests'][k]['gpu_count'] =int(settings['gpu_count'])
+        tests['tests'][k]['machine_type'] = partition['machine_type']
+        tests['tests'][k]['gpu_type'] = partition['gpu_type']
+        tests['tests'][k]['gpu_count'] =int(partition['gpu_count'])
 
         # Check return code
         if returncode == 0:
