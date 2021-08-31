@@ -113,6 +113,8 @@ def gceClusterRun(settings,tests):
         tests['tests'][k]['datetime'] = utc
         tests['tests'][k]['runtime'] = float(t1-t0)
         tests['tests'][k]['allocated_cpus'] = settings['nproc']
+        tests['tests'][k]['compiler'] = settings['compiler']
+        tests['tests'][k]['target_arch'] = settings['target_arch']
         #tests['tests'][index]['max_memory_gb'] = float(max_memory)
 
 
@@ -215,6 +217,8 @@ def slurmgcpRun(settings,tests):
         tests['tests'][k]['machine_type'] = partition['machine_type']
         tests['tests'][k]['gpu_type'] = partition['gpu_type']
         tests['tests'][k]['gpu_count'] =int(partition['gpu_count'])
+        tests['tests'][k]['compiler'] = settings['compiler']
+        tests['tests'][k]['target_arch'] = settings['target_arch']
 
         # Check return code
         if returncode == 0:
