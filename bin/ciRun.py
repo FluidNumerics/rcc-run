@@ -156,7 +156,7 @@ def spindownComputeNodes():
         while True:
             resp = compute.instances().list(project=config['project'],
                       zone=partition['zone'], pageToken=page_token,
-                      filter='name={}-compute*'.format(config['name'])).execute()
+                      filter='name={}-compute*'.format(config['cluster_name'])).execute()
 
             if "items" in resp:
                 g_nodes.extend(resp['items'])
