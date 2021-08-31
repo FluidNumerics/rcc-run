@@ -149,7 +149,6 @@ def slurmgcpRun(settings,tests):
     squeue = '/usr/local/bin/squeue '
     sacct = '/usr/local/bin/sacct '
 
-
     utc = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
    
     command_groups = {}
@@ -271,7 +270,7 @@ def slurmgcpRun(settings,tests):
                     stdout, stderr, returncode = run(cmd)
                     status = stdout.decode('utf-8').split('\n')[-2].strip()
                     print('Job {} status : {}'.format(str(jobid),status))
-                    if status == 'COMPLETED' or status == 'FAILED':
+                    if status == 'COMPLETED' or status == 'FAILED' or status == 'CANCELLED':
                         ncomplete += 1
                         command_groups[cg][k]['complete'] = True
 
