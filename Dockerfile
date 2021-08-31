@@ -19,7 +19,7 @@ COPY bin /opt/fluid-cicb/bin
 COPY tf /opt/fluid-cicb/tf
 
 RUN apt-get update -y && \
-    apt-get install python3-pip && \
+    apt-get install -y python3-pip && \
     pip3 install pyhcl
 
 ENTRYPOINT ["python3","/opt/fluid-cicb/bin/fluid-cicb.py"]
