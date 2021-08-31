@@ -9,6 +9,7 @@ import shlex
 from datetime import datetime
 import sys
 import time
+import hcl
 
 WORKSPACE='/workspace/'
 TFPATH='/opt/fluid-cicb/tf'
@@ -166,6 +167,7 @@ def createSettingsJson(args):
                 'nproc':args.nproc,
                 'profile':args.profile,
                 'project':args.project,
+                'rcc_tfvars':args.rcc_tfvars,
                 'service_account':args.service_account,
                 'singularity_image':args.singularity_image,
                 'slurm_controller':args.slurm_controller,
@@ -373,6 +375,49 @@ def checkExitCodes():
 
 #END checkExitCodes
 
+def appendSystemInfo(test):
+    """Appends additional system information included in the rcc-tfvars file, if provided"""
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    res = test
+
+    if settings['rcc_tfvars']:
+        with open(settings['rcc_tfvars'],'r')as f:
+            rcc = hcl.load(f)
+
+        # Filestore
+        if 'create_filestore' in rcc.keys():
+            res['filestore'] = rcc['create_filestore']
+            if res['filestore']:
+                res['filestore_tier'] = rcc['filestore']['tier']
+                res['filestore_capacity_gb'] = rcc['filestore']['capacity_gb']
+
+        # Lustre
+        if 'create_lustre' in rcc.keys():
+            res['lustre'] = rcc['create_lustre']
+            if res['lustre']:
+                res['lustre_image'] = rcc['lustre']['image']
+                res['lustre_mds_node_count'] = rcc['lustre']['mds_node_count']
+                res['lustre_mds_machine_type'] = rcc['lustre']['mds_machine_type']
+                res['lustre_mds_boot_disk_type'] = rcc['lustre']['mds_boot_disk_type']
+                res['lustre_mds_boot_disk_size_gb'] = rcc['lustre']['mds_boot_disk_size_gb']
+                res['lustre_mdt_disk_type'] = rcc['lustre']['mdt_disk_type']
+                res['lustre_mdt_disk_size_gb'] = rcc['lustre']['mdt_disk_size_gb']
+                res['lustre_mdt_per_mds'] = rcc['lustre']['mdt_per_mds']
+                res['lustre_oss_node_count'] = rcc['lustre']['oss_node_count']
+                res['lustre_oss_machine_type'] = rcc['lustre']['oss_machine_type']
+                res['lustre_oss_boot_disk_type'] = rcc['lustre']['oss_boot_disk_type']
+                res['lustre_oss_boot_disk_size_gb'] = rcc['lustre']['oss_boot_disk_size_gb']
+                res['lustre_ost_disk_type'] = rcc['lustre']['ost_disk_type']
+                res['lustre_ost_disk_size_gb'] = rcc['lustre']['ost_disk_size_gb']
+                res['lustre_ost_per_oss'] = rcc['lustre']['ost_per_oss']
+
+    return res
+
+#END appendSystemInfo
+
 def formatResults():
     """Formats the results.json to Newline Delimited JSON for loading into big query"""
 
@@ -382,8 +427,12 @@ def formatResults():
     with open(WORKSPACE+'bq-results.json','w')as f:          
         for test in tests['tests'] :
             del test['output_directory']
-            f.write(json.dumps(test))
-            print(json.dumps(test),flush=True)
+            
+            # Append additional system information from HCL file if provided
+            res = appendSystemInfo(test)
+
+            f.write(json.dumps(res))
+            print(json.dumps(res),flush=True)
             f.write('\n')
         
 #END formatResults
@@ -426,6 +475,7 @@ def parseCli():
     parser.add_argument('--zone', help='Google Cloud zone to deploy the GCE cluster to', type=str, default="us-west1-b")
     parser.add_argument('--slurm-controller', help='The name of a slurm controller to schedule CI tasks as jobs on', type=str)
     parser.add_argument('--ci-file', help='Path to tests file in your repository', type=str, default="./fluidci.json")
+    parser.add_argument('--rcc-tfvars', help='Path to research computing cluster tfvars file', type=str, default="")
     parser.add_argument('--ignore-job-dependencies', help='Boolean flag to enable ignorance of job dependencies assumed within a command_group (True). Default: False', type=bool, default=False)
 
     return parser.parse_args()

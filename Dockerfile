@@ -18,4 +18,6 @@ RUN mkdir -p /opt/fluid-cicb/etc
 COPY bin /opt/fluid-cicb/bin
 COPY tf /opt/fluid-cicb/tf
 
+RUN pip3 install pyhcl
+
 ENTRYPOINT ["python3","/opt/fluid-cicb/bin/fluid-cicb.py"]
