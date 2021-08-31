@@ -204,7 +204,6 @@ def slurmgcpRun(settings,tests):
         # Submit the job
         stdout, stderr, returncode = run(cmd)
 
-
         # Log information
         tests['tests'][k]['stdout'] = ''
         tests['tests'][k]['stderr'] = ''
@@ -216,6 +215,8 @@ def slurmgcpRun(settings,tests):
         tests['tests'][k]['machine_type'] = partition['machine_type']
         tests['tests'][k]['gpu_type'] = partition['gpu_type']
         tests['tests'][k]['gpu_count'] =int(partition['gpu_count'])
+        tests['tests'][k]['gvnic'] =partition['gvnic']
+        tests['tests'][k]['compact_placement'] = partition['compact_placement']
         tests['tests'][k]['compiler'] = settings['compiler']
         tests['tests'][k]['target_arch'] = settings['target_arch']
 
