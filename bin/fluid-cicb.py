@@ -12,7 +12,7 @@ import time
 import hcl
 
 WORKSPACE='/workspace/'
-TFPATH='/opt/fluid-cicb/tf'
+TFPATH='/opt/fluid-cicb/tf/'
 SLEEP_INTERVAL=5
 SSH_TIMEOUT=300
 N_RETRIES=SSH_TIMEOUT/SLEEP_INTERVAL
@@ -42,7 +42,10 @@ def waitForSSH():
     while True:
 
         if k > N_RETRIES:
-            if not settings['slurm_controller']:
+            if settings['cluster_type'] == 'gcc':
+                deprovisionCluster()
+
+            elif settings['cluster_type'] == 'rcc' and settings['rcc_ephemeral']:
                 deprovisionCluster()
 
             writePassFail(rc)
@@ -155,6 +158,7 @@ def createSettingsJson(args):
                 'build_id':args.build_id,
                 'docker_image':args.docker_image,
                 'compiler':args.compiler,
+                'cluster_type':args.cluster_type,
                 'target_arch':args.target_arch,
                 'git_sha':args.git_sha,
                 'gpu_count':args.gpu_count,
@@ -168,6 +172,7 @@ def createSettingsJson(args):
                 'profile':args.profile,
                 'project':args.project,
                 'rcc_tfvars':args.rcc_tfvars,
+                'rcc_ephemeral':args.rcc_ephemeral,
                 'service_account':args.service_account,
                 'singularity_image':args.singularity_image,
                 'slurm_controller':args.slurm_controller,
@@ -180,6 +185,8 @@ def createSettingsJson(args):
                 'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
                 'hostname':'fcicb-{}-0'.format(args.build_id[0:7])}
 
+    if args.cluster_type == 'rcc' and args.rcc_ephemeral:
+        settings['hostname'] = 'fcicb-{}-controller'.format(args.build_id[0:7])
     if args.slurm_controller:
         settings['hostname'] = args.slurm_controller
 
@@ -193,10 +200,22 @@ def concretizeTfvars():
     print('Concretizing tfvars',flush=True)
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
-
-    with open(TFPATH+'/fluid.tfvars.tmpl', 'r') as f:
-        tfvars = f.read()
     
+    clusterType = settings['cluster_type']
+
+    if clusterType == 'gce':
+
+        with open(TFPATH+clusterType+'/fluid.tfvars.tmpl', 'r') as f:
+            tfvars = f.read()
+
+    elif clusterType == 'rcc' :
+
+        rccFile = settings['rcc_file']
+        with open(rccFile, 'r') as f:
+            tfvars = f.read()
+
+        tfvars = tfvars.replace('<name>','fcicb-{}'.format(settings['build_id'][0:7]))
+
     tfvars = tfvars.replace('<project>',settings['project'])
     tfvars = tfvars.replace('<machine_type>',settings['machine_type'])
     tfvars = tfvars.replace('<node_count>',str(settings['node_count']))
@@ -211,7 +230,7 @@ def concretizeTfvars():
 
     print(tfvars,flush=True)
 
-    with open(TFPATH+'/fluid.auto.tfvars', 'w') as f:
+    with open(TFPATH+clusterType+'/fluid.auto.tfvars', 'w') as f:
         f.write(tfvars)
 
 #END concretizeTfvars
@@ -316,8 +335,12 @@ def downloadDirectory(localdir,remotedir):
 def deprovisionCluster():
     """Use Terraform and the provided module to delete the existing cluster"""
 
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+ 
+    clusterType = settings['cluster_type']
     print('Deprovisioning cluster...',flush=True)
-    os.chdir(TFPATH)
+    os.chdir(TFPATH+clusterType)
     localRun('terraform destroy --auto-approve')
     print('Done deprovisioning cluster',flush=True)
 
@@ -447,12 +470,13 @@ def publishToBQ():
         print('Publishing results to Big Query Table',flush=True)
         localRun('bq load --source_format=NEWLINE_DELIMITED_JSON {} {}bq-results.json'.format(settings['bq_table'],WORKSPACE))
 
-
 #END publishToBQ
 
 def parseCli():
     parser = argparse.ArgumentParser(description='Provision remote resources and test HPC/RC applications')
     parser.add_argument('--build-id', help='Cloud Build build ID', type=str)
+    parser.add_argument('--cluster-type', help='Type of cluster to use for testing. Either "rcc" or "gce".', type=str, default='gce')
+    parser.add_argument('--rcc-ephemeral', help='Indicates whether the rcc cluster is ephemeral. If True, an ephemeral rcc cluster is made on your behalf (Default False).', default=False, action='store_true')
     parser.add_argument('--git-sha', help='Git sha for your application', type=str)
     parser.add_argument('--node-count', help='Number of nodes to provision for testing', type=int, default=1)
     parser.add_argument('--machine-type', help='GCE Machine type for each node', type=str, default='n1-standard-2')
@@ -462,21 +486,21 @@ def parseCli():
     parser.add_argument('--gpu-type', help='The type of GPU to attach to each compute node', type=str, default='')
     parser.add_argument('--nproc', help='The number of processes to launch (MPI)', type=int, default=1)
     parser.add_argument('--task-affinity', help='Task affinity flags to send to MPI.', type=str)
-    parser.add_argument('--mpi', help='Boolean flag to indicate whether or not MPI is used', type=bool, default=False)
-    parser.add_argument('--profile', help='Boolean flag to enable (true) or disable (false) profiling with the hpc toolkit', type=bool, default=False)
-    parser.add_argument('--surface-nonzero-exit-code', help='Boolean flag to surface a nonzero exit code (true) if any of the tests fail', type=bool, default=True)
+    parser.add_argument('--mpi', help='Boolean flag to indicate whether or not MPI is used',default=False, action='store_true')
+    parser.add_argument('--profile', help='Boolean flag to enable (true) or disable (false) profiling with the hpc toolkit', default=False, action='store_true')
+    parser.add_argument('--surface-nonzero-exit-code', help='Boolean flag to surface a nonzero exit code (true) if any of the tests fail', default=False, action='store_true')
     parser.add_argument('--vpc-subnet', help='Link to VPC Subnet to use for deployment. If not provided, an ephemeral subnet is created', type=str, default='')
     parser.add_argument('--service-account', help='Service account email address to attach to GCE instance. If not provided, an ephemeral service account is created', type=str, default='')
     parser.add_argument('--artifact-type', help='Identifies the type of artifact used to deploy your application. Currently only "gce-vm-image", "docker", and "singularity" are supported.', type=str, default='singularity')
     parser.add_argument('--docker-image', help='The name of the docker image. Only used if --artifact-type=docker', type=str)
     parser.add_argument('--singularity-image', help='The name of the singularity image. Only used if --artifact-type=singularity', type=str)
     parser.add_argument('--image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='')
-    parser.add_argument('--project', help='Google Cloud project ID to deploy the GCE cluster to', type=str)
-    parser.add_argument('--zone', help='Google Cloud zone to deploy the GCE cluster to', type=str, default="us-west1-b")
-    parser.add_argument('--slurm-controller', help='The name of a slurm controller to schedule CI tasks as jobs on', type=str)
+    parser.add_argument('--project', help='Google Cloud project ID to deploy the cluster to', type=str)
+    parser.add_argument('--zone', help='Google Cloud zone to deploy the cluster to', type=str, default="us-west1-b")
+    parser.add_argument('--slurm-controller', help='The name of a slurm controller to schedule CI tasks as jobs on. Only used if cluster-tyoe=rcc and rcc-ephemeral=False', type=str)
     parser.add_argument('--ci-file', help='Path to tests file in your repository', type=str, default="./fluidci.json")
-    parser.add_argument('--rcc-tfvars', help='Path to research computing cluster tfvars file', type=str, default="")
-    parser.add_argument('--ignore-job-dependencies', help='Boolean flag to enable ignorance of job dependencies assumed within a command_group (True). Default: False', type=bool, default=False)
+    parser.add_argument('--rcc-tfvars', help='Path to research computing cluster tfvars file', type=str, default="./fluid.auto.tfvars")
+    parser.add_argument('--ignore-job-dependencies', help='Boolean flag to enable ignorance of job dependencies assumed within a command_group.', default=False, action='store_true')
 
     return parser.parse_args()
 
@@ -506,13 +530,9 @@ def gceClusterWorkflow():
 
     if rc == 0:
 
-#    packDockerImage()
-
         clusterRun('mkdir -p {}'.format(workspace))
 
         uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
-
-#        unpackDockerImage()
 
         runExeCommands()
 
@@ -533,6 +553,15 @@ def slurmgcpWorkflow():
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
+    if settings['rcc_ephemeral']:
+        concretizeTfvars()
+
+        provisionCluster()
+
+    createSSHKey()
+
+    rc = waitForSSH()
+
     workspace = settings['workspace']
 
     createSSHKey()
@@ -541,15 +570,11 @@ def slurmgcpWorkflow():
 
     if rc == 0:
 
-#        packDockerImage()
-
         uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
 
         clusterRun('mkdir -p {}'.format(workspace))
 
         uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
-
-#        unpackDockerImage()
 
         runExeCommands()
 
@@ -557,7 +582,10 @@ def slurmgcpWorkflow():
 
         time.sleep(5)
 
-        clusterRun('rm -rf {}'.format(workspace))
+        if settings['rcc_ephemeral']:
+            deprovisionCluster()
+        else:
+            clusterRun('rm -rf {}'.format(workspace))
 
         formatResults()
 
