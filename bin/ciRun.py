@@ -362,7 +362,7 @@ def main():
         settings = json.load(f)
 
     if settings['singularity_image']:
-        os.environ['SINGULARITY_IMAGE'] = str(settings['singularity_image'])
+        os.environ['SINGULARITY_IMAGE'] = '{}/{}'.format(WORKSPACE,str(settings['singularity_image']))
 
     with open(WORKSPACE+settings['ci_file'],'r')as f: 
         tests = json.load(f)
