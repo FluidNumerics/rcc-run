@@ -237,8 +237,12 @@ def concretizeTfvars():
 def provisionCluster():
     """Use Terraform and the provided module to create a GCE cluster to execute work on"""
 
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+ 
+    clusterType = settings['cluster_type']
     print('Provisioning Cluster',flush=True)
-    os.chdir(TFPATH)
+    os.chdir(TFPATH+clusterType)
     localRun('terraform init')
     localRun('terraform apply --auto-approve')
     print('Done provisioning cluster',flush=True)
