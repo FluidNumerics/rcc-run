@@ -172,7 +172,6 @@ def createSettingsJson(args):
                 'profile':args.profile,
                 'project':args.project,
                 'rcc_tfvars':args.rcc_tfvars,
-                'rcc_ephemeral':args.rcc_ephemeral,
                 'service_account':args.service_account,
                 'singularity_image':args.singularity_image,
                 'rcc_controller':args.rcc_controller,
@@ -552,7 +551,7 @@ def slurmgcpWorkflow():
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
-    if settings['rcc_ephemeral']:
+    if settings['cluster_type'] == 'rcc-ephemeral':
         concretizeTfvars()
 
         provisionCluster()
@@ -581,7 +580,7 @@ def slurmgcpWorkflow():
 
         time.sleep(5)
 
-        if settings['rcc_ephemeral']:
+        if settings['cluster_type'] == 'rcc-ephemeral':
             deprovisionCluster()
         else:
             clusterRun('rm -rf {}'.format(workspace))
