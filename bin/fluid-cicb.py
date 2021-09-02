@@ -42,10 +42,10 @@ def waitForSSH():
     while True:
 
         if k > N_RETRIES:
-            if settings['cluster_type'] == 'gcc':
+            if settings['cluster_type'] == 'gce':
                 deprovisionCluster()
 
-            elif settings['cluster_type'] == 'rcc' and settings['rcc_ephemeral']:
+            elif settings['cluster_type'] == 'rcc-ephemeral':
                 deprovisionCluster()
 
             writePassFail(rc)
@@ -175,7 +175,7 @@ def createSettingsJson(args):
                 'rcc_ephemeral':args.rcc_ephemeral,
                 'service_account':args.service_account,
                 'singularity_image':args.singularity_image,
-                'slurm_controller':args.slurm_controller,
+                'rcc_controller':args.rcc_controller,
                 'surface_nonzero_exit_code':args.surface_nonzero_exit_code,
                 'task_affinity':args.task_affinity,
                 'vpc_subnet':args.vpc_subnet,
@@ -185,10 +185,10 @@ def createSettingsJson(args):
                 'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
                 'hostname':'fcicb-{}-0'.format(args.build_id[0:7])}
 
-    if args.cluster_type == 'rcc' and args.rcc_ephemeral:
+    if args.cluster_type == 'rcc-ephemeral':
         settings['hostname'] = 'fcicb-{}-controller'.format(args.build_id[0:7])
-    if args.slurm_controller:
-        settings['hostname'] = args.slurm_controller
+    elif args.cluster_type == 'rcc-static':
+        settings['hostname'] = args.rcc_controller
 
     with open(WORKSPACE+'settings.json','w')as f: 
         f.write(json.dumps(settings))
@@ -208,7 +208,7 @@ def concretizeTfvars():
         with open(TFPATH+clusterType+'/fluid.tfvars.tmpl', 'r') as f:
             tfvars = f.read()
 
-    elif clusterType == 'rcc' :
+    elif clusterType == 'rcc-ephemeral' :
 
         rccFile = settings['rcc_file']
         with open(rccFile, 'r') as f:
@@ -475,8 +475,7 @@ def publishToBQ():
 def parseCli():
     parser = argparse.ArgumentParser(description='Provision remote resources and test HPC/RC applications')
     parser.add_argument('--build-id', help='Cloud Build build ID', type=str)
-    parser.add_argument('--cluster-type', help='Type of cluster to use for testing. Either "rcc" or "gce".', type=str, default='gce')
-    parser.add_argument('--rcc-ephemeral', help='Indicates whether the rcc cluster is ephemeral. If True, an ephemeral rcc cluster is made on your behalf (Default False).', default=False, action='store_true')
+    parser.add_argument('--cluster-type', help='Type of cluster to use for testing. Either "rcc-static", "rcc-ephemeral", or "gce".', type=str, default='gce')
     parser.add_argument('--git-sha', help='Git sha for your application', type=str)
     parser.add_argument('--node-count', help='Number of nodes to provision for testing', type=int, default=1)
     parser.add_argument('--machine-type', help='GCE Machine type for each node', type=str, default='n1-standard-2')
@@ -497,7 +496,7 @@ def parseCli():
     parser.add_argument('--image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='')
     parser.add_argument('--project', help='Google Cloud project ID to deploy the cluster to', type=str)
     parser.add_argument('--zone', help='Google Cloud zone to deploy the cluster to', type=str, default="us-west1-b")
-    parser.add_argument('--slurm-controller', help='The name of a slurm controller to schedule CI tasks as jobs on. Only used if cluster-tyoe=rcc and rcc-ephemeral=False', type=str)
+    parser.add_argument('--rcc-controller', help='The name of a slurm controller to schedule CI tasks as jobs on. Only used if cluster-type=rcc-static', type=str)
     parser.add_argument('--ci-file', help='Path to tests file in your repository', type=str, default="./fluidci.json")
     parser.add_argument('--rcc-tfvars', help='Path to research computing cluster tfvars file', type=str, default="./fluid.auto.tfvars")
     parser.add_argument('--ignore-job-dependencies', help='Boolean flag to enable ignorance of job dependencies assumed within a command_group.', default=False, action='store_true')
@@ -601,10 +600,10 @@ def main():
 
     createSettingsJson(args)
 
-    if args.slurm_controller:
-        slurmgcpWorkflow()
-    else:
+    if args.cluster_type == 'gce':
         gceClusterWorkflow()
+    else:
+        slurmgcpWorkflow()
 
 #END main
 
