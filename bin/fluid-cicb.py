@@ -209,7 +209,7 @@ def concretizeTfvars():
 
     elif clusterType == 'rcc-ephemeral' :
 
-        rccFile = settings['rcc_file']
+        rccFile = settings['rcc_tfvars']
         with open(rccFile, 'r') as f:
             tfvars = f.read()
 
