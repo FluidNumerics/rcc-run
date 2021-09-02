@@ -560,10 +560,6 @@ def slurmgcpWorkflow():
 
         provisionCluster()
 
-    createSSHKey()
-
-    rc = waitForSSH()
-
     workspace = settings['workspace']
 
     createSSHKey()
