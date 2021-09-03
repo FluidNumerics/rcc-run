@@ -343,13 +343,6 @@ def deprovisionCluster():
  
     clusterType = settings['cluster_type']
     print('Deprovisioning cluster...',flush=True)
-
-    # Stop controller so that shutdown script runs
-    # The shutdown script deletes compute nodes
-    if settings['cluster_type'] == 'rcc-ephemeral':
-        cmd = 'gcloud compute instance stop {} --zone={}'.format(settings['hostname'],settings['zone'])
-        localRun(cmd)
-
     os.chdir(TFPATH+clusterType)
     localRun('terraform destroy --auto-approve')
     print('Done deprovisioning cluster',flush=True)
