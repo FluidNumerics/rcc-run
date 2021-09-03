@@ -347,7 +347,7 @@ def deprovisionCluster():
     # Stop controller so that shutdown script runs
     # The shutdown script deletes compute nodes
     if settings['cluster_type'] == 'rcc-ephemeral':
-        cmd = 'gcloud compute instance stop {} --zone={}'.format(settings['hostname'],settings['zone'])
+        cmd = 'gcloud compute instances stop {} --zone={}'.format(settings['hostname'],settings['zone'])
         localRun(cmd)
 
     os.chdir(TFPATH+clusterType)
