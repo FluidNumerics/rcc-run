@@ -367,10 +367,10 @@ def main():
     with open(WORKSPACE+settings['ci_file'],'r')as f: 
         tests = json.load(f)
 
-    if settings['slurm_controller']:
-        slurmgcpRun(settings,tests)
-    else:
+    if settings['cluster_type'] == 'gce':
         gceClusterRun(settings,tests)
+    else:
+        slurmgcpRun(settings,tests)
 
 
 #END main
