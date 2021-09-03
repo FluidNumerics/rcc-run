@@ -410,7 +410,8 @@ def appendSystemInfo(test):
     res = test
 
     if settings['rcc_tfvars']:
-        with open(settings['rcc_tfvars'],'r')as f:
+        rccFile = settings['rcc_tfvars']
+        with open(WORKSPACE+'/'+rccFile, 'r') as f:
             rcc = hcl.load(f)
 
         # Filestore
