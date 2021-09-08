@@ -163,7 +163,7 @@ def createSettingsJson(args):
                 'git_sha':args.git_sha,
                 'gpu_count':args.gpu_count,
                 'gpu_type':args.gpu_type,
-                'image':args.image,
+                'gce_image':args.gce_image,
                 'ignore_job_dependencies':args.ignore_job_dependencies,
                 'machine_type':args.machine_type,
                 'mpi':args.mpi,
@@ -220,7 +220,7 @@ def concretizeTfvars():
     tfvars = tfvars.replace('<machine_type>',settings['machine_type'])
     tfvars = tfvars.replace('<node_count>',str(settings['node_count']))
     tfvars = tfvars.replace('<zone>',settings['zone'])
-    tfvars = tfvars.replace('<image>',settings['image'])
+    tfvars = tfvars.replace('<image>',settings['gce_image'])
     tfvars = tfvars.replace('<gpu_type>',settings['gpu_type'])
     tfvars = tfvars.replace('<gpu_count>',str(settings['gpu_count']))
     tfvars = tfvars.replace('<build_id>',settings['build_id'][0:7])
@@ -494,10 +494,10 @@ def parseCli():
     parser.add_argument('--profile', help='Boolean flag to enable (true) or disable (false) profiling with the hpc toolkit', default=False, action='store_true')
     parser.add_argument('--vpc-subnet', help='Link to VPC Subnet to use for deployment. If not provided, an ephemeral subnet is created', type=str, default='')
     parser.add_argument('--service-account', help='Service account email address to attach to GCE instance. If not provided, an ephemeral service account is created', type=str, default='')
-    parser.add_argument('--artifact-type', help='Identifies the type of artifact used to deploy your application. Currently only "gce-vm-image", "docker", and "singularity" are supported.', type=str, default='singularity')
+    parser.add_argument('--artifact-type', help='Identifies the type of artifact used to deploy your application. Currently only "gce-image", "docker", and "singularity" are supported.', type=str, default='singularity')
     parser.add_argument('--docker-image', help='The name of the docker image. Only used if --artifact-type=docker', type=str)
     parser.add_argument('--singularity-image', help='The name of the singularity image. Only used if --artifact-type=singularity', type=str)
-    parser.add_argument('--image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='')
+    parser.add_argument('--gce-image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='')
     parser.add_argument('--project', help='Google Cloud project ID to deploy the cluster to', type=str)
     parser.add_argument('--zone', help='Google Cloud zone to deploy the cluster to', type=str, default="us-west1-b")
     parser.add_argument('--rcc-controller', help='The name of a slurm controller to schedule CI tasks as jobs on. Only used if cluster-type=rcc-static', type=str)

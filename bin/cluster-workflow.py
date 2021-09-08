@@ -219,7 +219,7 @@ def slurmgcpRun(settings,tests):
         tests['tests'][k]['compact_placement'] = partition['enable_placement']
         tests['tests'][k]['compiler'] = settings['compiler']
         tests['tests'][k]['target_arch'] = settings['target_arch']
-        tests['tests'][k]['vm_image'] = settings['image']
+        tests['tests'][k]['vm_image'] = settings['gce_image']
 
         # Check return code
         if returncode == 0:
