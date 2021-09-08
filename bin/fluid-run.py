@@ -214,7 +214,7 @@ def concretizeTfvars():
         with open(rccFile, 'r') as f:
             tfvars = f.read()
 
-        tfvars = tfvars.replace('<name>','fcicb-{}'.format(settings['build_id'][0:7]))
+        tfvars = tfvars.replace('<name>','frun-{}'.format(settings['build_id'][0:7]))
 
     tfvars = tfvars.replace('<project>',settings['project'])
     tfvars = tfvars.replace('<machine_type>',settings['machine_type'])
@@ -225,7 +225,7 @@ def concretizeTfvars():
     tfvars = tfvars.replace('<gpu_count>',str(settings['gpu_count']))
     tfvars = tfvars.replace('<build_id>',settings['build_id'][0:7])
     tfvars = tfvars.replace('<vpc_subnet>',settings['vpc_subnet'])
-    tfvars = tfvars.replace('<tags>','fluid-cicb')
+    tfvars = tfvars.replace('<tags>','fluid-run')
     tfvars = tfvars.replace('<service_account>',settings['service_account'])
 
     print(tfvars,flush=True)
