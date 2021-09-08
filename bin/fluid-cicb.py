@@ -49,7 +49,7 @@ def waitForSSH():
                 deprovisionCluster()
 
             writePassFail(rc)
-            if settings['surface_nonzero_exit_code']:
+            if not settings['ignore_exit_code']:
                 sys.exit(rc)
 
         print('Waiting for ssh connection...',flush=True)
@@ -175,7 +175,8 @@ def createSettingsJson(args):
                 'service_account':args.service_account,
                 'singularity_image':args.singularity_image,
                 'rcc_controller':args.rcc_controller,
-                'surface_nonzero_exit_code':args.surface_nonzero_exit_code,
+                'ignore_exit_code':args.ignore_exit_code,
+                'save_results':args.save_results,
                 'task_affinity':args.task_affinity,
                 'vpc_subnet':args.vpc_subnet,
                 'workspace':'/apps/workspace/{}/'.format(args.build_id[0:7]),
@@ -393,7 +394,7 @@ def checkExitCodes():
 
     print('============================',flush=True)
 
-    if settings['surface_nonzero_exit_code']:
+    if not settings['ignore_exit_code']:
         if sysExitCode != 0:
             sys.exit(sysExitCode) 
     else:
@@ -470,7 +471,7 @@ def publishToBQ():
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
-    if settings['bq_table']:
+    if settings['save_results']:
         print('Publishing results to Big Query Table',flush=True)
         localRun('bq load --source_format=NEWLINE_DELIMITED_JSON {} {}bq-results.json'.format(settings['bq_table'],WORKSPACE))
 
@@ -491,7 +492,6 @@ def parseCli():
     parser.add_argument('--task-affinity', help='Task affinity flags to send to MPI.', type=str)
     parser.add_argument('--mpi', help='Boolean flag to indicate whether or not MPI is used',default=False, action='store_true')
     parser.add_argument('--profile', help='Boolean flag to enable (true) or disable (false) profiling with the hpc toolkit', default=False, action='store_true')
-    parser.add_argument('--surface-nonzero-exit-code', help='Boolean flag to surface a nonzero exit code (true) if any of the tests fail', default=False, action='store_true')
     parser.add_argument('--vpc-subnet', help='Link to VPC Subnet to use for deployment. If not provided, an ephemeral subnet is created', type=str, default='')
     parser.add_argument('--service-account', help='Service account email address to attach to GCE instance. If not provided, an ephemeral service account is created', type=str, default='')
     parser.add_argument('--artifact-type', help='Identifies the type of artifact used to deploy your application. Currently only "gce-vm-image", "docker", and "singularity" are supported.', type=str, default='singularity')
@@ -503,6 +503,8 @@ def parseCli():
     parser.add_argument('--rcc-controller', help='The name of a slurm controller to schedule CI tasks as jobs on. Only used if cluster-type=rcc-static', type=str)
     parser.add_argument('--ci-file', help='Path to tests file in your repository', type=str, default="./fluidci.json")
     parser.add_argument('--rcc-tfvars', help='Path to research computing cluster tfvars file', type=str, default="./fluid.auto.tfvars")
+    parser.add_argument('--save-results', help='Boolean flag to save results to {project-id}:fluid-cicb.app_runs Big Query Table', default=False, action='store_true')
+    parser.add_argument('--ignore-exit-code', help='Boolean flag to ignore nonzero exit code (true) if any of the tests fail', default=False, action='store_true')
     parser.add_argument('--ignore-job-dependencies', help='Boolean flag to enable ignorance of job dependencies assumed within a command_group.', default=False, action='store_true')
 
     return parser.parse_args()
