@@ -13,13 +13,13 @@ FROM gcr.io/cloud-builders/gcloud
 # Install terraform
 COPY --from=builder /usr/local/bin/terraform /usr/local/bin/terraform
 
-# Install fluid-cicb
-RUN mkdir -p /opt/fluid-cicb/etc
-COPY bin /opt/fluid-cicb/bin
-COPY tf /opt/fluid-cicb/tf
+# Install fluid-run
+RUN mkdir -p /opt/fluid-run/etc
+COPY bin /opt/fluid-run/bin
+COPY etc /opt/fluid-run/etc
 
 RUN apt-get update -y && \
     apt-get install -y python3-pip && \
     pip3 install pyhcl
 
-ENTRYPOINT ["python3","/opt/fluid-cicb/bin/fluid-cicb.py"]
+ENTRYPOINT ["python3","/opt/fluid-run/bin/fluid-run.py"]

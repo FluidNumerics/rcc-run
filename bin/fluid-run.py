@@ -12,7 +12,7 @@ import time
 import hcl
 
 WORKSPACE='/workspace/'
-TFPATH='/opt/fluid-cicb/tf/'
+TFPATH='/opt/fluid-run/etc/'
 SLEEP_INTERVAL=5
 SSH_TIMEOUT=300
 N_RETRIES=SSH_TIMEOUT/SLEEP_INTERVAL
@@ -186,7 +186,7 @@ def createSettingsJson(args):
                 'hostname':'fcicb-{}-0'.format(args.build_id[0:7])}
 
     if args.cluster_type == 'rcc-ephemeral':
-        settings['hostname'] = 'fcicb-{}-controller'.format(args.build_id[0:7])
+        settings['hostname'] = 'frun-{}-controller'.format(args.build_id[0:7])
     elif args.cluster_type == 'rcc-static':
         settings['hostname'] = args.rcc_controller
 
@@ -290,13 +290,13 @@ def uploadDirectory(localdir,remotedir):
 #END uploadDirectory
 
 def runExeCommands():
-    """Runs the ciRun.py application on the remote cluster"""
+    """Runs the cluster-workflow.py application on the remote cluster"""
 
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
     print('Running CI tests...',flush=True)
-    clusterRun('python3 /tmp/bin/ciRun.py {}'.format(settings['workspace']))
+    clusterRun('python3 {WORKSPACE}/bin/cluster-workflow.py {WORKSPACE}'.format(WORKSPACE=settings['workspace']))
     print('Done running CI tests.',flush=True)
 
 #END runExeCommands
@@ -537,6 +537,8 @@ def gceClusterWorkflow():
 
         clusterRun('mkdir -p {}'.format(workspace))
 
+        uploadDirectory(localdir='/opt/fluid-run',remotedir='{}/'.format(workspace))
+
         uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
 
         runExeCommands()
@@ -571,9 +573,9 @@ def slurmgcpWorkflow():
 
     if rc == 0:
 
-        uploadDirectory(localdir='/opt/fluid-cicb',remotedir='/tmp')
-
         clusterRun('mkdir -p {}'.format(workspace))
+
+        uploadDirectory(localdir='/opt/fluid-run',remotedir='{}/'.format(workspace))
 
         uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
 
