@@ -183,7 +183,7 @@ def createSettingsJson(args):
                 'zone':args.zone,
                 'ci_file':args.ci_file,
                 'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
-                'hostname':'fcicb-{}-0'.format(args.build_id[0:7])}
+                'hostname':'frun-{}-0'.format(args.build_id[0:7])}
 
     if args.cluster_type == 'rcc-ephemeral':
         settings['hostname'] = 'frun-{}-controller'.format(args.build_id[0:7])
