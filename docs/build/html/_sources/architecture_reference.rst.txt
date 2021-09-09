@@ -1,0 +1,15 @@
+
+Architecture Reference
+=========================
+
+Overview
+----------
+
+
+Cloud Build with RCC Ephemeral System
+---------------------------------------
+
+
+Cloud Build with GCE Cluster
+------------------------------
+
