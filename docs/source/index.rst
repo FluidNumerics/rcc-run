@@ -20,6 +20,7 @@ This allows developers to create an auditable trail of data that comments on the
 
    quickstart
    architecture_reference
+   support
 
 
 Indices and tables
