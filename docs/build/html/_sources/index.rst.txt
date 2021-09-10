@@ -15,12 +15,10 @@ This allows developers to create an auditable trail of data that comments on the
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
 
-   quickstart
-   architecture_reference
-   support
+   QuickStart/index
+   Reference/index
+   Support/index
 
 
 Indices and tables

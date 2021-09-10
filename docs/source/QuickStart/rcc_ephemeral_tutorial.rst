@@ -1,6 +1,4 @@
-
-
-Quickstart
+RCC Ephemeral Tutorials
 ======================================
 
 Fluid Run is used to create ephemeral compute resources for testing HPC applications and to record information about the test for later analysis.
