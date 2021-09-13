@@ -20,6 +20,6 @@ COPY etc /opt/fluid-run/etc
 
 RUN apt-get update -y && \
     apt-get install -y python3-pip && \
-    pip3 install pyhcl jsonschema pyyaml
+    pip3 install pyhcl jsonschema==3.0.2 pyyaml
 
 ENTRYPOINT ["python3","/opt/fluid-run/bin/fluid-run.py"]
