@@ -76,6 +76,12 @@ resource "google_bigquery_table" "benchmarks" {
     "description": "The number of GPUs that are allocated to run the execution_command."
   },
   {
+    "name": "batch_options",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Additional options sent to the batch scheduler."
+  },
+  {
     "name": "command_group",
     "type": "STRING",
     "mode": "REQUIRED",

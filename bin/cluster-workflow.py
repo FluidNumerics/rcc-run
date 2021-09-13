@@ -189,6 +189,11 @@ def slurmgcpRun(settings,tests):
             print('Submitting {} to default partition'.format(test['execution_command']),flush=True)
             partition = get_partition("default")
 
+        # Add batch options
+        if 'batch_options' in test.keys():
+            if test['batch_options']
+                cmd += '{} '.format(test['batch_options'])
+
         if int(settings['gpu_count']) > 0:
             cmd += '--gres=gpu:{} '.format(settings['gpu_count'])
 
