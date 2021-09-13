@@ -1,0 +1,7 @@
+{
+  "tests":[
+    {"command_group":"sleep","execution_command":"test/sleep10.sh","output_directory":"sleep","partition":"c2-standard-8"},
+    {"command_group":"cowsay","execution_command":"test/hello.sh","output_directory":"nosleep","partition":"c2-standard-8"},
+    {"command_group":"cowsay","execution_command":"test/ready.sh","output_directory":"nosleep","partition":"c2-standard-8"}
+   ]
+}

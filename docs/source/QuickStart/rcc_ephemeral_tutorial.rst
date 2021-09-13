@@ -1,8 +1,9 @@
-RCC Ephemeral Tutorials
+=====================================
+Ephemeral RCC Tutorial
 ======================================
 
-Fluid Run is used to create ephemeral compute resources for testing HPC applications and to record information about the test for later analysis.
-This quickstart guide will introduce you to the necessary ingredients for configuring application tests with fluid-run.
+Fluid Run can be used to create ephemeral compute resources for testing HPC applications and to record information about the test for later analysis.
+This quickstart guide will introduce you to the necessary ingredients for configuring application tests with fluid-run, using an ephemeral Research Computing Cluster (RCC).
 
 .. _gcpsetup:
 
