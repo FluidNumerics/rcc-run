@@ -191,7 +191,7 @@ def slurmgcpRun(settings,tests):
 
         # Add batch options
         if 'batch_options' in test.keys():
-            if test['batch_options']
+            if test['batch_options']:
                 cmd += '{} '.format(test['batch_options'])
 
         if int(settings['gpu_count']) > 0:
@@ -351,6 +351,35 @@ def parseCli():
 
 #END parseCli
 
+def loadTests(WORKSPACE,settings):
+
+    ext = settings['ci_file'].split('.')[-1]
+
+    if ext == 'json':
+
+        try:
+            with open(WORKSPACE+settings['ci_file'],'r')as f: 
+                tests = json.load(f)
+        except:
+            print('Error opening CI file {}'.format(settings['ci_file']))
+            sys.exit(-1)
+
+    elif ext == 'yaml':
+
+        try:
+            with open(WORKSPACE+settings['ci_file'],'r')as f: 
+                tests = yaml.load(f, Loader=yaml.FullLoader)
+        except:
+            print('Error opening CI file {}'.format(settings['ci_file']))
+            sys.exit(-1)
+    else:
+        print('Undefined extension : {}'.format(ext))
+        sys.exit(-1)
+
+    return tests
+
+#END loadTests
+
 def main():
 
     args = parseCli()
@@ -369,8 +398,7 @@ def main():
     if settings['singularity_image']:
         os.environ['SINGULARITY_IMAGE'] = '{}/{}'.format(WORKSPACE,str(settings['singularity_image']))
 
-    with open(WORKSPACE+settings['ci_file'],'r')as f: 
-        tests = json.load(f)
+    tests = loadTests(WORKSPACE,settings)
 
     if settings['cluster_type'] == 'gce':
         gceClusterRun(settings,tests)

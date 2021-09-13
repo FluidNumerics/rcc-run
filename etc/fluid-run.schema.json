@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "",
+  "title": "Fluid-Run Test Job Specification Schema",
+  "description": "",
+  "type": "object",
+  "required":[],
+  "properties":{
+    "tests": {
+      "description": "An array of tests to run",
+      "type": "array",
+      "minItems": 1,
+      "items" : {
+        "type": "object",
+        "required": ["command_group","execution_command"],
+        "properties": {
+          "batch_options": {
+            "type": "string",
+            "description": "Additional options sent to the batch scheduler."
+          },
+          "command_group": {
+            "type": "string",
+            "description": "An identifier to allow grouping of execution_commands in reporting. This is particularly useful if you are exercising multiple options for the same CLI command and want to be able to group results and profile metrics for multiple execution commands."
+          },
+          "execution_command": {
+            "type": "string",
+            "description": "The full command used to execute this benchmark. When a scheduler is used, this is the path to the batch script, relative to the root directory of your repository."
+          },
+          "partition": {
+            "type": "string",
+            "pattern": "^((?!_)[a-z]([-a-z0-9]*[a-z0-9]))+$",
+            "description": "(Optional) The name of the scheduler partition to run the job under. If provided, the execution_command is interpreted as the path to a batch script." 
+          },
+          "output_directory": {
+            "type": "string",
+            "description": "Relative path underneath working path to run the execution command"
+          }
+	}
+      }
+    }
+  }
+}

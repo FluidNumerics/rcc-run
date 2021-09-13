@@ -10,6 +10,8 @@ from datetime import datetime
 import sys
 import time
 import hcl
+import jsonschema
+import yaml
 
 WORKSPACE='/workspace/'
 TFPATH='/opt/fluid-run/etc/'
@@ -17,6 +19,67 @@ SLEEP_INTERVAL=5
 SSH_TIMEOUT=300
 N_RETRIES=SSH_TIMEOUT/SLEEP_INTERVAL
 
+def loadTests():
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    ext = settings['ci_file'].split('.')[-1]
+
+    if ext == 'json':
+
+        try:
+            with open(WORKSPACE+settings['ci_file'],'r')as f: 
+                tests = json.load(f)
+        except:
+            print('Error opening CI file {}'.format(settings['ci_file']))
+            sys.exit(-1)
+
+    elif ext == 'yaml':
+
+        try:
+            with open(WORKSPACE+settings['ci_file'],'r')as f: 
+                tests = yaml.load(f, Loader=yaml.FullLoader)
+        except:
+            print('Error opening CI file {}'.format(settings['ci_file']))
+            sys.exit(-1)
+    else:
+        print('Undefined extension : {}'.format(ext))
+        sys.exit(-1)
+
+    return tests
+
+#END loadTests
+
+def validateTests():
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    try:
+        with open('/opt/fluid-run/etc/fluid-run.schema.json') as f:
+            schema = json.load(f)
+    except:
+        print('Error opening CI Schema'.format(settings['ci_file']))
+        sys.exit(-1)
+
+    tests = loadTests()
+
+    try:
+        jsonschema.validate(tests, schema=schema)
+        print('Job dictionary validates!')
+
+    except jsonschema.ValidationError as err:
+        print('Validation failure. Invalid jobs dictionary')
+        print(err,flush=True)
+        sys.exit(-1)
+
+    except jsonschema.SchemaError as err:
+        print('Validation failure. Invalid schema file!')
+        print(err,flush=True)
+        sys.exit(-1)
+
+#END validateTests
 
 def waitForSSH():
     """Repeatedly checks for SSH connection"""
