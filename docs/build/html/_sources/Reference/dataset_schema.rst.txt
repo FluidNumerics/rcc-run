@@ -1,21 +1,6 @@
 
-Architecture Reference
-=========================
-
-Overview
-----------
-
-
-Cloud Build with RCC Ephemeral System
----------------------------------------
-
-
-Cloud Build with GCE Cluster
-------------------------------
-
-
 Benchmark Dataset Schema
--------------------------
+=========================
 With each `execution_command` in your CI file, fluid-run will align variables about your build and testing environment along with runtimes to create a fully auditable record of the execution. This allows you to naturally generate a database over time that can track how your application performs over time and on all available hardware on Google Cloud. Knowing this information is critical for optimizing costs for your applications on public cloud systems. The table below provides an overview of the current schema.
 
 ============================  ===========  ========  ===============  ==================================================
@@ -23,6 +8,7 @@ Field name                    Type         Mode      Cluster Type(s)  Descriptio
 ============================  ===========  ========  ===============  ==================================================
 allocated_cpus                INTEGER      NULLABLE  RCC              The number of CPUs that are allocated to run the execution_command. 
 allocated_gpus                INTEGER      NULLABLE  RCC              The number of GPUs that are allocated to run the execution_command. 
+batch_options                 STRING       NULLABLE  RCC              Additional options sent to the batch scheduler
 command_group                 STRING       REQUIRED  RCC, GCE         An identifier to allow grouping of execution_commands in reporting.
 execution_command             STRING       REQUIRED  RCC, GCE         The full command used to execute this benchmark.
 build_id                      STRING       REQUIRED  RCC, GCE         The Cloud Build build ID associated with this build. 
@@ -65,40 +51,4 @@ compact_placement             BOOLEAN      NULLABLE  RCC              A flag to 
 gvnic                         BOOLEAN      NULLABLE  RCC              A flag to indicate if Google Virtual NIC is used. 
 lustre_image                  STRING       NULLABLE  RCC              The VM image used for the Lustre deployment. 
 vm_image                      STRING       NULLABLE  RCC              VM image used for the GCE instance running the fluid-cicb cluster.
-============================  ===========  ========  ==================================================
-
-
-Environment Variables
-=====================
-When running batch scripts on RCC style platforms and when running in-line commands on GCE clusters, some environment variables are provided for you to use during runtime.
-
-Since RCC clusters use a Slurm job scheduler, you also have access to common `Slurm environment variables <https://hpcc.umd.edu/hpcc/help/slurmenv.html>`_ when `--cluster-type=rcc-static` or `--cluster-type=rcc-ephemeral`.
-
-Variable         Description
-BUILD_ID
-GIT_SHA
-WORKSPACE
-
-
-
-                'ignore_job_dependencies':args.ignore_job_dependencies,
-                'machine_type':args.machine_type,
-                'mpi':args.mpi,
-                'node_count':args.node_count,
-                'nproc':args.nproc,
-                'profile':args.profile,
-                'project':args.project,
-                'rcc_tfvars':args.rcc_tfvars,
-                'service_account':args.service_account,
-                'singularity_image':args.singularity_image,
-                'rcc_controller':args.rcc_controller,
-                'ignore_exit_code':args.ignore_exit_code,
-                'save_results':args.save_results,
-                'task_affinity':args.task_affinity,
-                'vpc_subnet':args.vpc_subnet,
-                'workspace':'/apps/workspace/{}/'.format(args.build_id[0:7]),
-                'zone':args.zone,
-                'ci_file':args.ci_file,
-                'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
-                'hostname':'frun-{}-0'.format(args.build_id[0:7])}
-
+============================  ===========  ========  ===============  ==================================================

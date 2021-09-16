@@ -25,11 +25,13 @@ variable "cloudbuild_path" {
 variable "github_owner" {
   type = string
   description = "The owner of the Github repository"
+  default = null
 }
 
 variable "github_repo" {
   type = string
   description = "The name of the Github repository"
+  default = null
 }
 
 variable "project" {

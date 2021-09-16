@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>RCC Ephemeral Tutorials &mdash; fluid-run v0.0.0 documentation</title>
+  <title>Ephemeral RCC Tutorial &mdash; fluid-run v0.0.0 documentation</title>
   
 
   
@@ -38,7 +38,9 @@
 
     
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Architecture Reference" href="../Reference/architecture.html" />
+    <link rel="prev" title="Fluid Run" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,17 +85,22 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">RCC Ephemeral Tutorials</a><ul>
-<li><a class="reference internal" href="#google-cloud-project-setup">Google Cloud Project Setup</a></li>
-<li><a class="reference internal" href="#create-the-ci-cb-dataset">Create the CI/CB Dataset</a></li>
-<li><a class="reference internal" href="#create-a-fluid-run-docker-image">Create a fluid-run Docker image</a></li>
-<li><a class="reference internal" href="#cloud-build-demo">Cloud Build demo</a></li>
+              <p class="caption"><span class="caption-text">Quick Start</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Ephemeral RCC Tutorial</a></li>
 </ul>
-</li>
+<p class="caption"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Reference/architecture.html">Architecture Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference/cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference/dataset_schema.html">Benchmark Dataset Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference/environment_variables.html">Environment Variables</a></li>
 </ul>
-</div>
+<p class="caption"><span class="caption-text">Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Support/support.html">Support</a></li>
+</ul>
+
             
           
         </div>
@@ -140,7 +147,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>RCC Ephemeral Tutorials</li>
+      <li>Ephemeral RCC Tutorial</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -159,12 +166,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="rcc-ephemeral-tutorials">
-<h1>RCC Ephemeral Tutorials<a class="headerlink" href="#rcc-ephemeral-tutorials" title="Permalink to this headline">¶</a></h1>
-<p>Fluid Run is used to create ephemeral compute resources for testing HPC applications and to record information about the test for later analysis.
-This quickstart guide will introduce you to the necessary ingredients for configuring application tests with fluid-run.</p>
+  <div class="section" id="ephemeral-rcc-tutorial">
+<h1>Ephemeral RCC Tutorial<a class="headerlink" href="#ephemeral-rcc-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>Fluid Run can be used to create ephemeral compute resources for testing HPC applications and to record information about the test for later analysis.
+This quickstart guide will introduce you to the necessary ingredients for configuring application tests with fluid-run, using an ephemeral Research Computing Cluster (RCC).</p>
+<p>You will start by using the rcc-ephemeral example provided in the fluid-run repository. This example creates a Singularity image with the <cite>cowsay</cite> program installed on it and then runs tests for this image on an ephemeral RCC cluster. You will learn how to set up your Google Cloud project and create the necessary resources to support application testing, benchmarking, and logging. Additionally, you’ll set up a basic dashboard with Data Studio to visualize and inspect your test results.</p>
 <div class="section" id="google-cloud-project-setup">
-<span id="gcpsetup"></span><h2>Google Cloud Project Setup<a class="headerlink" href="#google-cloud-project-setup" title="Permalink to this headline">¶</a></h2>
+<h2>Google Cloud Project Setup<a class="headerlink" href="#google-cloud-project-setup" title="Permalink to this headline">¶</a></h2>
 <p>To complete this tutorial, you will need to have an active project on Google Cloud.
 Sign up and create your first project by visiting <a class="reference external" href="https://console.cloud.google.com">https://console.cloud.google.com</a></p>
 <p>Once your project is ready, <a class="reference external" href="https://shell.cloud.google.com/?show=terminal">open Cloud Shell</a></p>
@@ -175,23 +183,60 @@ Sign up and create your first project by visiting <a class="reference external" 
 <li>Big Query</li>
 <li>Identity &amp; Access Management (IAM)</li>
 </ul>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gcloud config <span class="nb">set</span> project PROJECT-ID
+gcloud services <span class="nb">enable</span> compute.googleapis.com
+gcloud services <span class="nb">enable</span> bigquery.googleapis.com
+gcloud services <span class="nb">enable</span> iam.googleapis.com
+gcloud services <span class="nb">enable</span> cloudbuild.googleapis.com
 </pre></div>
 </div>
-<p>gcloud config set project <em>PROJECT-ID</em>
-gcloud services enable compute.googleapis.com
-gcloud services enable bigquery.googleapis.com
-gcloud services enable iam.googleapis.com
-gcloud services enable cloudbuild.googleapis.com</p>
-</div>
-<div class="section" id="create-the-ci-cb-dataset">
-<span id="createcicbdataset"></span><h2>Create the CI/CB Dataset<a class="headerlink" href="#create-the-ci-cb-dataset" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="create-a-fluid-run-docker-image">
-<span id="createdockerimage"></span><h2>Create a fluid-run Docker image<a class="headerlink" href="#create-a-fluid-run-docker-image" title="Permalink to this headline">¶</a></h2>
+<h2>Create a fluid-run Docker image<a class="headerlink" href="#create-a-fluid-run-docker-image" title="Permalink to this headline">¶</a></h2>
+<p>The fluid-run application is a <a class="reference external" href="https://cloud.google.com/build/docs/cloud-builders">Cloud Build builder</a>. A Cloud builder is a Docker image that provides an environment and entrypoint application for carrying out a step in a Cloud Build pipeline. You can create the fluid-run docker image and store it in your Google Cloud project’s <a class="reference external" href="https://cloud.google.com/container-registry">Container Registry</a>.</p>
+<p><a class="reference external" href="https://shell.cloud.google.com/?show=terminal">Open Cloud Shell</a> and clone the fluid-run repository.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/FluidNumerics/fluid-run.git ~/fluid-run
+</pre></div>
 </div>
-<div class="section" id="cloud-build-demo">
-<span id="cloudbuilddemo"></span><h2>Cloud Build demo<a class="headerlink" href="#cloud-build-demo" title="Permalink to this headline">¶</a></h2>
+<p>Once you’ve cloned the repository, navigate to the root directory of the repo and trigger a build of the docker image.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> ~/fluid-run/
+$ gcloud builds submit . --config<span class="o">=</span>ci/cloudbuild.yaml --substitutions<span class="o">=</span><span class="nv">SHORT_SHA</span><span class="o">=</span>latest
+</pre></div>
+</div>
+<p>This will cause Google Cloud build to create the fluid-run docker image <cite>gcr.io/${PROJECT_ID}/fluid-run:latest</cite> that you can then use in your project’s builds.</p>
+</div>
+<div class="section" id="create-the-ci-cb-dataset">
+<h2>Create the CI/CB Dataset<a class="headerlink" href="#create-the-ci-cb-dataset" title="Permalink to this headline">¶</a></h2>
+<p>The CI/CB dataset is a <a class="reference external" href="https://cloud.google.com/bigquery">Big Query</a> dataset that is used to store information about each test run with fluid-run. This includes runtimes for each execution command used to test your application. The fluid-run repository comes with a terraform module that can create this dataset for your project. We’ve also included an example under the <cite>examples/rcc-ephemeral</cite> directory that you will use for the rest of this tutorial.</p>
+<p>Navigate to the <cite>examples/rcc-ephemeral/ci/build_iac</cite> directory</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> ~/fluid-run/examples/rcc-ephemeral/ci/build_iac
+</pre></div>
+</div>
+<p>The <cite>ci/build_iac</cite> subdirectory contains the <a class="reference external" href="https://terraform.io">Terraform</a> infrastructure as code for provisioning a VPC network, firewall rules, service account, and the Big Query dataset that all support using fluid-run. This example Terraform module is a template for creating these resources, and the <cite>fluid.auto.tfvars</cite> file in this directory is used to concretize certain variables in the template, so that you can deploy the resources in your project.</p>
+<p>Open <cite>fluid.auto.tfvars</cite> in a text editor and set <cite>&lt;project&gt;</cite> to your Google Cloud Project ID. The command below will quickly do the search and replace for you.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sed -i <span class="s2">&quot;s/&lt;project&gt;/</span><span class="k">$(</span>gcloud config get-value project<span class="k">)</span><span class="s2">/g&quot;</span> fluid.auto.tfvars
+</pre></div>
+</div>
+<p>Now, you will execute a workflow typical of Terraform deployments to initialize, validate, plan, and deploy. All of the commands are shown below, but you should review the output from each command before executing the next.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ terraform init
+$ terraform validate
+$ terraform plan
+$ terraform apply --auto-approve
+</pre></div>
+</div>
+<p>Once this completes, you’re ready to run a build using fluid-run.</p>
+</div>
+<div class="section" id="mannually-trigger-a-build">
+<h2>Mannually Trigger a build<a class="headerlink" href="#mannually-trigger-a-build" title="Permalink to this headline">¶</a></h2>
+<p>Cloud Build pipelines for a repository are specified in a <a class="reference external" href="https://cloud.google.com/build/docs/build-config-file-schema">build configuration file</a> written in YAML syntax. In this example, three build steps are provided that create a Docker image, create a Singularity image, and test the Singularity image on an ephemeral RCC cluster.</p>
+</div>
+<div class="section" id="things-to-consider">
+<h2>Things to consider<a class="headerlink" href="#things-to-consider" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Maybe you’re really just interested in continuous integration and continuous benchmarking for your application and don’t want to manage all of the infrastructure. Fluid Numerics offers a fully managed solution; simply point us to your repository. We’ll pass forward costs of Google Cloud and maintain your infrastructure for at a rate that depends on the number of build minutes and the vCPU and GPU hours used. This way you’re only billed when you’re using our managed solution.</li>
+<li>If you’d like a quicker method for deploying fluid-run infrastructure on your own project, we have a private catalog with click-to-deploy solutions. Reach out to Fluid Numerics to learn how to get access.</li>
+<li>By default, the RCC cluster deploys with a VM image that is licensed to you for free with no technical support. Fluid Numerics offers technical support as well as cloud architecting and engineering services to help you get up and running quickly. Start a conversation with us and let us help make your transition to cloud easy.</li>
+</ul>
 </div>
 </div>
 
@@ -200,6 +245,10 @@ gcloud services enable cloudbuild.googleapis.com</p>
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../Reference/architecture.html" class="btn btn-neutral float-right" title="Architecture Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="Fluid Run" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

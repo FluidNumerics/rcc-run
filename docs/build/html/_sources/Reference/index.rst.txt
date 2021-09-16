@@ -10,7 +10,3 @@ Reference
    dataset_schema
    cli
 
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

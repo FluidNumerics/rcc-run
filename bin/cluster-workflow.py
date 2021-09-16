@@ -141,8 +141,8 @@ def run(cmd):
 
 #END run
 
-def slurmgcpRun(settings,tests):
-    """Executes command_groups sequentially on a Slurm-GPC cluster"""
+def rccClusterRun(settings,tests):
+    """Executes command_groups sequentially on a RCC cluster"""
 
     WORKSPACE=settings['workspace']
     sbatch = '/usr/local/bin/sbatch '
@@ -340,7 +340,7 @@ def slurmgcpRun(settings,tests):
         f.write(json.dumps(tests))
 
 
-#END slurmgcpRun
+#END rccClusterRun
 
 def parseCli():
 
@@ -380,10 +380,23 @@ def loadTests(WORKSPACE,settings):
 
 #END loadTests
 
+def setEnvironmentVars(settings):
+    """Sets environment variables that can be used during job execution.
+       CAUTION : The WORKSPACE environment variable will be overriden in 
+       the rccClusterWorkflow
+    """
+    os.environ["WORKSPACE"] = settings['workspace']
+    os.environ["PROJECT"] = settings['project']
+    os.environ["GIT_SHA"] = settings['git_sha']
+    os.environ["DOCKER_IMAGE"] = settings['docker_image']
+    os.environ['SINGULARITY_IMAGE'] = '{}/{}'.format(settings['workspace'],str(settings['singularity_image']))
+    os.environ["GCE_IMAGE"] = settings['gce_image']
+
+#END setEnvironmentVars
+
 def main():
 
     args = parseCli()
-
 
     if os.path.isdir(args.workspace):
         print('Found settings in {}'.format(args.workspace),flush=True)
@@ -395,15 +408,14 @@ def main():
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
 
-    if settings['singularity_image']:
-        os.environ['SINGULARITY_IMAGE'] = '{}/{}'.format(WORKSPACE,str(settings['singularity_image']))
+    setEnvironmentVars(settings)
 
     tests = loadTests(WORKSPACE,settings)
 
     if settings['cluster_type'] == 'gce':
         gceClusterRun(settings,tests)
     else:
-        slurmgcpRun(settings,tests)
+        rccClusterRun(settings,tests)
 
 
 #END main

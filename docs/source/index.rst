@@ -15,10 +15,29 @@ This allows developers to create an auditable trail of data that comments on the
 
 
 .. toctree::
+   :caption: Quick Start
+   :name: quickstarttoc
+   :titlesonly:
 
-   QuickStart/index
-   Reference/index
-   Support/index
+   QuickStart/rcc_ephemeral_tutorial
+
+.. toctree::
+   :caption: Reference Guide
+   :name: referencetoc
+   :titlesonly:
+
+   Reference/architecture
+   Reference/cli
+   Reference/dataset_schema
+   Reference/environment_variables
+
+
+.. toctree::
+   :caption: Support
+   :name: supporttoc
+   :titlesonly:
+
+   Support/support
 
 
 Indices and tables

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Architecture Reference &mdash; fluid-run v0.0.0 documentation</title>
+  <title>Command Line Interface &mdash; fluid-run v0.0.0 documentation</title>
   
 
   
@@ -38,7 +38,9 @@
 
     
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Get Support" href="../Support/index.html" />
+    <link rel="prev" title="Benchmark Dataset Schema" href="dataset_schema.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,18 +85,18 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Architecture Reference</a><ul>
-<li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#cloud-build-with-rcc-ephemeral-system">Cloud Build with RCC Ephemeral System</a></li>
-<li><a class="reference internal" href="#cloud-build-with-gce-cluster">Cloud Build with GCE Cluster</a></li>
-<li><a class="reference internal" href="#benchmark-dataset-schema">Benchmark Dataset Schema</a></li>
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../QuickStart/index.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="architecture.html">Architecture Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="environment_variables.html">Environment Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset_schema.html">Benchmark Dataset Schema</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Command Line Interface</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Support/index.html">Get Support</a></li>
 </ul>
-</div>
+
             
           
         </div>
@@ -141,7 +143,9 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Architecture Reference</li>
+          <li><a href="index.html">Reference</a> &raquo;</li>
+        
+      <li>Command Line Interface</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -160,51 +164,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="architecture-reference">
-<h1>Architecture Reference<a class="headerlink" href="#architecture-reference" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="cloud-build-with-rcc-ephemeral-system">
-<h2>Cloud Build with RCC Ephemeral System<a class="headerlink" href="#cloud-build-with-rcc-ephemeral-system" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="cloud-build-with-gce-cluster">
-<h2>Cloud Build with GCE Cluster<a class="headerlink" href="#cloud-build-with-gce-cluster" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="benchmark-dataset-schema">
-<h2>Benchmark Dataset Schema<a class="headerlink" href="#benchmark-dataset-schema" title="Permalink to this headline">¶</a></h2>
-<p>With each <cite>execution_command</cite> in your CI file, fluid-run will align variables about your build and testing environment along with runtimes to create a fully auditable record of the execution. This allows you to naturally generate a database over time that can track how your application performs over time and on all available hardware on Google Cloud. Knowing this information is critical for optimizing costs for your applications on public cloud systems. The table below provides an overview of the current schema.</p>
-</div>
-</div>
-<div class="section" id="environment-variables">
-<h1>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h1>
-<p>When running batch scripts on RCC style platforms and when running in-line commands on GCE clusters, some environment variables are provided for you to use during runtime.</p>
-<p>Since RCC clusters use a Slurm job scheduler, you also have access to common <a class="reference external" href="https://hpcc.umd.edu/hpcc/help/slurmenv.html">Slurm environment variables</a> when <cite>–cluster-type=rcc-static</cite> or <cite>–cluster-type=rcc-ephemeral</cite>.</p>
-<p>Variable         Description
-BUILD_ID
-GIT_SHA
-WORKSPACE</p>
-<blockquote>
-<div>‘ignore_job_dependencies’:args.ignore_job_dependencies,
-‘machine_type’:args.machine_type,
-‘mpi’:args.mpi,
-‘node_count’:args.node_count,
-‘nproc’:args.nproc,
-‘profile’:args.profile,
-‘project’:args.project,
-‘rcc_tfvars’:args.rcc_tfvars,
-‘service_account’:args.service_account,
-‘singularity_image’:args.singularity_image,
-‘rcc_controller’:args.rcc_controller,
-‘ignore_exit_code’:args.ignore_exit_code,
-‘save_results’:args.save_results,
-‘task_affinity’:args.task_affinity,
-‘vpc_subnet’:args.vpc_subnet,
-‘workspace’:’/apps/workspace/{}/’.format(args.build_id[0:7]),
-‘zone’:args.zone,
-‘ci_file’:args.ci_file,
-‘bq_table’:’{}:fluid_cicb.app_runs’.format(args.project),
-‘hostname’:’frun-{}-0’.format(args.build_id[0:7])}</div></blockquote>
+  <div class="section" id="command-line-interface">
+<h1>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
@@ -212,6 +173,10 @@ WORKSPACE</p>
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../Support/index.html" class="btn btn-neutral float-right" title="Get Support" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dataset_schema.html" class="btn btn-neutral float-left" title="Benchmark Dataset Schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

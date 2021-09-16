@@ -39,7 +39,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Quick Start" href="QuickStart/index.html" /> 
+    <link rel="next" title="Ephemeral RCC Tutorial" href="QuickStart/rcc_ephemeral_tutorial.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,10 +84,20 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="QuickStart/index.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Reference/index.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Support/index.html">Get Support</a></li>
+              <p class="caption"><span class="caption-text">Quick Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="QuickStart/rcc_ephemeral_tutorial.html">Ephemeral RCC Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Reference/architecture.html">Architecture Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/dataset_schema.html">Benchmark Dataset Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/environment_variables.html">Environment Variables</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Support/support.html">Support</a></li>
 </ul>
 
             
@@ -162,57 +172,25 @@ The motivation for developing fluid-run is to support continuous integration and
 By using fluid-run as a build step with Google Cloud Build, developers can automate running tests on GPU accelerated and multi-VM platforms hosted on Google Cloud.
 Information about the each test, including the system architecture, software version (git sha), build id, and application runtime are recorded and can be saved to Big Query.
 This allows developers to create an auditable trail of data that comments on the performance of an application over time and accross various hardware.</p>
-<div class="toctree-wrapper compound">
+<div class="toctree-wrapper compound" id="quickstarttoc">
+<p class="caption"><span class="caption-text">Quick Start</span><a class="headerlink" href="#quickstarttoc" title="Permalink to this toctree">¶</a></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="QuickStart/index.html">Quick Start</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="QuickStart/rcc_ephemeral_tutorial.html">RCC Ephemeral Tutorials</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="QuickStart/rcc_ephemeral_tutorial.html#google-cloud-project-setup">Google Cloud Project Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="QuickStart/rcc_ephemeral_tutorial.html#create-the-ci-cb-dataset">Create the CI/CB Dataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="QuickStart/rcc_ephemeral_tutorial.html#create-a-fluid-run-docker-image">Create a fluid-run Docker image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="QuickStart/rcc_ephemeral_tutorial.html#cloud-build-demo">Cloud Build demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="QuickStart/rcc_ephemeral_tutorial.html">Ephemeral RCC Tutorial</a></li>
 </ul>
-</li>
+</div>
+<div class="toctree-wrapper compound" id="referencetoc">
+<p class="caption"><span class="caption-text">Reference Guide</span><a class="headerlink" href="#referencetoc" title="Permalink to this toctree">¶</a></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Reference/architecture.html">Architecture Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/dataset_schema.html">Benchmark Dataset Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/environment_variables.html">Environment Variables</a></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Reference/index.html">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Reference/architecture.html">Architecture Reference</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Reference/architecture.html#overview">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/architecture.html#cloud-build-with-rcc-ephemeral-system">Cloud Build with RCC Ephemeral System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/architecture.html#cloud-build-with-gce-cluster">Cloud Build with GCE Cluster</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/architecture.html#benchmark-dataset-schema">Benchmark Dataset Schema</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Reference/architecture.html#environment-variables">Environment Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Reference/environment_variables.html">Architecture Reference</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Reference/environment_variables.html#overview">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/environment_variables.html#cloud-build-with-rcc-ephemeral-system">Cloud Build with RCC Ephemeral System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/environment_variables.html#cloud-build-with-gce-cluster">Cloud Build with GCE Cluster</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/environment_variables.html#benchmark-dataset-schema">Benchmark Dataset Schema</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Reference/environment_variables.html#environment-variables">Environment Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Reference/dataset_schema.html">Architecture Reference</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Reference/dataset_schema.html#overview">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/dataset_schema.html#cloud-build-with-rcc-ephemeral-system">Cloud Build with RCC Ephemeral System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/dataset_schema.html#cloud-build-with-gce-cluster">Cloud Build with GCE Cluster</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/dataset_schema.html#benchmark-dataset-schema">Benchmark Dataset Schema</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Reference/dataset_schema.html#environment-variables">Environment Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Reference/cli.html">Architecture Reference</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Reference/cli.html#overview">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/cli.html#cloud-build-with-rcc-ephemeral-system">Cloud Build with RCC Ephemeral System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/cli.html#cloud-build-with-gce-cluster">Cloud Build with GCE Cluster</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Reference/cli.html#benchmark-dataset-schema">Benchmark Dataset Schema</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Reference/cli.html#environment-variables">Environment Variables</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Support/index.html">Get Support</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Support/support.html">Support</a></li>
-</ul>
-</li>
+</div>
+<div class="toctree-wrapper compound" id="supporttoc">
+<p class="caption"><span class="caption-text">Support</span><a class="headerlink" href="#supporttoc" title="Permalink to this toctree">¶</a></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Support/support.html">Support</a></li>
 </ul>
 </div>
 </div>
@@ -231,7 +209,7 @@ This allows developers to create an auditable trail of data that comments on the
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="QuickStart/index.html" class="btn btn-neutral float-right" title="Quick Start" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="QuickStart/rcc_ephemeral_tutorial.html" class="btn btn-neutral float-right" title="Ephemeral RCC Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

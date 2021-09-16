@@ -36,7 +36,7 @@ resource "google_cloudbuild_trigger" "builds" {
 
 
 module "fluid_cicb" {
-  source = "github.com/FluidNumerics/fluid-cicb-tf//modules/"
+  source = "github.com/FluidNumerics/fluid-run//tf/"
   bq_location = var.bq_location
   project = var.project
   subnet_cidr = var.subnet_cidr
