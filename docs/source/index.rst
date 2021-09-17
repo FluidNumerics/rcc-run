@@ -22,11 +22,24 @@ This allows developers to create an auditable trail of data that comments on the
    QuickStart/rcc_ephemeral_tutorial
 
 .. toctree::
+   :caption: How To
+   :name: howto
+   :titlesonly:
+
+   HowTo/setup_your_repo
+   HowTo/customize_compute_partitions
+   HowTo/add_lustre_file_system
+   HowTo/customize_nfs_file_system
+   HowTo/create_a_datastudio_dashboard
+
+.. toctree::
    :caption: Reference Guide
    :name: referencetoc
    :titlesonly:
 
+   Reference/fluid_run_workflow
    Reference/architecture
+   Reference/fluid_run_reference
    Reference/cli
    Reference/dataset_schema
    Reference/environment_variables

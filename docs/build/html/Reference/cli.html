@@ -39,8 +39,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Get Support" href="../Support/index.html" />
-    <link rel="prev" title="Benchmark Dataset Schema" href="dataset_schema.html" /> 
+    <link rel="next" title="Benchmark Dataset Schema" href="dataset_schema.html" />
+    <link rel="prev" title="The Fluid Run CI File" href="fluid_run_reference.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,16 +85,28 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../QuickStart/index.html">Quick Start</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="architecture.html">Architecture Reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="environment_variables.html">Environment Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dataset_schema.html">Benchmark Dataset Schema</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Command Line Interface</a></li>
+              <p class="caption"><span class="caption-text">Quick Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../QuickStart/rcc_ephemeral_tutorial.html">Ephemeral RCC Tutorial</a></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../Support/index.html">Get Support</a></li>
+<p class="caption"><span class="caption-text">How To</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../HowTo/setup_your_repo.html">Setup your Repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_compute_partitions.html">Customize Compute Partitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../HowTo/add_lustre_file_system.html">Add a Lustre File System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_nfs_file_system.html">Customize NFS File System</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fluid_run_reference.html">The Fluid Run CI File</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset_schema.html">Benchmark Dataset Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment_variables.html">Environment Variables</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Support/support.html">Support</a></li>
 </ul>
 
             
@@ -143,8 +155,6 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="index.html">Reference</a> &raquo;</li>
-        
       <li>Command Line Interface</li>
     
     
@@ -166,6 +176,48 @@
             
   <div class="section" id="command-line-interface">
 <h1>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
+<p>The fluid-run container is intended to be used as a build step in Google Cloud Build. Once you create the fluid-run container image, you can call it in your cloud build configuration file using something like the following:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">CI/CB</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="s">&#39;gcr.io/${PROJECT_ID}/fluid-run&#39;</span>
+  <span class="nt">args</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="s">&#39;--build-id=${BUILD_ID}&#39;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&#39;--git-sha=${COMMIT_SHA}&#39;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&#39;--singularity-image=cowsay.sif&#39;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&#39;--project=${PROJECT_ID}&#39;</span>
+</pre></div>
+</div>
+<p>In this example, a minimal set of arguments are provided to fluid-run to run tests on a singularity image called <cite>cowsay.sif</cite>. By default, fluid-run would look for a CI file at <cite>./fluid-run.yaml</cite> in your repository. Additionally, it would use a <cite>rcc-ephemeral</cite> cluster type for testing and only expose a limited set of machine types for running tests and benchmarks.</p>
+<p>There are a number of options to customize the behavior of fluid-run. The table below provides a complete summary of the arguments along with their default values.
+========================   ========  ============   =============   =========================================================
+Argument                   Required  Cluster Type   Artifact Type   Default Value
+========================   ========  ============   =============   =========================================================
+–build-id                 Yes       All            All             “”
+–cluster-type             No        All            All             rcc-ephemeral
+–git-sha                  Yes       All            All             “”
+–ci-file                  No        All            All             ./fluid-run.yaml
+–node-count               No        GCE            All             1
+–machine-type             No        GCE            All             c2-standard-8
+–compiler                 No        All            All             “”
+–target-arch              No        All            All             “”
+–gpu-count                Yes       GCE            All             0
+–gpu-type                 Yes       GCE            All             “”
+–nproc                    No        GCE            All             1
+–task-affinity            Yes       GCE            All             “”
+–mpi                      Yes       GCE            All             false
+–vpc-subnet               No        All            All             “”
+–service-account          No        GCE            All             <a class="reference external" href="mailto:fluid-run&#37;&#52;&#48;${PROJECT}&#46;iam&#46;gserviceaccount&#46;com">fluid-run<span>&#64;</span>${PROJECT}<span>&#46;</span>iam<span>&#46;</span>gserviceaccount<span>&#46;</span>com</a>
+–artifact-type            Yes       All            All             singularity
+–singularity-image        Yes       All            singularity     “”
+–gce-image                No        All            All             project/research-computing-cloud/global/images/rcc-foss
+–project                  Yes       All            All             “”
+–zone                     No        All            All             us-west1-b
+–rcc-controller           Yes       RCC-Static     All             “”
+–rcc-tfvars               No        RCC-Ephemeral  All             ./fluid.auto.tfvars
+–save-results             No        All            All             false
+–ignore-exit-code         No        All            All             false
+–ignore-job-dependencies  No        All            All             false
+========================   ========  ============   =============   =========================================================</p>
+<p>This next table gives a description for each of the command line arguments.</p>
 </div>
 
 
@@ -174,8 +226,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../Support/index.html" class="btn btn-neutral float-right" title="Get Support" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="dataset_schema.html" class="btn btn-neutral float-left" title="Benchmark Dataset Schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dataset_schema.html" class="btn btn-neutral float-right" title="Benchmark Dataset Schema" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fluid_run_reference.html" class="btn btn-neutral float-left" title="The Fluid Run CI File" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
