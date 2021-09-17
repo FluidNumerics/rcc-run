@@ -29,7 +29,7 @@
           "partition": {
             "type": "string",
             "pattern": "^((?!_)[a-z]([-a-z0-9]*[a-z0-9]))+$",
-            "description": "(Optional) The name of the scheduler partition to run the job under. If provided, the execution_command is interpreted as the path to a batch script." 
+            "description": "(Optional) The name of the scheduler partition to run the job under. If on an rcc cluster, specifying no partition will execute instructions on the default partition." 
           },
           "output_directory": {
             "type": "string",

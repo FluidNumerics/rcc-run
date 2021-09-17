@@ -1,0 +1,18 @@
+tests:
+  - command_group: "sleep"
+    execution_command: "test/sleep10.sh"
+    output_directory: "sleep"
+    partition: "c2-standard-8"
+    batch_options: "--ntasks=1 --cpus-per-task=1 --time=05:00"
+
+  - command_group: "cowsay"
+    execution_command: "test/hello.sh"
+    output_directory: "cowsay-hello"
+    partition: "c2-standard-8"
+    batch_options: "--ntasks=1 --cpus-per-task=1 --time=05:00"
+
+  - command_group: "cowsay"
+    execution_command: "test/ready.sh"
+    output_directory: "cowsay-ready"
+    partition: "c2-standard-8"
+    batch_options: "--ntasks=1 --cpus-per-task=1 --time=05:00"

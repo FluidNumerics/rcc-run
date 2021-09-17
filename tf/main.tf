@@ -1,21 +1,21 @@
 // Service account for CI tests
-resource "google_service_account" "fluid_cicb" {
-  account_id = "fluid-cicb"
+resource "google_service_account" "fluid_run" {
+  account_id = "fluid-run"
   display_name = "Continuous Integration Service account"
   project = var.project
 }
 
 // **** Create the Shared VPC Network **** //
 resource "google_compute_network" "vpc_network" {
-  name = "fluid-cicb"
+  name = "fluid-run"
   project = var.project
   auto_create_subnetworks = true
 }
 
 resource "google_compute_firewall" "default_ssh_firewall_rules" {
-  name = "fluid-cicb-ssh"
+  name = "fluid-run-ssh"
   network = google_compute_network.vpc_network.self_link
-  target_tags = ["fluid-cicb"]
+  target_tags = ["fluid-run"]
   source_ranges = var.whitelist_ssh_ips
   project = var.project
 
@@ -26,10 +26,10 @@ resource "google_compute_firewall" "default_ssh_firewall_rules" {
 }
 
 resource "google_compute_firewall" "default_internal_firewall_rules" {
-  name = "fluid-cicb-all-internal"
+  name = "fluid-run-all-internal"
   network = google_compute_network.vpc_network.self_link
-  source_tags = ["fluid-cicb"]
-  target_tags = ["fluid-cicb"]
+  source_tags = ["fluid-run"]
+  target_tags = ["fluid-run"]
   project = var.project
 
   allow {
@@ -48,7 +48,7 @@ resource "google_compute_firewall" "default_internal_firewall_rules" {
 
 
 // Big Query Dataset for CICB Data
-resource "google_bigquery_dataset" "fluid_cicb" {
+resource "google_bigquery_dataset" "fluid_run" {
   dataset_id = "fluid_cicb"
   friendly_name = "Fluid CI/CB data"
   description = "A dataset containing build information for the Fluid CI/CB pipeline."
@@ -57,7 +57,7 @@ resource "google_bigquery_dataset" "fluid_cicb" {
 }
 
 resource "google_bigquery_table" "benchmarks" {
-  dataset_id = google_bigquery_dataset.fluid_cicb.dataset_id
+  dataset_id = google_bigquery_dataset.fluid_run.dataset_id
   table_id = "app_runs"
   project = var.project
   deletion_protection=false
@@ -331,7 +331,7 @@ resource "google_bigquery_table" "benchmarks" {
     "name": "vm_image",
     "type": "STRING",
     "mode": "NULLABLE",
-    "description": "VM image used for the GCE instance running the fluid-cicb cluster." 
+    "description": "VM image used for the GCE instance running the fluid-run cluster." 
   }
 ]
 EOF
