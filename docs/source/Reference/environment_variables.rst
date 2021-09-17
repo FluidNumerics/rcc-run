@@ -4,6 +4,7 @@ Environment Variables
 When running batch scripts on RCC style platforms and when running in-line commands on GCE clusters, some environment variables are provided for you to use during runtime.
 
 Since RCC clusters use a Slurm job scheduler, you also have access to common `Slurm environment variables <https://hpcc.umd.edu/hpcc/help/slurmenv.html>`_ when `--cluster-type=rcc-static` or `--cluster-type=rcc-ephemeral`.
+
 ===================   ==================================================================
 Variable              Description
 ===================   ==================================================================

@@ -16,6 +16,7 @@ The fluid-run container is intended to be used as a build step in Google Cloud B
 In this example, a minimal set of arguments are provided to fluid-run to run tests on a singularity image called `cowsay.sif`. By default, fluid-run would look for a CI file at `./fluid-run.yaml` in your repository. Additionally, it would use a `rcc-ephemeral` cluster type for testing and only expose a limited set of machine types for running tests and benchmarks.
 
 There are a number of options to customize the behavior of fluid-run. The table below provides a complete summary of the arguments along with their default values.
+
 ========================   ========  ============   =============   =========================================================
 Argument                   Required  Cluster Type   Artifact Type   Default Value
 ========================   ========  ============   =============   =========================================================
