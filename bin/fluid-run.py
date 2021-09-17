@@ -248,6 +248,9 @@ def createSettingsJson(args):
                 'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
                 'hostname':'frun-{}-0'.format(args.build_id[0:7])}
 
+    if not args.service_account :
+        settings['service_account'] = 'fluid-run@{}.iam.gserviceaccount.com'.format(args.project)
+
     if args.cluster_type == 'rcc-ephemeral':
         settings['hostname'] = 'frun-{}-controller'.format(args.build_id[0:7])
     elif args.cluster_type == 'rcc-static':
