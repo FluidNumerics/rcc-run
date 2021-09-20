@@ -183,10 +183,7 @@ If you've worked through this tutorial on a Google Cloud project where you will 
 Next Steps
 ------------
 
-.. toctree::
-   :titlesonly:
-
-   ../HowTo/setup_your_repo
-   ../HowTo/customize_compute_partitions
-   ../HowTo/add_lustre_file_system
-   ../HowTo/customize_nfs_file_system
+* :doc:`Set up your Git Repository <../HowTo/setup_your_repo>`
+* :doc:`Customize Compute Partitions <../HowTo/customize_compute_partitions>`
+* :doc:`Add a Lustre file system to the test cluster <../HowTo/add_lustre_file_system>`
+* :doc:`Customize the NFS file system on the test cluster <../HowTo/customize_nfs_file_system>`

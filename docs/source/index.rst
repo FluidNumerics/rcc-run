@@ -27,9 +27,7 @@ This allows developers to create an auditable trail of data that comments on the
    :titlesonly:
 
    HowTo/setup_your_repo
-   HowTo/customize_compute_partitions
-   HowTo/add_lustre_file_system
-   HowTo/customize_nfs_file_system
+   HowTo/customize_cluster
    HowTo/create_a_datastudio_dashboard
 
 .. toctree::

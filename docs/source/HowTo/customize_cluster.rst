@@ -1,0 +1,89 @@
+Customize the Test Cluster
+===============================
+When using the :code:`rcc-ephemeral` cluster type for testing, there are only a limited set of compute instances made avaiable to you by default. Behind the scenes, fluid-run uses Terraform to create ephemeral clusters for application testing and the :code:`rcc-ephemeral` cluster is defined by the `rcc-tf module <https://github.com/FluidNumerics/rcc-tf>`_ from Fluid Numerics. The default variable concretizations are provided in `fluid-run/etc/rcc-ephemeral/default.auto.tfvars <https://github.com/FluidNumerics/fluid-run/blob/main/etc/rcc-ephemeral/default.auto.tfvars>`_. This default configuration provides you with a n1-standard-16 controller with a 1TB pd-ssd disk and a single compute partition, consisting of 5x c2-standard-8 instances. 
+
+The fluid-run build step provides a mechanism to customize the cluster so that you can define compute partitions that meet your testing needs. You are able to add `instances with GPUs <https://cloud.google.com/compute/docs/gpus>`_, specify partitions for a heterogeneous cluster (see `machine types available on Google Cloud <https://cloud.google.com/compute/docs/machine-types>`_), change the controller size, shape, and disk properties, and even add a Lustre file system.
+
+
+Getting Started
+-----------------
+To customize the cluster, you can add a tfvars definition file that is similar to the `fluid-run/etc/rcc-ephemeral/default.auto.tfvars <https://github.com/FluidNumerics/fluid-run/blob/main/etc/rcc-ephemeral/default.auto.tfvars>`_. For reference, the `fluid-run/etc/rcc-ephemeral/io.tf <https://github.com/FluidNumerics/fluid-run/blob/main/etc/rcc-ephemeral/io.tf>`_ file defines all of the variables available for concretizing a :code:`rcc-ephemeral` cluster. 
+
+It is recommended that you start by creating a file in your repository called :code:`rcc.auto.tfvars` with the following contents
+
+.. code-block:: 
+
+  cluster_name = "<name>"
+  project = "<project>"
+  zone = "<zone>"
+  
+  controller_image = "<image>"
+  disable_controller_public_ips = false
+  controller_machine_type = "n1-standard-16"
+  controller_disk_size_gb = 1024
+  controller_disk_type = "pd-ssd"
+  
+  login_image = "<image>"
+  disable_login_public_ips = true
+  login_machine_type = "n1-standard-4"
+  login_node_count = 0
+  
+  suspend_time = 2
+  
+  
+  compute_node_scopes          = [
+    "https://www.googleapis.com/auth/cloud-platform"
+  ]
+  partitions = [
+    { name                 = "c2-standard-8"
+      machine_type         = "c2-standard-8"
+      image                = "<image>"
+      image_hyperthreads   = true
+      static_node_count    = 0
+      max_node_count       = 5
+      zone                 = "<zone>"
+      compute_disk_type    = "pd-standard"
+      compute_disk_size_gb = 50
+      compute_labels       = {}
+      cpu_platform         = null
+      gpu_count            = 0
+      gpu_type             = null
+      gvnic                = false
+      network_storage      = []
+      preemptible_bursting = false
+      vpc_subnet           = null
+      exclusive            = false
+      enable_placement     = false
+      regional_capacity    = false
+      regional_policy      = null
+      instance_template    = null
+    },
+  ]
+  
+  create_filestore = false
+  create_lustre = false
+
+
+You'll notice that their are a few template variables in this example that are demarked by :code:`<>`. The fluid-run build step is able to substitute values for these variables a build-time based on options provided to the command lined interface. The example above provides a good starting point with some of the necessary template variables in place. It is not recommended to remove the template variables for :code:`<name>`, :code:`<project>`, :code:`<zone>`, or :code:`<image>`.
+
+
+For your reference, template variables for :code:`rcc-ephemeral` clusters that are substituted at run-time are given in the table below.
+
+====================  =======================  ===============================================
+Template Variable     Value/CLI Option         Description
+====================  =======================  ===============================================
+<name>                 frun-{build-id}[0:7]    Name of the ephemeral cluster
+<project>              --project               Google Cloud Project ID
+<zone>                 --zone                  Google Cloud zone
+<image>                --gce-image             Google Compute Engine VM Image self-link
+<build_id>             --build-id              Google Cloud Build build ID
+<vpc_subnet>           --vpc-subnet            Google Cloud VPC Subnetwork
+<service_account>      --service-account       Google Cloud Service Account email address
+====================  =======================  ===============================================
+
+
+
+
+Customize Partitions
+----------------------
+Partitions are used to define the type of compute nodes available to you for testing. Each partition consists of a homogeneous pool of machines. While each partition has 22 variables to concretely define it, we'll cover a few of the options here to help you make informed decisions when defining partitions for testing.
