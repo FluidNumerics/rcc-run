@@ -9,3 +9,13 @@ builds = [
             disabled = false
           }
          ]
+
+releases = [
+          {
+            name = "fluid-run-version-releases"
+            tag="v.*"
+            project = "research-computing-cloud"
+            description = "Version releases"
+            disabled = false
+          }
+         ]
