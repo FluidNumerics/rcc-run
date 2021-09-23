@@ -388,8 +388,13 @@ def setEnvironmentVars(settings):
     os.environ["WORKSPACE"] = settings['workspace']
     os.environ["PROJECT"] = settings['project']
     os.environ["GIT_SHA"] = settings['git_sha']
-    os.environ["DOCKER_IMAGE"] = settings['docker_image']
-    os.environ['SINGULARITY_IMAGE'] = '{}/{}'.format(settings['workspace'],str(settings['singularity_image']))
+
+    if settings['docker_image']:
+        os.environ["DOCKER_IMAGE"] = settings['docker_image']
+
+    if settings['singularity_image']:
+        os.environ['SINGULARITY_IMAGE'] = '{}/{}'.format(settings['workspace'],str(settings['singularity_image']))
+
     os.environ["GCE_IMAGE"] = settings['gce_image']
 
 #END setEnvironmentVars
