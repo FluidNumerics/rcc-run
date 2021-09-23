@@ -28,7 +28,6 @@ This allows developers to create an auditable trail of data that comments on the
 
    HowTo/setup_your_repo
    HowTo/customize_cluster
-   HowTo/create_a_datastudio_dashboard
 
 .. toctree::
    :caption: Reference Guide

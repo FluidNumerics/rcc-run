@@ -92,10 +92,7 @@
 <p class="caption"><span class="caption-text">How To</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../HowTo/setup_your_repo.html">Set Up your Repository</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_compute_partitions.html">Customize Compute Partitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/add_lustre_file_system.html">Add a Lustre File System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_nfs_file_system.html">Customize NFS File System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/create_a_datastudio_dashboard.html">Create a Data Studio Dashboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_cluster.html">Customize the Test Cluster</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Reference Guide</span></p>
 <ul class="current">
@@ -179,15 +176,32 @@
   <div class="section" id="environment-variables">
 <h1>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h1>
 <p>When running batch scripts on RCC style platforms and when running in-line commands on GCE clusters, some environment variables are provided for you to use during runtime.</p>
-<p>Since RCC clusters use a Slurm job scheduler, you also have access to common <a class="reference external" href="https://hpcc.umd.edu/hpcc/help/slurmenv.html">Slurm environment variables</a> when <cite>–cluster-type=rcc-static</cite> or <cite>–cluster-type=rcc-ephemeral</cite>.
-===================   ==================================================================
-Variable              Description
-===================   ==================================================================
-WORKSPACE             The path to the working directory where your job is executed.
-PROJECT               The Google Cloud project hosting your test cluster.
-GIT_SHA               The git sha associated with the run test.
-SINGULARITY_IMAGE     The full path to the Singularity image on the test cluster.
-===================   ==================================================================</p>
+<p>Since RCC clusters use a Slurm job scheduler, you also have access to common <a class="reference external" href="https://hpcc.umd.edu/hpcc/help/slurmenv.html">Slurm environment variables</a> when <cite>–cluster-type=rcc-static</cite> or <cite>–cluster-type=rcc-ephemeral</cite>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="78%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variable</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>WORKSPACE</td>
+<td>The path to the working directory where your job is executed.</td>
+</tr>
+<tr class="row-odd"><td>PROJECT</td>
+<td>The Google Cloud project hosting your test cluster.</td>
+</tr>
+<tr class="row-even"><td>GIT_SHA</td>
+<td>The git sha associated with the run test.</td>
+</tr>
+<tr class="row-odd"><td>SINGULARITY_IMAGE</td>
+<td>The full path to the Singularity image on the test cluster.</td>
+</tr>
+</tbody>
+</table>
 <div class="section" id="example-job-script-singularity">
 <h2>Example Job Script (Singularity)<a class="headerlink" href="#example-job-script-singularity" title="Permalink to this headline">¶</a></h2>
 <p>When writing a job script to test your application, you can use the provided environment variables to reference the working directory and the full path to the Singularity image produced during the build phase in Cloud Build. The example below provides a basic demonstration for using environment variables in your test scripts.</p>

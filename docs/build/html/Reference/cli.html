@@ -91,13 +91,12 @@
 </ul>
 <p class="caption"><span class="caption-text">How To</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/setup_your_repo.html">Setup your Repository</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_compute_partitions.html">Customize Compute Partitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/add_lustre_file_system.html">Add a Lustre File System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_nfs_file_system.html">Customize NFS File System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../HowTo/setup_your_repo.html">Set Up your Repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_cluster.html">Customize the Test Cluster</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Reference Guide</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="fluid_run_workflow.html">Fluid Run Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fluid_run_reference.html">The Fluid Run CI File</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Command Line Interface</a></li>
@@ -176,6 +175,8 @@
             
   <div class="section" id="command-line-interface">
 <h1>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>The fluid-run container is intended to be used as a build step in Google Cloud Build. Once you create the fluid-run container image, you can call it in your cloud build configuration file using something like the following:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">CI/CB</span>
   <span class="nt">name</span><span class="p">:</span> <span class="s">&#39;gcr.io/${PROJECT_ID}/fluid-run&#39;</span>
@@ -187,37 +188,181 @@
 </pre></div>
 </div>
 <p>In this example, a minimal set of arguments are provided to fluid-run to run tests on a singularity image called <cite>cowsay.sif</cite>. By default, fluid-run would look for a CI file at <cite>./fluid-run.yaml</cite> in your repository. Additionally, it would use a <cite>rcc-ephemeral</cite> cluster type for testing and only expose a limited set of machine types for running tests and benchmarks.</p>
-<p>There are a number of options to customize the behavior of fluid-run. The table below provides a complete summary of the arguments along with their default values.
-========================   ========  ============   =============   =========================================================
-Argument                   Required  Cluster Type   Artifact Type   Default Value
-========================   ========  ============   =============   =========================================================
-–build-id                 Yes       All            All             “”
-–cluster-type             No        All            All             rcc-ephemeral
-–git-sha                  Yes       All            All             “”
-–ci-file                  No        All            All             ./fluid-run.yaml
-–node-count               No        GCE            All             1
-–machine-type             No        GCE            All             c2-standard-8
-–compiler                 No        All            All             “”
-–target-arch              No        All            All             “”
-–gpu-count                Yes       GCE            All             0
-–gpu-type                 Yes       GCE            All             “”
-–nproc                    No        GCE            All             1
-–task-affinity            Yes       GCE            All             “”
-–mpi                      Yes       GCE            All             false
-–vpc-subnet               No        All            All             “”
-–service-account          No        GCE            All             <a class="reference external" href="mailto:fluid-run&#37;&#52;&#48;${PROJECT}&#46;iam&#46;gserviceaccount&#46;com">fluid-run<span>&#64;</span>${PROJECT}<span>&#46;</span>iam<span>&#46;</span>gserviceaccount<span>&#46;</span>com</a>
-–artifact-type            Yes       All            All             singularity
-–singularity-image        Yes       All            singularity     “”
-–gce-image                No        All            All             project/research-computing-cloud/global/images/rcc-foss
-–project                  Yes       All            All             “”
-–zone                     No        All            All             us-west1-b
-–rcc-controller           Yes       RCC-Static     All             “”
-–rcc-tfvars               No        RCC-Ephemeral  All             ./fluid.auto.tfvars
-–save-results             No        All            All             false
-–ignore-exit-code         No        All            All             false
-–ignore-job-dependencies  No        All            All             false
-========================   ========  ============   =============   =========================================================</p>
+</div>
+<div class="section" id="cli-arguments">
+<h2>CLI Arguments<a class="headerlink" href="#cli-arguments" title="Permalink to this headline">¶</a></h2>
+<p>There are a number of options to customize the behavior of fluid-run. The table below provides a complete summary of the arguments along with their default values.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="7%" />
+<col width="12%" />
+<col width="11%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Argument</th>
+<th class="head">Required</th>
+<th class="head">Cluster Type</th>
+<th class="head">Artifact Type</th>
+<th class="head">Default Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>–build-id</td>
+<td>Yes</td>
+<td>All</td>
+<td>All</td>
+<td>“”</td>
+</tr>
+<tr class="row-odd"><td>–cluster-type</td>
+<td>No</td>
+<td>All</td>
+<td>All</td>
+<td>rcc-ephemeral</td>
+</tr>
+<tr class="row-even"><td>–git-sha</td>
+<td>Yes</td>
+<td>All</td>
+<td>All</td>
+<td>“”</td>
+</tr>
+<tr class="row-odd"><td>–ci-file</td>
+<td>No</td>
+<td>All</td>
+<td>All</td>
+<td>./fluid-run.yaml</td>
+</tr>
+<tr class="row-even"><td>–node-count</td>
+<td>No</td>
+<td>GCE</td>
+<td>All</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><td>–machine-type</td>
+<td>No</td>
+<td>GCE</td>
+<td>All</td>
+<td>c2-standard-8</td>
+</tr>
+<tr class="row-even"><td>–compiler</td>
+<td>No</td>
+<td>All</td>
+<td>All</td>
+<td>“”</td>
+</tr>
+<tr class="row-odd"><td>–target-arch</td>
+<td>No</td>
+<td>All</td>
+<td>All</td>
+<td>“”</td>
+</tr>
+<tr class="row-even"><td>–gpu-count</td>
+<td>Yes</td>
+<td>GCE</td>
+<td>All</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>–gpu-type</td>
+<td>Yes</td>
+<td>GCE</td>
+<td>All</td>
+<td>“”</td>
+</tr>
+<tr class="row-even"><td>–nproc</td>
+<td>No</td>
+<td>GCE</td>
+<td>All</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><td>–task-affinity</td>
+<td>Yes</td>
+<td>GCE</td>
+<td>All</td>
+<td>“”</td>
+</tr>
+<tr class="row-even"><td>–mpi</td>
+<td>Yes</td>
+<td>GCE</td>
+<td>All</td>
+<td>false</td>
+</tr>
+<tr class="row-odd"><td>–vpc-subnet</td>
+<td>No</td>
+<td>All</td>
+<td>All</td>
+<td>“”</td>
+</tr>
+<tr class="row-even"><td>–service-account</td>
+<td>No</td>
+<td>GCE</td>
+<td>All</td>
+<td><a class="reference external" href="mailto:fluid-run&#37;&#52;&#48;${PROJECT}&#46;iam&#46;gserviceaccount&#46;com">fluid-run<span>&#64;</span>${PROJECT}<span>&#46;</span>iam<span>&#46;</span>gserviceaccount<span>&#46;</span>com</a></td>
+</tr>
+<tr class="row-odd"><td>–artifact-type</td>
+<td>Yes</td>
+<td>All</td>
+<td>All</td>
+<td>singularity</td>
+</tr>
+<tr class="row-even"><td>–singularity-image</td>
+<td>Yes</td>
+<td>All</td>
+<td>singularity</td>
+<td>“”</td>
+</tr>
+<tr class="row-odd"><td>–gce-image</td>
+<td>No</td>
+<td>All</td>
+<td>All</td>
+<td>project/research-computing-cloud/global/images/rcc-foss</td>
+</tr>
+<tr class="row-even"><td>–project</td>
+<td>Yes</td>
+<td>All</td>
+<td>All</td>
+<td>“”</td>
+</tr>
+<tr class="row-odd"><td>–zone</td>
+<td>No</td>
+<td>All</td>
+<td>All</td>
+<td>us-west1-b</td>
+</tr>
+<tr class="row-even"><td>–rcc-controller</td>
+<td>Yes</td>
+<td>RCC-Static</td>
+<td>All</td>
+<td>“”</td>
+</tr>
+<tr class="row-odd"><td>–rcc-tfvars</td>
+<td>No</td>
+<td>RCC-Ephemeral</td>
+<td>All</td>
+<td>./fluid.auto.tfvars</td>
+</tr>
+<tr class="row-even"><td>–save-results</td>
+<td>No</td>
+<td>All</td>
+<td>All</td>
+<td>false</td>
+</tr>
+<tr class="row-odd"><td>–ignore-exit-code</td>
+<td>No</td>
+<td>All</td>
+<td>All</td>
+<td>false</td>
+</tr>
+<tr class="row-even"><td>–ignore-job-dependencies</td>
+<td>No</td>
+<td>All</td>
+<td>All</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
 <p>This next table gives a description for each of the command line arguments.</p>
+</div>
 </div>
 
 

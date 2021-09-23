@@ -1,0 +1,361 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Customize the Test Cluster &mdash; fluid-run v0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Fluid Run Workflow" href="../Reference/fluid_run_workflow.html" />
+    <link rel="prev" title="Set Up your Repository" href="setup_your_repo.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> fluid-run
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Quick Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../QuickStart/rcc_ephemeral_tutorial.html">Ephemeral RCC Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">How To</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup_your_repo.html">Set Up your Repository</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Customize the Test Cluster</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Reference/fluid_run_workflow.html">Fluid Run Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference/architecture.html">Architecture Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference/fluid_run_reference.html">The Fluid Run CI File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference/cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference/dataset_schema.html">Benchmark Dataset Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference/environment_variables.html">Environment Variables</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Support/support.html">Support</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">fluid-run</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Customize the Test Cluster</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/HowTo/customize_cluster.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="customize-the-test-cluster">
+<h1>Customize the Test Cluster<a class="headerlink" href="#customize-the-test-cluster" title="Permalink to this headline">¶</a></h1>
+<p>When using the <code class="code docutils literal notranslate"><span class="pre">rcc-ephemeral</span></code> cluster type for testing, there are only a limited set of compute instances made avaiable to you by default. Behind the scenes, fluid-run uses Terraform to create ephemeral clusters for application testing and the <code class="code docutils literal notranslate"><span class="pre">rcc-ephemeral</span></code> cluster is defined by the <a class="reference external" href="https://github.com/FluidNumerics/rcc-tf">rcc-tf module</a> from Fluid Numerics. The default variable concretizations are provided in <a class="reference external" href="https://github.com/FluidNumerics/fluid-run/blob/main/etc/rcc-ephemeral/default.auto.tfvars">fluid-run/etc/rcc-ephemeral/default.auto.tfvars</a>. This default configuration provides you with a n1-standard-16 controller with a 1TB pd-ssd disk and a single compute partition, consisting of 5x c2-standard-8 instances.</p>
+<p>The fluid-run build step provides a mechanism to customize the cluster so that you can define compute partitions that meet your testing needs. You are able to add <a class="reference external" href="https://cloud.google.com/compute/docs/gpus">instances with GPUs</a>, specify partitions for a heterogeneous cluster (see <a class="reference external" href="https://cloud.google.com/compute/docs/machine-types">machine types available on Google Cloud</a>), specify the zone to deploy to, change the controller size, shape, and disk properties, and even add a Lustre file system.</p>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>To customize the cluster, you can add a tfvars definition file that is similar to the <a class="reference external" href="https://github.com/FluidNumerics/fluid-run/blob/main/etc/rcc-ephemeral/default.auto.tfvars">fluid-run/etc/rcc-ephemeral/default.auto.tfvars</a>. For reference, the <a class="reference external" href="https://github.com/FluidNumerics/fluid-run/blob/main/etc/rcc-ephemeral/io.tf">fluid-run/etc/rcc-ephemeral/io.tf</a> file defines all of the variables available for concretizing a <code class="code docutils literal notranslate"><span class="pre">rcc-ephemeral</span></code> cluster.</p>
+<p>It is recommended that you start by creating a file in your repository called <code class="code docutils literal notranslate"><span class="pre">rcc.auto.tfvars</span></code> with the following contents</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">cluster_name = &quot;&lt;name&gt;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">project = &quot;&lt;project&gt;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">zone = &quot;&lt;zone&gt;&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">controller_image = &quot;&lt;image&gt;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">disable_controller_public_ips = false</span>
+<span class="l l-Scalar l-Scalar-Plain">controller_machine_type = &quot;n1-standard-16&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">controller_disk_size_gb = 1024</span>
+<span class="l l-Scalar l-Scalar-Plain">controller_disk_type = &quot;pd-ssd&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">login_image = &quot;&lt;image&gt;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">disable_login_public_ips = true</span>
+<span class="l l-Scalar l-Scalar-Plain">login_machine_type = &quot;n1-standard-4&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">login_node_count = 0</span>
+
+<span class="l l-Scalar l-Scalar-Plain">suspend_time = 2</span>
+
+
+<span class="l l-Scalar l-Scalar-Plain">compute_node_scopes          = [</span>
+  <span class="l l-Scalar l-Scalar-Plain">&quot;https://www.googleapis.com/auth/cloud-platform&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">]</span>
+<span class="l l-Scalar l-Scalar-Plain">partitions = [</span>
+  <span class="l l-Scalar l-Scalar-Plain">{ name                 = &quot;c2-standard-8&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">machine_type         = &quot;c2-standard-8&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">image                = &quot;&lt;image&gt;&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">image_hyperthreads   = true</span>
+    <span class="l l-Scalar l-Scalar-Plain">static_node_count    = 0</span>
+    <span class="l l-Scalar l-Scalar-Plain">max_node_count       = 5</span>
+    <span class="l l-Scalar l-Scalar-Plain">zone                 = &quot;&lt;zone&gt;&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">compute_disk_type    = &quot;pd-standard&quot;</span>
+    <span class="l l-Scalar l-Scalar-Plain">compute_disk_size_gb = 50</span>
+    <span class="l l-Scalar l-Scalar-Plain">compute_labels       = {}</span>
+    <span class="l l-Scalar l-Scalar-Plain">cpu_platform         = null</span>
+    <span class="l l-Scalar l-Scalar-Plain">gpu_count            = 0</span>
+    <span class="l l-Scalar l-Scalar-Plain">gpu_type             = null</span>
+    <span class="l l-Scalar l-Scalar-Plain">gvnic                = false</span>
+    <span class="l l-Scalar l-Scalar-Plain">network_storage      = []</span>
+    <span class="l l-Scalar l-Scalar-Plain">preemptible_bursting = false</span>
+    <span class="l l-Scalar l-Scalar-Plain">vpc_subnet           = null</span>
+    <span class="l l-Scalar l-Scalar-Plain">exclusive            = false</span>
+    <span class="l l-Scalar l-Scalar-Plain">enable_placement     = false</span>
+    <span class="l l-Scalar l-Scalar-Plain">regional_capacity    = false</span>
+    <span class="l l-Scalar l-Scalar-Plain">regional_policy      = null</span>
+    <span class="l l-Scalar l-Scalar-Plain">instance_template    = null</span>
+  <span class="l l-Scalar l-Scalar-Plain">},</span>
+<span class="l l-Scalar l-Scalar-Plain">]</span>
+
+<span class="l l-Scalar l-Scalar-Plain">create_filestore = false</span>
+<span class="l l-Scalar l-Scalar-Plain">create_lustre = false</span>
+</pre></div>
+</div>
+<p>You’ll notice that their are a few template variables in this example that are demarked by <code class="code docutils literal notranslate"><span class="pre">&lt;&gt;</span></code>. The fluid-run build step is able to substitute values for these variables at build-time based on options provided to the command lined interface. The example above provides a good starting point with some of the necessary template variables in place. It is not recommended to remove the template variables for <code class="code docutils literal notranslate"><span class="pre">&lt;name&gt;</span></code>, <code class="code docutils literal notranslate"><span class="pre">&lt;project&gt;</span></code>, <code class="code docutils literal notranslate"><span class="pre">&lt;zone&gt;</span></code>, or <code class="code docutils literal notranslate"><span class="pre">&lt;image&gt;</span></code>.</p>
+<p>For your reference, template variables for <code class="code docutils literal notranslate"><span class="pre">rcc-ephemeral</span></code> clusters that are substituted at run-time are given in the table below.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="26%" />
+<col width="52%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Template Variable</th>
+<th class="head">Value/CLI Option</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&lt;name&gt;</td>
+<td>frun-{build-id}[0:7]</td>
+<td>Name of the ephemeral cluster</td>
+</tr>
+<tr class="row-odd"><td>&lt;project&gt;</td>
+<td>–project</td>
+<td>Google Cloud Project ID</td>
+</tr>
+<tr class="row-even"><td>&lt;zone&gt;</td>
+<td>–zone</td>
+<td>Google Cloud zone</td>
+</tr>
+<tr class="row-odd"><td>&lt;image&gt;</td>
+<td>–gce-image</td>
+<td>Google Compute Engine VM Image self-link</td>
+</tr>
+<tr class="row-even"><td>&lt;build_id&gt;</td>
+<td>–build-id</td>
+<td>Google Cloud Build build ID</td>
+</tr>
+<tr class="row-odd"><td>&lt;vpc_subnet&gt;</td>
+<td>–vpc-subnet</td>
+<td>Google Cloud VPC Subnetwork</td>
+</tr>
+<tr class="row-even"><td>&lt;service_account&gt;</td>
+<td>–service-account</td>
+<td>Google Cloud Service Account email address</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="customize-partitions">
+<h2>Customize Partitions<a class="headerlink" href="#customize-partitions" title="Permalink to this headline">¶</a></h2>
+<p>Partitions are used to define the type of compute nodes available to you for testing. Each partition consists of a homogeneous pool of machines. While each partition has 22 variables to concretely define it, we’ll cover a few of the options here to help you make informed decisions when defining partitions for testing.</p>
+<div class="section" id="name">
+<h3>name<a class="headerlink" href="#name" title="Permalink to this headline">¶</a></h3>
+<p>The partition name is used to identify a homogeneous group of compute nodes. When writing your Fluid Run CI File, you will set the <code class="code docutils literal notranslate"><span class="pre">partition</span></code> field to one of the partition names set in your <code class="code docutils literal notranslate"><span class="pre">tfvars</span></code> file.</p>
+</div>
+<div class="section" id="machine-type">
+<h3>machine_type<a class="headerlink" href="#machine-type" title="Permalink to this headline">¶</a></h3>
+<p>The machine type refers to a <a class="reference external" href="https://cloud.google.com/compute/docs/machine-types">Google Compute Engine machine type</a>. If you define multiple partitions with differing machine types, this gives you the ability to see how your code’s performance varies across different hardware</p>
+</div>
+<div class="section" id="image">
+<h3>image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="code docutils literal notranslate"><span class="pre">image</span></code> expects a self-link to a VM image for the cluster. It is recommended that you leave this field set to the template variable <code class="code docutils literal notranslate"><span class="pre">&quot;&lt;image&gt;&quot;</span></code> so that fluid-run can set this field for you.</p>
+</div>
+<div class="section" id="gpu-type-and-gpu-count">
+<h3>gpu_type and gpu_count<a class="headerlink" href="#gpu-type-and-gpu-count" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="code docutils literal notranslate"><span class="pre">gpu_type</span></code> field is used to set the type of GPU to attach to each compute node in the partition. Possible values are</p>
+<ul class="simple">
+<li>nvidia-tesla-k80</li>
+<li>nvidia-tesla-p100</li>
+<li>nvidia-tesla-v100</li>
+<li>nvidia-tesla-p4</li>
+<li>nvidia-tesla-t4</li>
+<li>nvidia-tesla-a100 (<a class="reference external" href="https://cloud.google.com/compute/docs/accelerator-optimized-machines">A2 instances only</a>)</li>
+</ul>
+<p>The <code class="code docutils literal notranslate"><span class="pre">gpu_count</span></code> field is used to set the number of GPUs per machine in the partition. For most GPUs, you can set this to 0, 1, 2, 4, or 8. Currently, GPUs must be used with an <em>n1</em> machine type on Google Cloud (<a class="reference external" href="https://cloud.google.com/compute/docs/accelerator-optimized-machines">except for the A100 GPUs</a>).
+Keep in mind that each GPU type is available in <a class="reference external" href="https://cloud.google.com/compute/docs/gpus/gpu-regions-zones">certain zones</a> and that there are <a class="reference external" href="https://cloud.google.com/compute/docs/gpus">restrictions on the ratio of vCPU to GPU</a>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../Reference/fluid_run_workflow.html" class="btn btn-neutral float-right" title="Fluid Run Workflow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="setup_your_repo.html" class="btn btn-neutral float-left" title="Set Up your Repository" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Fluid Numerics LLC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

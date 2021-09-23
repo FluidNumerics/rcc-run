@@ -98,15 +98,11 @@ machine_type
 =============
 The machine type refers to a `Google Compute Engine machine type <https://cloud.google.com/compute/docs/machine-types>`_. If you define multiple partitions with differing machine types, this gives you the ability to see how your code's performance varies across different hardware
 
-max_node_count
-===============
-This is the maximum number of nodes that can be created in this partition. When tests are run, the cluster will automatically manage provisioning compute nodes to run benchmarks and tear them down upon completion. Keep in mind that you need to ensure that you have `sufficient Quota <https://cloud.google.com/compute/quotas>`_ for the machine type, gpus, and disks in the region that your cluster is deployed to.
-
 image
 =======
 The :code:`image` expects a self-link to a VM image for the cluster. It is recommended that you leave this field set to the template variable :code:`"<image>"` so that fluid-run can set this field for you.
 
-gpu_type / gpu_count
+gpu_type and gpu_count
 ========================
 The :code:`gpu_type` field is used to set the type of GPU to attach to each compute node in the partition. Possible values are
 

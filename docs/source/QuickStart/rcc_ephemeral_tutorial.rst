@@ -1,13 +1,19 @@
+######################################
 Ephemeral RCC Tutorial
-======================================
+######################################
 
 Fluid Run can be used to create ephemeral compute resources for testing HPC applications and to record information about the test for later analysis.
 This quickstart guide will introduce you to the necessary ingredients for configuring application tests with fluid-run, using an ephemeral Research Computing Cluster (RCC).
 
+
+***************************
+Demo
+***************************
 You will start by using the rcc-ephemeral example provided in the fluid-run repository. This example creates a Singularity image with the `cowsay` program installed on it and then runs tests for this image on an ephemeral RCC cluster. You will learn how to set up your Google Cloud project and create the necessary resources to support application testing, benchmarking, and logging.
 
+
 Google Cloud Project Setup
----------------------------
+===========================
 To complete this tutorial, you will need to have an active project on Google Cloud. 
 Sign up and create your first project by visiting https://console.cloud.google.com
 
@@ -30,7 +36,7 @@ You will need to activate the following Google Cloud APIs
 
 
 Create a fluid-run Docker image
---------------------------------
+================================
 The fluid-run application is a `Cloud Build builder <https://cloud.google.com/build/docs/cloud-builders>`_. A Cloud builder is a Docker image that provides an environment and entrypoint application for carrying out a step in a Cloud Build pipeline. You can create the fluid-run docker image and store it in your Google Cloud project's `Container Registry <https://cloud.google.com/container-registry>`_.
 
 `Open Cloud Shell <https://shell.cloud.google.com/?show=terminal>`_ and clone the fluid-run repository.
@@ -49,7 +55,7 @@ Once you've cloned the repository, navigate to the root directory of the repo an
 This will cause Google Cloud build to create the fluid-run docker image :code:`gcr.io/${PROJECT_ID}/fluid-run:latest` that you can then use in your project's builds.
 
 Create the CI/CB Dataset
----------------------------
+================================
 The CI/CB dataset is a `Big Query <https://cloud.google.com/bigquery>`_ dataset that is used to store information about each test run with fluid-run. This includes runtimes for each execution command used to test your application. The fluid-run repository comes with a terraform module that can create this dataset for your project. We've also included an example under the :code:`examples/rcc-ephemeral` directory that you will use for the rest of this tutorial.
 
 Navigate to the :code:`examples/rcc-ephemeral/ci/build_iac` directory
@@ -78,7 +84,7 @@ Now, you will execute a workflow typical of Terraform deployments to initialize,
 Once this completes, you're ready to run a build using fluid-run.
 
 Manually Trigger a build
---------------------------
+================================
 Cloud Build pipelines for a repository are specified in a `build configuration file <https://cloud.google.com/build/docs/build-config-file-schema>`_ written in YAML syntax. In this example, three build steps are provided that create a Docker image, create a Singularity image, and test the Singularity image on an ephemeral RCC cluster. A singularity image is created since, currently, fluid-run only supports testing of GCE VM images and Singularity images. However, as you can see, Singularity can convert a Docker image to a Singularity image that can be passed to fluid-run. 
 
 .. code-block::  yaml
@@ -132,7 +138,7 @@ Note that the cloud build can be run asynchronously by passing the :code:`--asyn
 
 
 View Data in Big Query
-----------------------------
+================================
 Once the build is complete, the run-time and other data for each execution command is posted to the fluid_cicb dataset in Big Query. In your browser, `navigate to Big Query <https://console.cloud.google.com/bigquery>`_. 
 
 In the data explorer panel on the left-hand side, find your Google Cloud project and expand the dropdown menu. 
@@ -151,7 +157,7 @@ At this point, you now have a dataset hosted in Google Cloud. The fluid-run buil
 
 
 Dashboarding and other post-processing
------------------------------------------
+=========================================
 From here, it is helpful to visualize results. There are a number of solutions available for visualizing data stored in Big Query. Below are a couple dashboard examples using `Data Studio <https://datastudio.google.com>`_ with the fluid_cic data set, to give you an idea of where you can take this.
 
 **Example Pass-Fail Report**
@@ -171,7 +177,7 @@ In addition to dashboarding, having a dataset that tracks the performance of you
 
 
 Delete Resources
------------------
+=========================================
 If you've worked through this tutorial on a Google Cloud project where you will continue setting up a CI/CB workflow for your application, you can keep using the resources you've created. However, if you need to tear down the resources created during this tutorial, you can use the commands below
 
 .. code-block:: shell
@@ -180,10 +186,9 @@ If you've worked through this tutorial on a Google Cloud project where you will 
     $ terraform destroy --auto-approve
   
 
+*****************************************
 Next Steps
-------------
+*****************************************
 
 * :doc:`Set up your Git Repository <../HowTo/setup_your_repo>`
-* :doc:`Customize Compute Partitions <../HowTo/customize_compute_partitions>`
-* :doc:`Add a Lustre file system to the test cluster <../HowTo/add_lustre_file_system>`
-* :doc:`Customize the NFS file system on the test cluster <../HowTo/customize_nfs_file_system>`
+* :doc:`Customize the Benchmarking Cluster <../HowTo/customize_cluster>`

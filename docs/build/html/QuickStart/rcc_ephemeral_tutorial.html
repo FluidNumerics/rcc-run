@@ -87,21 +87,12 @@
             
               <p class="caption"><span class="caption-text">Quick Start</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Ephemeral RCC Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../HowTo/setup_your_repo.html">Set Up your Repository</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../HowTo/customize_compute_partitions.html">Customize Compute Partitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../HowTo/add_lustre_file_system.html">Add a Lustre File System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../HowTo/customize_nfs_file_system.html">Customize NFS File System</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Ephemeral RCC Tutorial</a></li>
 </ul>
 <p class="caption"><span class="caption-text">How To</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../HowTo/setup_your_repo.html">Set Up your Repository</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_compute_partitions.html">Customize Compute Partitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/add_lustre_file_system.html">Add a Lustre File System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_nfs_file_system.html">Customize NFS File System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/create_a_datastudio_dashboard.html">Create a Data Studio Dashboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_cluster.html">Customize the Test Cluster</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -186,9 +177,11 @@
 <h1>Ephemeral RCC Tutorial<a class="headerlink" href="#ephemeral-rcc-tutorial" title="Permalink to this headline">¶</a></h1>
 <p>Fluid Run can be used to create ephemeral compute resources for testing HPC applications and to record information about the test for later analysis.
 This quickstart guide will introduce you to the necessary ingredients for configuring application tests with fluid-run, using an ephemeral Research Computing Cluster (RCC).</p>
+<div class="section" id="demo">
+<h2>Demo<a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
 <p>You will start by using the rcc-ephemeral example provided in the fluid-run repository. This example creates a Singularity image with the <cite>cowsay</cite> program installed on it and then runs tests for this image on an ephemeral RCC cluster. You will learn how to set up your Google Cloud project and create the necessary resources to support application testing, benchmarking, and logging.</p>
 <div class="section" id="google-cloud-project-setup">
-<h2>Google Cloud Project Setup<a class="headerlink" href="#google-cloud-project-setup" title="Permalink to this headline">¶</a></h2>
+<h3>Google Cloud Project Setup<a class="headerlink" href="#google-cloud-project-setup" title="Permalink to this headline">¶</a></h3>
 <p>To complete this tutorial, you will need to have an active project on Google Cloud.
 Sign up and create your first project by visiting <a class="reference external" href="https://console.cloud.google.com">https://console.cloud.google.com</a></p>
 <p>Once your project is ready, open <a class="reference external" href="https://shell.cloud.google.com/?show=terminal">Cloud Shell</a></p>
@@ -208,7 +201,7 @@ gcloud services <span class="nb">enable</span> cloudbuild.googleapis.com
 </div>
 </div>
 <div class="section" id="create-a-fluid-run-docker-image">
-<h2>Create a fluid-run Docker image<a class="headerlink" href="#create-a-fluid-run-docker-image" title="Permalink to this headline">¶</a></h2>
+<h3>Create a fluid-run Docker image<a class="headerlink" href="#create-a-fluid-run-docker-image" title="Permalink to this headline">¶</a></h3>
 <p>The fluid-run application is a <a class="reference external" href="https://cloud.google.com/build/docs/cloud-builders">Cloud Build builder</a>. A Cloud builder is a Docker image that provides an environment and entrypoint application for carrying out a step in a Cloud Build pipeline. You can create the fluid-run docker image and store it in your Google Cloud project’s <a class="reference external" href="https://cloud.google.com/container-registry">Container Registry</a>.</p>
 <p><a class="reference external" href="https://shell.cloud.google.com/?show=terminal">Open Cloud Shell</a> and clone the fluid-run repository.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/FluidNumerics/fluid-run.git ~/fluid-run
@@ -222,7 +215,7 @@ $ gcloud builds submit . --config<span class="o">=</span>ci/cloudbuild.yaml --su
 <p>This will cause Google Cloud build to create the fluid-run docker image <code class="code docutils literal notranslate"><span class="pre">gcr.io/${PROJECT_ID}/fluid-run:latest</span></code> that you can then use in your project’s builds.</p>
 </div>
 <div class="section" id="create-the-ci-cb-dataset">
-<h2>Create the CI/CB Dataset<a class="headerlink" href="#create-the-ci-cb-dataset" title="Permalink to this headline">¶</a></h2>
+<h3>Create the CI/CB Dataset<a class="headerlink" href="#create-the-ci-cb-dataset" title="Permalink to this headline">¶</a></h3>
 <p>The CI/CB dataset is a <a class="reference external" href="https://cloud.google.com/bigquery">Big Query</a> dataset that is used to store information about each test run with fluid-run. This includes runtimes for each execution command used to test your application. The fluid-run repository comes with a terraform module that can create this dataset for your project. We’ve also included an example under the <code class="code docutils literal notranslate"><span class="pre">examples/rcc-ephemeral</span></code> directory that you will use for the rest of this tutorial.</p>
 <p>Navigate to the <code class="code docutils literal notranslate"><span class="pre">examples/rcc-ephemeral/ci/build_iac</span></code> directory</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> ~/fluid-run/examples/rcc-ephemeral/ci/build_iac
@@ -243,7 +236,7 @@ $ terraform apply --auto-approve
 <p>Once this completes, you’re ready to run a build using fluid-run.</p>
 </div>
 <div class="section" id="manually-trigger-a-build">
-<h2>Manually Trigger a build<a class="headerlink" href="#manually-trigger-a-build" title="Permalink to this headline">¶</a></h2>
+<h3>Manually Trigger a build<a class="headerlink" href="#manually-trigger-a-build" title="Permalink to this headline">¶</a></h3>
 <p>Cloud Build pipelines for a repository are specified in a <a class="reference external" href="https://cloud.google.com/build/docs/build-config-file-schema">build configuration file</a> written in YAML syntax. In this example, three build steps are provided that create a Docker image, create a Singularity image, and test the Singularity image on an ephemeral RCC cluster. A singularity image is created since, currently, fluid-run only supports testing of GCE VM images and Singularity images. However, as you can see, Singularity can convert a Docker image to a Singularity image that can be passed to fluid-run.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">steps</span><span class="p">:</span>
 
@@ -291,7 +284,7 @@ $ gcloud builds submit . --config<span class="o">=</span>ci/cloudbuild.yaml
 <p>Note that the cloud build can be run asynchronously by passing the <code class="code docutils literal notranslate"><span class="pre">--async</span></code> flag as well. If you run asynchronously, you can view the status of the build at the <a class="reference external" href="https://console.cloud.google.com/cloud-build/builds">Cloud Build Console</a>.</p>
 </div>
 <div class="section" id="view-data-in-big-query">
-<h2>View Data in Big Query<a class="headerlink" href="#view-data-in-big-query" title="Permalink to this headline">¶</a></h2>
+<h3>View Data in Big Query<a class="headerlink" href="#view-data-in-big-query" title="Permalink to this headline">¶</a></h3>
 <p>Once the build is complete, the run-time and other data for each execution command is posted to the fluid_cicb dataset in Big Query. In your browser, <a class="reference external" href="https://console.cloud.google.com/bigquery">navigate to Big Query</a>.</p>
 <p>In the data explorer panel on the left-hand side, find your Google Cloud project and expand the dropdown menu.</p>
 <a class="reference internal image-reference" href="../_images/biq-query-app_runs.png"><img alt="Big Query App Runs data set" src="../_images/biq-query-app_runs.png" style="width: 800px;" /></a>
@@ -300,7 +293,7 @@ $ gcloud builds submit . --config<span class="o">=</span>ci/cloudbuild.yaml
 <p>At this point, you now have a dataset hosted in Google Cloud. The fluid-run build step with Google Cloud Build will allow you to automate testing and benchmarking of your application and will post results to this dataset.</p>
 </div>
 <div class="section" id="dashboarding-and-other-post-processing">
-<h2>Dashboarding and other post-processing<a class="headerlink" href="#dashboarding-and-other-post-processing" title="Permalink to this headline">¶</a></h2>
+<h3>Dashboarding and other post-processing<a class="headerlink" href="#dashboarding-and-other-post-processing" title="Permalink to this headline">¶</a></h3>
 <p>From here, it is helpful to visualize results. There are a number of solutions available for visualizing data stored in Big Query. Below are a couple dashboard examples using <a class="reference external" href="https://datastudio.google.com">Data Studio</a> with the fluid_cic data set, to give you an idea of where you can take this.</p>
 <p><strong>Example Pass-Fail Report</strong></p>
 <a class="reference internal image-reference" href="../_images/pass-fail-report-example.png"><img alt="Pass fail report example" src="../_images/pass-fail-report-example.png" style="width: 800px;" /></a>
@@ -309,23 +302,20 @@ $ gcloud builds submit . --config<span class="o">=</span>ci/cloudbuild.yaml
 <p>In addition to dashboarding, having a dataset that tracks the performance of your application over time and on a variety of hardware can enable you to automatically check for performance regressions or uncovers performance portability issues. You can write application in C#, Go, Java, Node.js, PHP, Python, and Ruby using the <a class="reference external" href="https://cloud.google.com/bigquery/docs/reference/libraries">Big Query API</a> to interact with the dataset to add further post-processing and verification to your builds.</p>
 </div>
 <div class="section" id="delete-resources">
-<h2>Delete Resources<a class="headerlink" href="#delete-resources" title="Permalink to this headline">¶</a></h2>
+<h3>Delete Resources<a class="headerlink" href="#delete-resources" title="Permalink to this headline">¶</a></h3>
 <p>If you’ve worked through this tutorial on a Google Cloud project where you will continue setting up a CI/CB workflow for your application, you can keep using the resources you’ve created. However, if you need to tear down the resources created during this tutorial, you can use the commands below</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> ~/fluid-run/examples/rcc-ephemeral/ci/build_iac
 $ terraform destroy --auto-approve
 </pre></div>
 </div>
 </div>
+</div>
 <div class="section" id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/setup_your_repo.html">Set Up your Repository</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_compute_partitions.html">Customize Compute Partitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/add_lustre_file_system.html">Add a Lustre File System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../HowTo/customize_nfs_file_system.html">Customize NFS File System</a></li>
+<ul class="simple">
+<li><a class="reference internal" href="../HowTo/setup_your_repo.html"><span class="doc">Set up your Git Repository</span></a></li>
+<li><a class="reference internal" href="../HowTo/customize_cluster.html"><span class="doc">Customize the Benchmarking Cluster</span></a></li>
 </ul>
-</div>
 </div>
 </div>
 
