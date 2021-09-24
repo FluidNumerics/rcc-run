@@ -9,9 +9,15 @@ Issues, feature requests, and general support requests can be submitted through 
 
 
 ## Documentation
-
 Documentation is available at https://fluid-run.readthedocs.io/en/latest/
 
-## Tutorials
 
-## Contributing
+## Projects using fluid-run
+
+*Feel free to add your project using a pull request*
+
+
+* [SELF](https://github.com/FluidNumerics/SELF)
+
+
+
