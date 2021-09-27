@@ -248,6 +248,9 @@ def createSettingsJson(args):
                 'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
                 'hostname':'frun-{}-0'.format(args.build_id[0:7])}
 
+    if args.bq_table:
+        settings['bq_table'] = args.bq_table
+
     if not args.service_account :
         settings['service_account'] = 'fluid-run@{}.iam.gserviceaccount.com'.format(args.project)
 
@@ -572,6 +575,7 @@ def parseCli():
     parser.add_argument('--save-results', help='Boolean flag to save results to {project-id}:fluid-cicb.app_runs Big Query Table', default=False, action='store_true')
     parser.add_argument('--ignore-exit-code', help='Boolean flag to ignore nonzero exit code (true) if any of the tests fail', default=False, action='store_true')
     parser.add_argument('--ignore-job-dependencies', help='Boolean flag to enable ignorance of job dependencies assumed within a command_group.', default=False, action='store_true')
+    parser.add_argument('--bq_dataset', help='Path to the Big Query data set. When unset, the dataset defaults to {project-id}:fluid-cicb.app_runs', type=str, default='')
 
     return parser.parse_args()
 
