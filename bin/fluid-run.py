@@ -248,8 +248,8 @@ def createSettingsJson(args):
                 'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
                 'hostname':'frun-{}-0'.format(args.build_id[0:7])}
 
-    if args.bq_table:
-        settings['bq_table'] = args.bq_table
+    if args.bq_dataset:
+        settings['bq_table'] = args.bq_dataset
 
     if not args.service_account :
         settings['service_account'] = 'fluid-run@{}.iam.gserviceaccount.com'.format(args.project)
