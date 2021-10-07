@@ -15,7 +15,7 @@ resource "google_compute_network" "vpc_network" {
 resource "google_compute_firewall" "default_ssh_firewall_rules" {
   name = "fluid-run-ssh"
   network = google_compute_network.vpc_network.self_link
-  target_tags = ["fluid-run"]
+  target_tags = ["fluid-run","controller","login","compute"]
   source_ranges = var.whitelist_ssh_ips
   project = var.project
 
@@ -28,8 +28,8 @@ resource "google_compute_firewall" "default_ssh_firewall_rules" {
 resource "google_compute_firewall" "default_internal_firewall_rules" {
   name = "fluid-run-all-internal"
   network = google_compute_network.vpc_network.self_link
-  source_tags = ["fluid-run"]
-  target_tags = ["fluid-run"]
+  source_tags = ["fluid-run","controller","login","compute"]
+  target_tags = ["fluid-run","controller","login","compute"]
   project = var.project
 
   allow {
