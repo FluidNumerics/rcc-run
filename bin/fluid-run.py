@@ -133,6 +133,58 @@ def waitForSSH():
 
 #END waitForSSH
 
+def waitForSlurm():
+    """Repeatedly checks for active Slurm controller"""
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    hostname = settings['hostname']
+    zone = settings['zone']
+    project = settings['project']
+
+    command = ['gcloud',
+               'compute',
+               'ssh',
+               hostname,
+               '--command="sinfo"',
+               '--zone={}'.format(zone),
+               '--project={}'.format(project),
+               '--ssh-key-file=/workspace/sshkey']
+
+    k = 1
+    rc = 1
+    while True:
+
+        if k > N_RETRIES:
+            if settings['cluster_type'] == 'gce':
+                deprovisionCluster()
+
+            elif settings['cluster_type'] == 'rcc-ephemeral':
+                deprovisionCluster()
+
+            writePassFail(rc)
+            if not settings['ignore_exit_code']:
+                sys.exit(rc)
+
+        print('Waiting for Slurm controller...',flush=True)
+        proc = subprocess.Popen(command,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+
+        stdout, stderr = proc.communicate()
+        if proc.returncode == 0:
+            print('Slurm controller is active!',flush=True)
+            rc = 0
+            break
+        else:
+            time.sleep(SLEEP_INTERVAL)
+            k+=1
+
+    return rc
+
+#END waitForSlurm
+
 def clusterRun(cmd,streamOutput=False):
     """Runs a command over ssh on the head node for the cluster"""
 
@@ -640,6 +692,8 @@ def slurmgcpWorkflow():
     createSSHKey()
 
     rc = waitForSSH()
+
+    rc = waitForSlurm()
 
     if rc == 0:
 
