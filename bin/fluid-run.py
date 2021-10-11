@@ -618,7 +618,7 @@ def parseCli():
     parser.add_argument('--artifact-type', help='Identifies the type of artifact used to deploy your application. Currently only "gce-image", "docker", and "singularity" are supported.', type=str, default='singularity')
     parser.add_argument('--docker-image', help='The name of the docker image. Only used if --artifact-type=docker', type=str)
     parser.add_argument('--singularity-image', help='The name of the singularity image. Only used if --artifact-type=singularity', type=str)
-    parser.add_argument('--gce-image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='projects/research-computing-cloud/global/images/family/rcc-centos-foss')
+    parser.add_argument('--gce-image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='projects/research-computing-cloud/global/images/family/rcc-centos-foss-v300')
     parser.add_argument('--project', help='Google Cloud project ID to deploy the cluster to', type=str)
     parser.add_argument('--zone', help='Google Cloud zone to deploy the cluster to', type=str, default="us-west1-b")
     parser.add_argument('--rcc-controller', help='The name of a slurm controller to schedule CI tasks as jobs on. Only used if cluster-type=rcc-static', type=str)
