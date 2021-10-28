@@ -76,6 +76,12 @@ resource "google_bigquery_table" "benchmarks" {
     "description": "The number of GPUs that are allocated to run the execution_command."
   },
   {
+    "name": "artifact_type",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The type of artifact tested, e.g., 'singularity', 'docker', 'gce'"
+  },
+  {
     "name": "batch_options",
     "type": "STRING",
     "mode": "NULLABLE",
