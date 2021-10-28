@@ -126,6 +126,7 @@ def waitForSSH():
             rc = 0
             break
         else:
+            print(stderr.decode('utf-8'))
             time.sleep(SLEEP_INTERVAL)
             k+=1
 
