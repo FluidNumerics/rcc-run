@@ -378,7 +378,7 @@ def createSSHKey():
     localRun('ssh-keygen -b 2048 -t rsa -f /workspace/sshkey -q -N ""')
    
     stdout,stderr,rc = localRun('gcloud compute os-login ssh-keys list')
-    for line in stdout.split('\n'):
+    for line in stdout.decode('utf-8').split('\n'):
         if not line in ['FINGERPRINT','EXPIRY']:
             localRun('gcloud compute os-login ssh-keys remove --key {}'.format(line))
 
