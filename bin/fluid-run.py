@@ -253,7 +253,7 @@ def localRun(cmd):
 
     checkReturnCode(proc.returncode,stderr)
 
-    return proc.returncode
+    return stdout, stderr, proc.returncode
 
 #END localRun
 
@@ -376,6 +376,10 @@ def createSSHKey():
     """Create an ssh key that can be used to connect with the cluster"""
 
     localRun('ssh-keygen -b 2048 -t rsa -f /workspace/sshkey -q -N ""')
+   
+    stdout,stderr,rc = localRun('gcloud compute os-login ssh-keys list')
+    for line in stdout.split('\n'):
+        localRun('gcloud compute os-login ssh-keys remove --key {}'.format(line))
 
 #END createSSHKey
 
