@@ -70,11 +70,21 @@ def gceClusterRun(settings,tests):
 
         os.chdir(workdir)
 
+        if 'task_affinity' in test.keys():
+            task_affinity = test['task_affinity']
+        else:
+            task_affinity = settings['task_affinity']
+
+        if 'nproc' in test.keys():
+            nproc = test['nproc']
+        else:
+            nproc = settings['nproc']
+
         if settings['artifact_type'] == 'singularity':
             if settings['mpi'] :
   
                 cmd = 'mpirun -np {NPROC} {AFFINITY} singularity exec --bind /workspace:/workspace {IMAGE} {CMD}'.format(NPROC=settings['nproc'],
-                        AFFINITY=settings['task_affinity'],
+                        AFFINITY=task_affinity,
                         IMAGE=WORKSPACE+settings['singularity_image'],
 
                         CMD=test['execution_command'])
@@ -116,7 +126,6 @@ def gceClusterRun(settings,tests):
         tests['tests'][k]['compiler'] = settings['compiler']
         tests['tests'][k]['target_arch'] = settings['target_arch']
         #tests['tests'][index]['max_memory_gb'] = float(max_memory)
-
 
         k+=1
                                         
