@@ -302,10 +302,15 @@ def checkReturnCode(returncode,stderr):
 def createSettingsJson(args):
     """Converts the args namespace to a json dictionary for use in the Cloud Build environment and on the cluster"""
 
-    hostname = 'frun-{}-0'.format(args.build_id[0:7])
+    if args.cluster_type == 'rcc-ephemeral':
+        hostname = 'frun-{}-controller'.format(args.build_id[0:7])
+    elif args.cluster_type == 'rcc-static':
+        hostname = args.rcc_controller
+    else:
+        hostname = 'frun-{}-0'.format(args.build_id[0:7])
+
     zone = args.zone
     project = args.project
-    homedir = getRemoteHomeDir(hostname,zone,project)
 
     print(args,flush=True)
 
@@ -334,7 +339,7 @@ def createSettingsJson(args):
                 'save_results':args.save_results,
                 'task_affinity':args.task_affinity,
                 'vpc_subnet':args.vpc_subnet,
-                'workspace':'{}/workspace/{}/'.format(homedir,args.build_id[0:7]),
+                'workspace':'@HOMEDIR@/workspace/{}/'.format(args.build_id[0:7]),
                 'zone':args.zone,
                 'ci_file':args.ci_file,
                 'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
@@ -733,11 +738,17 @@ def rccWorkflow():
 
         provisionCluster()
 
-    workspace = settings['workspace']
-
-    createSSHKey()
 
     rc = waitForSSH()
+
+    # Update home directory and rewrite settings.json
+    homedir = getRemoteHomeDir(settings['hostname'],
+            settings['zone'],settings['project'])
+    settings['workspace'] = settings['workspace'].replace('@HOMEDIR@',homedir)
+    with open(WORKSPACE+'settings.json','w')as f: 
+        f.write(json.dumps(settings))
+
+    workspace = settings['workspace']
 
     rc = waitForSlurm()
 
@@ -776,6 +787,8 @@ def rccWorkflow():
 def main():
 
     args = parseCli()
+
+    createSSHKey()
 
     createSettingsJson(args)
 
