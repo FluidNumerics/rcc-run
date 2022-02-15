@@ -738,6 +738,7 @@ def rccWorkflow():
 
         provisionCluster()
 
+    createSSHKey()
 
     rc = waitForSSH()
 
@@ -787,8 +788,6 @@ def rccWorkflow():
 def main():
 
     args = parseCli()
-
-    createSSHKey()
 
     createSettingsJson(args)
 
