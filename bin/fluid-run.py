@@ -684,7 +684,7 @@ def gceClusterWorkflow():
 
 #END gceClusterWorkflow
 
-def slurmgcpWorkflow():
+def rccWorkflow():
 
     with open(WORKSPACE+'settings.json','r')as f: 
         settings = json.load(f)
@@ -704,30 +704,35 @@ def slurmgcpWorkflow():
 
     if rc == 0:
 
-        clusterRun('mkdir -p {}'.format(workspace))
+        try:
+            clusterRun('mkdir -p {}'.format(workspace))
 
-        uploadDirectory(localdir='/opt/fluid-run',remotedir='{}/'.format(workspace))
+            uploadDirectory(localdir='/opt/fluid-run',remotedir='{}/'.format(workspace))
 
-        uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
+            uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
 
-        runExeCommands()
+            runExeCommands()
 
-        downloadDirectory(localdir='/workspace',remotedir='{}'.format(workspace))
+            downloadDirectory(localdir='/workspace',remotedir='{}'.format(workspace))
 
-        time.sleep(5)
+            time.sleep(5)
 
-        if settings['cluster_type'] == 'rcc-ephemeral':
+            if settings['cluster_type'] == 'rcc-ephemeral':
+                deprovisionCluster()
+            else:
+                clusterRun('rm -rf {}'.format(workspace))
+
+            formatResults()
+
+            publishToBQ()
+
+            checkExitCodes()
+
+        except:
+
             deprovisionCluster()
-        else:
-            clusterRun('rm -rf {}'.format(workspace))
 
-        formatResults()
-
-        publishToBQ()
-
-        checkExitCodes()
-
-#END slurmgcpWorkflow
+#END rccWorkflow
 
 def main():
 
@@ -738,7 +743,7 @@ def main():
     if args.cluster_type == 'gce':
         gceClusterWorkflow()
     else:
-        slurmgcpWorkflow()
+        rccWorkflow()
 
 #END main
 
