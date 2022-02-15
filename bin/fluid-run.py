@@ -295,7 +295,7 @@ def createSettingsJson(args):
                 'save_results':args.save_results,
                 'task_affinity':args.task_affinity,
                 'vpc_subnet':args.vpc_subnet,
-                'workspace':'~/workspace/{}/'.format(args.build_id[0:7]),
+                'workspace':'$HOME/workspace/{}/'.format(args.build_id[0:7]),
                 'zone':args.zone,
                 'ci_file':args.ci_file,
                 'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
