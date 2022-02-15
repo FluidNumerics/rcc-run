@@ -278,6 +278,7 @@ variable "create_filestore" {
 
 variable "filestore" {
   type = object({
+    local_mount=string
     name = string
     zone = string
     tier = string
@@ -286,6 +287,7 @@ variable "filestore" {
     network = string
   })
   default = {
+    local_mount="/mnt/filestore/"
     name = "filestore"
     zone = null
     tier = "PREMIUM"
@@ -302,6 +304,7 @@ variable "create_lustre" {
 }
 variable "lustre" {
   type = object({
+    local_mount=string
     image = string
     project = string
     zone = string
@@ -330,6 +333,7 @@ variable "lustre" {
     hsm_gcs_prefix = string
   })
   default = {
+    local_mount="/mnt/lustre"
     image = "projects/research-computing-cloud/global/images/family/lustre"
     project = null
     zone = null
