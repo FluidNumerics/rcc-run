@@ -186,6 +186,46 @@ def waitForSlurm():
 
 #END waitForSlurm
 
+def getRemoteHomeDir():
+    """Gets the remote home directory for the builder"""
+
+    with open(WORKSPACE+'settings.json','r')as f: 
+        settings = json.load(f)
+
+    hostname = settings['hostname']
+    zone = settings['zone']
+    project = settings['project']
+
+    command = 'gcloud'
+    command += ' compute'
+    command += ' ssh '
+    command += hostname
+    command += ' --command=pwd'
+    command += ' --zone={}'.format(zone)
+    command += ' --project={}'.format(project)
+    command += ' --ssh-key-file=/workspace/sshkey'
+
+    proc = subprocess.Popen(command,
+                            shell=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+
+    stdout, stderr = proc.communicate()
+    try:
+        print(stdout.decode('utf-8').rstrip(),flush=True)
+    except:
+        print(stdout,flush=True)
+
+    checkReturnCode(proc.returncode,stderr)
+
+    if proc.returncode == 0:
+        print(f'Found remote home directory : {stdout}')
+        return stdout
+    else:
+        sys.exit(1)
+
+#END getRemoteHomeDir
+
 def clusterRun(cmd,streamOutput=False):
     """Runs a command over ssh on the head node for the cluster"""
 
@@ -269,6 +309,7 @@ def checkReturnCode(returncode,stderr):
 def createSettingsJson(args):
     """Converts the args namespace to a json dictionary for use in the Cloud Build environment and on the cluster"""
 
+    homedir = getRemoteHomeDir()
     print(args,flush=True)
     settings = {'artifact_type':args.artifact_type,
                 'build_id':args.build_id,
@@ -295,7 +336,7 @@ def createSettingsJson(args):
                 'save_results':args.save_results,
                 'task_affinity':args.task_affinity,
                 'vpc_subnet':args.vpc_subnet,
-                'workspace':'$HOME/workspace/{}/'.format(args.build_id[0:7]),
+                'workspace':'{}/workspace/{}/'.format(homedir,args.build_id[0:7]),
                 'zone':args.zone,
                 'ci_file':args.ci_file,
                 'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
