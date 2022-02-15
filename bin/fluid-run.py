@@ -212,8 +212,9 @@ def getRemoteHomeDir(hostname,zone,project):
     checkReturnCode(proc.returncode,stderr)
 
     if proc.returncode == 0:
-        print(f'Found remote home directory : {stdout}')
-        return stdout
+        homedir = stdout.decode('utf-8').rstrip()
+        print(f'Found remote home directory : {homedir}')
+        return homedir
     else:
         sys.exit(1)
 
