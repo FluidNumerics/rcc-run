@@ -630,7 +630,7 @@ def parseCli():
     parser.add_argument('--zone', help='Google Cloud zone to deploy the cluster to', type=str, default="us-west1-b")
     parser.add_argument('--rcc-controller', help='The name of a slurm controller to schedule CI tasks as jobs on. Only used if cluster-type=rcc-static', type=str)
     parser.add_argument('--ci-file', help='Path to tests file in your repository', type=str, default="./fluidci.json")
-    parser.add_argument('--rcc-tfvars', help='Path to research computing cluster tfvars file', type=str, default="/opt/fluid-run/etc/rcc-ephemeral/default.auto.tfvars")
+    parser.add_argument('--rcc-tfvars', help='Path to research computing cluster tfvars file', type=str, default="/opt/fluid-run/etc/rcc-ephemeral/default/fluid.auto.tfvars")
     parser.add_argument('--save-results', help='Boolean flag to save results to {project-id}:fluid-cicb.app_runs Big Query Table', default=False, action='store_true')
     parser.add_argument('--ignore-exit-code', help='Boolean flag to ignore nonzero exit code (true) if any of the tests fail', default=False, action='store_true')
     parser.add_argument('--ignore-job-dependencies', help='Boolean flag to enable ignorance of job dependencies assumed within a command_group.', default=False, action='store_true')
