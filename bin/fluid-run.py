@@ -186,15 +186,8 @@ def waitForSlurm():
 
 #END waitForSlurm
 
-def getRemoteHomeDir():
+def getRemoteHomeDir(hostname,zone,project):
     """Gets the remote home directory for the builder"""
-
-    with open(WORKSPACE+'settings.json','r')as f: 
-        settings = json.load(f)
-
-    hostname = settings['hostname']
-    zone = settings['zone']
-    project = settings['project']
 
     command = 'gcloud'
     command += ' compute'
@@ -309,8 +302,13 @@ def checkReturnCode(returncode,stderr):
 def createSettingsJson(args):
     """Converts the args namespace to a json dictionary for use in the Cloud Build environment and on the cluster"""
 
-    homedir = getRemoteHomeDir()
+    hostname = 'frun-{}-0'.format(args.build_id[0:7])
+    zone = args.zone
+    project = args.project
+    homedir = getRemoteHomeDir(hostname,zone,project)
+
     print(args,flush=True)
+
     settings = {'artifact_type':args.artifact_type,
                 'build_id':args.build_id,
                 'docker_image':args.docker_image,
@@ -340,7 +338,7 @@ def createSettingsJson(args):
                 'zone':args.zone,
                 'ci_file':args.ci_file,
                 'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
-                'hostname':'frun-{}-0'.format(args.build_id[0:7])}
+                'hostname':hostname}
 
     if args.bq_dataset:
         settings['bq_table'] = args.bq_dataset
