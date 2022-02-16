@@ -220,7 +220,7 @@ def getRemoteHomeDir(hostname,zone,project):
 
 #END getRemoteHomeDir
 
-def clusterRun(cmd,streamOutput=False):
+def clusterRun(cmd,streamOutput=False,checkRC=True):
     """Runs a command over ssh on the head node for the cluster"""
 
     with open(WORKSPACE+'settings.json','r')as f: 
@@ -254,7 +254,8 @@ def clusterRun(cmd,streamOutput=False):
                 print(output.strip())
 #                time.sleep(1)
 
-            checkReturnCode(proc.returncode,proc.stderr)
+            if checkRC:
+                checkReturnCode(proc.returncode,proc.stderr)
 
     else:
         stdout, stderr = proc.communicate()
@@ -263,7 +264,8 @@ def clusterRun(cmd,streamOutput=False):
         except:
             print(stdout,flush=True)
 
-        checkReturnCode(proc.returncode,stderr)
+        if checkRC:
+            checkReturnCode(proc.returncode,stderr)
 
         return proc.returncode
 
@@ -469,7 +471,19 @@ def runExeCommands():
         settings = json.load(f)
 
     print('Running CI tests...',flush=True)
-    clusterRun('python3 {WORKSPACE}/bin/cluster-workflow.py {WORKSPACE}'.format(WORKSPACE=settings['workspace']))
+    clusterRun('python3 {WORKSPACE}/bin/cluster-workflow.py {WORKSPACE}  > {WORKSPACE}/stdout 2> {WORKSPACE}/stderr &'.format(WORKSPACE=settings['workspace']))
+
+    rc = -1
+    k = 0
+    echar=['|','/','-','|','/','-','\\']
+    while rc != 0:
+
+        i = k % 7
+
+        print('Checking for results file...'+echar[i],end='\r')
+        rc = clusterRun('ls {WORKSPACE}/results.json'.format(WORKSPACE=settings['workspace']))
+        time.sleep(5)
+
     print('Done running CI tests.',flush=True)
 
 #END runExeCommands
