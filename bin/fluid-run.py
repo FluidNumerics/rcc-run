@@ -769,14 +769,14 @@ def rccWorkflow():
 
             time.sleep(5)
 
+            formatResults()
+
+            publishToBQ()
+
             if settings['cluster_type'] == 'rcc-ephemeral':
                 deprovisionCluster()
             else:
                 clusterRun('rm -rf {}'.format(workspace))
-
-            formatResults()
-
-            publishToBQ()
 
             checkExitCodes()
 
