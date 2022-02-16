@@ -14,6 +14,7 @@ import yaml
 import urllib.request
 
 
+STDOUT_LIMIT=50000
 DEFAULT_RETURN_CODE=999
 SLEEP_INTERVAL=5
 
@@ -237,7 +238,7 @@ def rccClusterRun(settings,tests):
                 command_groups[test['command_group']] = [{'job_id':jobid,'index':k,'complete':False}]
         else:
             print(stderr.decode('utf-8'),flush=True)
-            tests['tests'][k]['stdout'] = 'sbatch stdout : '+stdout.decode("utf-8")
+            tests['tests'][k]['stdout'] = 'sbatch stdout : '+stdout.decode("utf-8")[:STDOUT_LIMIT]
             tests['tests'][k]['stderr'] = 'sbatch stderr : '+stderr.decode("utf-8")
             tests['tests'][k]['exit_code'] = returncode
 
