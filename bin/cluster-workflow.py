@@ -238,7 +238,7 @@ def rccClusterRun(settings,tests):
                 command_groups[test['command_group']] = [{'job_id':jobid,'index':k,'complete':False}]
         else:
             print(stderr.decode('utf-8'),flush=True)
-            tests['tests'][k]['stdout'] = 'sbatch stdout : '+stdout.decode("utf-8")[:STDOUT_LIMIT]
+            #tests['tests'][k]['stdout'] = 'sbatch stdout : '+stdout.decode("utf-8")[:STDOUT_LIMIT]
             tests['tests'][k]['stderr'] = 'sbatch stderr : '+stderr.decode("utf-8")
             tests['tests'][k]['exit_code'] = returncode
 
@@ -301,6 +301,7 @@ def rccClusterRun(settings,tests):
                         # Get the number of nodes
                         cmd = 'sacct -j {} --format=NNodes'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
+                        print('Number of nodes report : '+stdout.decode('utf-8'))
                         nnodes = stdout.decode('utf-8').split('\n')[-2].strip()
                         tests['tests'][index]['node_count'] = int(nnodes)
 
