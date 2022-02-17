@@ -481,7 +481,7 @@ def runExeCommands():
         i = k % 7
 
         print('Checking for results file...'+echar[i],end='\r')
-        rc = clusterRun('ls {WORKSPACE}/results.json'.format(WORKSPACE=settings['workspace']))
+        rc = clusterRun('ls {WORKSPACE}/results.json'.format(WORKSPACE=settings['workspace']),checkRC=False)
         time.sleep(5)
 
     print('Done running CI tests.',flush=True)
