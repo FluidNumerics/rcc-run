@@ -289,7 +289,7 @@ def rccClusterRun(settings,tests):
                         with open('{}/{}/stderr'.format(WORKSPACE,tests['tests'][index]['output_directory']),'r') as f:
                             stderr = f.read()
 
-                        tests['tests'][index]['stdout'] = stdout
+#                        tests['tests'][index]['stdout'] = stdout
                         tests['tests'][index]['stderr'] = stderr
 
                         # Get return code from sacct
@@ -301,8 +301,7 @@ def rccClusterRun(settings,tests):
                         # Get the number of nodes
                         cmd = 'sacct -j {} --format=NNodes'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
-                        print('Number of nodes report : '+stdout.decode('utf-8'))
-                        nnodes = stdout.decode('utf-8').split('\n')[-2].strip()
+                        nnodes = stdout.decode('utf-8').split('\n')[1].strip()
                         tests['tests'][index]['node_count'] = int(nnodes)
 
                         # Get the elapsed time in seconds
