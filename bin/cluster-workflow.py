@@ -301,7 +301,7 @@ def rccClusterRun(settings,tests):
                         # Get the number of nodes
                         cmd = 'sacct -j {} --format=NNodes'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
-                        nnodes = stdout.decode('utf-8').split('\n')[1].strip()
+                        nnodes = stdout.decode('utf-8').split('\n')[-2].strip()
                         tests['tests'][index]['node_count'] = int(nnodes)
 
                         # Get the elapsed time in seconds
