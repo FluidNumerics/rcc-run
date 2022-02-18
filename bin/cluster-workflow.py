@@ -295,31 +295,31 @@ def rccClusterRun(settings,tests):
                         # Get return code from sacct
                         cmd = 'sacct -j {} --format=exitCode%10'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
-                        returncode = stdout.decode('utf-8').split('\n')[-2].strip().split(':')[0]
+                        returncode = stdout.decode('utf-8').split('\n')[2].strip().split(':')[0]
                         tests['tests'][index]['exit_code'] = int(returncode)
 
                         # Get the number of nodes
                         cmd = 'sacct -j {} --format=NNodes'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
-                        nnodes = stdout.decode('utf-8').split('\n')[-2].strip()
+                        nnodes = stdout.decode('utf-8').split('\n')[2].strip()
                         tests['tests'][index]['node_count'] = int(nnodes)
 
                         # Get the elapsed time in seconds
                         cmd = 'sacct -j {} --format=ElapsedRaw'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
-                        runtime = stdout.decode('utf-8').split('\n')[-2].strip()
+                        runtime = stdout.decode('utf-8').split('\n')[2].strip()
                         tests['tests'][index]['runtime'] = float(runtime)
 
                         # Get the number of CPUs used
                         cmd = 'sacct -j {} --format=AllocCPUs'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
-                        alloc_cpus = stdout.decode('utf-8').split('\n')[-2].strip()
+                        alloc_cpus = stdout.decode('utf-8').split('\n')[2].strip()
                         tests['tests'][index]['allocated_cpus'] = int(alloc_cpus)
 
                         # Get the max memory used
                         cmd = 'sacct -j {} --format=MaxRSS'.format(str(jobid))
                         stdout, stderr, returncode = run(cmd)
-                        maxRss = stdout.decode('utf-8').split('\n')[-2].strip()
+                        maxRss = stdout.decode('utf-8').split('\n')[3].strip()
                         unit = maxRss[-1]
                         if unit == 'K':
                             max_memory = float(maxRss[:-1])/1024.0/1024.0
