@@ -105,10 +105,7 @@ def waitForSSH():
     while True:
 
         if k > N_RETRIES:
-            if settings['cluster_type'] == 'gce':
-                deprovisionCluster()
-
-            elif settings['cluster_type'] == 'rcc-ephemeral':
+            if settings['cluster_type'] == 'rcc-ephemeral':
                 deprovisionCluster()
 
             writePassFail(rc)
@@ -158,10 +155,7 @@ def waitForSlurm():
     while True:
 
         if k > N_RETRIES:
-            if settings['cluster_type'] == 'gce':
-                deprovisionCluster()
-
-            elif settings['cluster_type'] == 'rcc-ephemeral':
+            if settings['cluster_type'] == 'rcc-ephemeral':
                 deprovisionCluster()
 
             writePassFail(rc)
@@ -372,12 +366,7 @@ def concretizeTfvars():
     
     clusterType = settings['cluster_type']
 
-    if clusterType == 'gce':
-
-        with open(TFPATH+clusterType+'/fluid.tfvars.tmpl', 'r') as f:
-            tfvars = f.read()
-
-    elif clusterType == 'rcc-ephemeral' :
+    if clusterType == 'rcc-ephemeral' :
 
         rccFile = settings['rcc_tfvars']
         with open(rccFile, 'r') as f:
@@ -489,7 +478,7 @@ def runExeCommands():
 
 #END runExeCommands
 
-def downloadDirectory(localdir,remotedir):
+def downloacDirectory(localdir,remotedir):
     """Recursively copies the cluster:{remotedir} to local:{localdir}"""
 
     print('Transferring cluster workspace to local workspace...',flush=True)
@@ -668,7 +657,7 @@ def publishToBQ():
 def parseCli():
     parser = argparse.ArgumentParser(description='Provision remote resources and test HPC/RC applications')
     parser.add_argument('--build-id', help='Cloud Build build ID', type=str)
-    parser.add_argument('--cluster-type', help='Type of cluster to use for testing. Either "rcc-static", "rcc-ephemeral", or "gce".', type=str, default='rcc-ephemeral')
+    parser.add_argument('--cluster-type', help='Type of cluster to use for testing. Either "rcc-static" or "rcc-ephemeral".', type=str, default='rcc-ephemeral')
     parser.add_argument('--git-sha', help='Git sha for your application', type=str)
     parser.add_argument('--node-count', help='Number of nodes to provision for testing', type=int, default=1)
     parser.add_argument('--machine-type', help='GCE Machine type for each node', type=str, default='n1-standard-2')
@@ -685,7 +674,7 @@ def parseCli():
     parser.add_argument('--artifact-type', help='Identifies the type of artifact used to deploy your application. Currently only "gce-image", "docker", and "singularity" are supported.', type=str, default='singularity')
     parser.add_argument('--docker-image', help='The name of the docker image. Only used if --artifact-type=docker', type=str)
     parser.add_argument('--singularity-image', help='The name of the singularity image. Only used if --artifact-type=singularity', type=str)
-    parser.add_argument('--gce-image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='projects/research-computing-cloud/global/images/family/rcc-centos-foss-v300')
+    parser.add_argument('--gce-image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='projects/research-computing-cloud/global/images/family/fluid-run-foss-latest')
     parser.add_argument('--project', help='Google Cloud project ID to deploy the cluster to', type=str)
     parser.add_argument('--zone', help='Google Cloud zone to deploy the cluster to', type=str, default="us-west1-b")
     parser.add_argument('--rcc-controller', help='The name of a slurm controller to schedule CI tasks as jobs on. Only used if cluster-type=rcc-static', type=str)
@@ -706,43 +695,6 @@ def writePassFail(exitCode):
         f.write(str(exitCode))
 
 #END writePassFail
-
-def gceClusterWorkflow():
-
-    with open(WORKSPACE+'settings.json','r')as f: 
-        settings = json.load(f)
-
-    workspace = settings['workspace']
-
-    concretizeTfvars()
-    
-    createSSHKey()
-
-    provisionCluster()
-
-    rc = waitForSSH()
-
-    if rc == 0:
-
-        clusterRun('mkdir -p {}'.format(workspace))
-
-        uploadDirectory(localdir='/opt/fluid-run',remotedir='{}/'.format(workspace))
-
-        uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
-
-        runExeCommands()
-
-        downloadDirectory(localdir='/workspace',remotedir='{}'.format(workspace))
-
-        deprovisionCluster()
-
-        formatResults()
-
-        publishToBQ()
-
-        checkExitCodes()
-
-#END gceClusterWorkflow
 
 def rccWorkflow():
 
@@ -807,10 +759,7 @@ def main():
 
     createSettingsJson(args)
 
-    if args.cluster_type == 'gce':
-        gceClusterWorkflow()
-    else:
-        rccWorkflow()
+    rccWorkflow()
 
 #END main
 

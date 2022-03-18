@@ -48,86 +48,6 @@ def get_partition(name='default'):
 
 #END get_partition
 
-
-def gceClusterRun(settings,tests):
-    """Executes all execution_commands sequentially on GCE Cluster"""
-
-    WORKSPACE=settings['workspace']
-    # Set the WORKSPACE environment variable so that users can reference this
-    # in test scripts as the top of their directory tree.
-    os.environ["WORKSPACE"] = WORKSPACE
-    utc = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
-    k=0
-    for test in tests['tests'] :
-
-        workdir=WORKSPACE+test['output_directory']
-        print('Making directory {}\n'.format(workdir),flush=True)
-        try:
-            os.makedirs(workdir)
-        except OSError as exc:
-            if exc.errno != errno.EEXIST:
-                raise
-            pass
-
-        os.chdir(workdir)
-
-        if settings['artifact_type'] == 'singularity':
-            if settings['mpi'] :
-  
-                cmd = 'mpirun -np {NPROC} {AFFINITY} singularity exec --bind /workspace:/workspace {IMAGE} {CMD}'.format(NPROC=settings['nproc'],
-                        AFFINITY=settings['task_affinity'],
-                        IMAGE=WORKSPACE+settings['singularity_image'],
-
-                        CMD=test['execution_command'])
-
-            else:
-  
-                if int(settings['gpu_count']) > 0:
-                    cmd = 'singularity exec --nv --bind /workspace:/workspace {IMAGE} {CMD}'.format(IMAGE=WORKSPACE+settings['singularity_image'],CMD=test['execution_command'])
-                else:
-                    cmd = 'singularity exec --bind /workspace:/workspace {IMAGE} {CMD}'.format(IMAGE=WORKSPACE+settings['singularity_image'],CMD=test['execution_command'])
-
-       
-        else:
-            cmd = test['execution_command']
-
-
-        print('Running {}\n'.format(cmd),flush=True)
-        t0 = time.time()
-        proc = subprocess.Popen(cmd,
-                                shell=True,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-        stdout, stderr = proc.communicate()
-        t1 = time.time()
-        print(stdout.decode("utf-8"),flush=True)
-        print(stderr.decode("utf-8"),flush=True)
-        tests['tests'][k]['stdout'] = stdout.decode("utf-8")
-        tests['tests'][k]['stderr'] = stderr.decode("utf-8")
-        tests['tests'][k]['exit_code'] = proc.returncode
-        tests['tests'][k]['build_id'] = settings['build_id']
-        tests['tests'][k]['machine_type'] = settings['machine_type']
-        tests['tests'][k]['node_count'] =int(settings['node_count'])
-        tests['tests'][k]['gpu_type'] = settings['gpu_type']
-        tests['tests'][k]['gpu_count'] =int(settings['gpu_count'])
-        tests['tests'][k]['git_sha'] = settings['git_sha']
-        tests['tests'][k]['datetime'] = utc
-        tests['tests'][k]['runtime'] = float(t1-t0)
-        tests['tests'][k]['allocated_cpus'] = settings['nproc']
-        tests['tests'][k]['compiler'] = settings['compiler']
-        tests['tests'][k]['target_arch'] = settings['target_arch']
-        #tests['tests'][index]['max_memory_gb'] = float(max_memory)
-
-
-        k+=1
-                                        
-    # Change working directory back to /workspace
-    os.chdir(WORKSPACE)
-    with open(WORKSPACE+'/results.json','w')as f:          
-        f.write(json.dumps(tests))
-
-#END gceClusterRun
-
 def run(cmd):
     """Runs a command in the local environment and returns exit code, stdout, and stderr"""
 
@@ -418,10 +338,7 @@ def main():
 
     tests = loadTests(WORKSPACE,settings)
 
-    if settings['cluster_type'] == 'gce':
-        gceClusterRun(settings,tests)
-    else:
-        rccClusterRun(settings,tests)
+    rccClusterRun(settings,tests)
 
 
 #END main
