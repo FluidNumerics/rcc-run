@@ -331,6 +331,7 @@ def createSettingsJson(args):
                 'rcc_tfvars':args.rcc_tfvars,
                 'service_account':args.service_account,
                 'singularity_image':args.singularity_image,
+                'env_file':args.env_file,
                 'rcc_controller':args.rcc_controller,
                 'ignore_exit_code':args.ignore_exit_code,
                 'save_results':args.save_results,
@@ -669,6 +670,7 @@ def parseCli():
     parser.add_argument('--artifact-type', help='Identifies the type of artifact used to deploy your application. Currently only "gce-image", "docker", and "singularity" are supported.', type=str, default='singularity')
     parser.add_argument('--docker-image', help='The name of the docker image. Only used if --artifact-type=docker', type=str)
     parser.add_argument('--singularity-image', help='The name of the singularity image. Only used if --artifact-type=singularity', type=str)
+    parser.add_argument('--env-file', help='The path to a file to use to set environment variables', type=str)
     parser.add_argument('--gce-image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='projects/research-computing-cloud/global/images/family/fluid-run-foss')
     parser.add_argument('--project', help='Google Cloud project ID to deploy the cluster to', type=str)
     parser.add_argument('--zone', help='Google Cloud zone to deploy the cluster to', type=str, default="us-west1-b")

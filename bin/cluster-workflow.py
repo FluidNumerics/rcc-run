@@ -316,6 +316,9 @@ def setEnvironmentVars(settings):
     if settings['singularity_image']:
         os.environ['SINGULARITY_IMAGE'] = '{}/{}'.format(settings['workspace'],str(settings['singularity_image']))
 
+    if settings['env_file']:
+        os.environ['ENV_FILE'] = '{}/{}'.format(settings['workspace'],str(settings['env_file']))
+
     os.environ["GCE_IMAGE"] = settings['gce_image']
 
 #END setEnvironmentVars
