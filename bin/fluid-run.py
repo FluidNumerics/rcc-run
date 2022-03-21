@@ -473,7 +473,7 @@ def runExeCommands():
 
 #END runExeCommands
 
-def downloacDirectory(localdir,remotedir):
+def downloadDirectory(localdir,remotedir):
     """Recursively copies the cluster:{remotedir} to local:{localdir}"""
 
     print('Transferring cluster workspace to local workspace...',flush=True)
@@ -748,9 +748,20 @@ def rccWorkflow():
 
 #END rccWorkflow
 
+def checkArgs(args):
+
+    # Check if ci file exists
+    if not os.path.exists(args.ci_file):
+        print('CI file {} not found.'.format(args.ci_file))
+        sys.exit(1)
+
+#END checkArgs
+
 def main():
 
     args = parseCli()
+
+    checkArgs(args)
 
     createSettingsJson(args)
 
