@@ -2,14 +2,14 @@
 Ephemeral RCC Tutorial
 ######################################
 
-Fluid Run can be used to create ephemeral compute resources for testing HPC applications and to record information about the test for later analysis.
-This quickstart guide will introduce you to the necessary ingredients for configuring application tests with fluid-run, using an ephemeral Research Computing Cluster (RCC).
+RCC Run can be used to create ephemeral compute resources for testing HPC applications and to record information about the test for later analysis.
+This quickstart guide will introduce you to the necessary ingredients for configuring application tests with rcc-run, using an ephemeral Research Computing Cluster (RCC).
 
 
 ***************************
 Demo
 ***************************
-You will start by using the rcc-ephemeral example provided in the fluid-run repository. This example creates a Singularity image with the `cowsay` program installed on it and then runs tests for this image on an ephemeral RCC cluster. You will learn how to set up your Google Cloud project and create the necessary resources to support application testing, benchmarking, and logging.
+You will start by using the rcc-ephemeral example provided in the rcc-run repository. This example creates a Singularity image with the `cowsay` program installed on it and then runs tests for this image on an ephemeral RCC cluster. You will learn how to set up your Google Cloud project and create the necessary resources to support application testing, benchmarking, and logging.
 
 
 Google Cloud Project Setup
@@ -35,36 +35,36 @@ You will need to activate the following Google Cloud APIs
     gcloud services enable cloudbuild.googleapis.com
 
 
-Create a fluid-run Docker image
+Create a rcc-run Docker image
 ================================
-The fluid-run application is a `Cloud Build builder <https://cloud.google.com/build/docs/cloud-builders>`_. A Cloud builder is a Docker image that provides an environment and entrypoint application for carrying out a step in a Cloud Build pipeline. You can create the fluid-run docker image and store it in your Google Cloud project's `Container Registry <https://cloud.google.com/container-registry>`_.
+The rcc-run application is a `Cloud Build builder <https://cloud.google.com/build/docs/cloud-builders>`_. A Cloud builder is a Docker image that provides an environment and entrypoint application for carrying out a step in a Cloud Build pipeline. You can create the rcc-run docker image and store it in your Google Cloud project's `Container Registry <https://cloud.google.com/container-registry>`_.
 
-`Open Cloud Shell <https://shell.cloud.google.com/?show=terminal>`_ and clone the fluid-run repository.
+`Open Cloud Shell <https://shell.cloud.google.com/?show=terminal>`_ and clone the rcc-run repository.
 
 .. code-block:: shell
 
-    $ git clone https://github.com/FluidNumerics/fluid-run.git ~/fluid-run
+    $ git clone https://github.com/FluidNumerics/rcc-run.git ~/rcc-run
 
 Once you've cloned the repository, navigate to the root directory of the repo and trigger a build of the docker image.
 
 .. code-block:: shell
 
-    $ cd ~/fluid-run/
+    $ cd ~/rcc-run/
     $ gcloud builds submit . --config=ci/cloudbuild.yaml --substitutions=SHORT_SHA=latest
 
-This will cause Google Cloud build to create the fluid-run docker image :code:`gcr.io/${PROJECT_ID}/fluid-run:latest` that you can then use in your project's builds.
+This will cause Google Cloud build to create the rcc-run docker image :code:`gcr.io/${PROJECT_ID}/rcc-run:latest` that you can then use in your project's builds.
 
 Create the CI/CB Dataset
 ================================
-The CI/CB dataset is a `Big Query <https://cloud.google.com/bigquery>`_ dataset that is used to store information about each test run with fluid-run. This includes runtimes for each execution command used to test your application. The fluid-run repository comes with a terraform module that can create this dataset for your project. We've also included an example under the :code:`examples/rcc-ephemeral` directory that you will use for the rest of this tutorial.
+The CI/CB dataset is a `Big Query <https://cloud.google.com/bigquery>`_ dataset that is used to store information about each test run with rcc-run. This includes runtimes for each execution command used to test your application. The rcc-run repository comes with a terraform module that can create this dataset for your project. We've also included an example under the :code:`examples/rcc-ephemeral` directory that you will use for the rest of this tutorial.
 
 Navigate to the :code:`examples/rcc-ephemeral/ci/build_iac` directory
 
 .. code-block:: shell
 
-    $ cd ~/fluid-run/examples/rcc-ephemeral/ci/build_iac
+    $ cd ~/rcc-run/examples/rcc-ephemeral/ci/build_iac
 
-The :code:`ci/build_iac` subdirectory contains the `Terraform <https://terraform.io>`_ infrastructure as code for provisioning a VPC network, firewall rules, service account, and the Big Query dataset that all support using fluid-run. This example Terraform module is a template for creating these resources, and the :code:`fluid.auto.tfvars` file in this directory is used to concretize certain variables in the template, so that you can deploy the resources in your project. 
+The :code:`ci/build_iac` subdirectory contains the `Terraform <https://terraform.io>`_ infrastructure as code for provisioning a VPC network, firewall rules, service account, and the Big Query dataset that all support using rcc-run. This example Terraform module is a template for creating these resources, and the :code:`fluid.auto.tfvars` file in this directory is used to concretize certain variables in the template, so that you can deploy the resources in your project. 
 
 Open :code:`fluid.auto.tfvars` in a text editor and set :code:`<project>` to your Google Cloud Project ID. The command below will quickly do the search and replace for you.
 
@@ -81,11 +81,11 @@ Now, you will execute a workflow typical of Terraform deployments to initialize,
     $ terraform plan
     $ terraform apply --auto-approve
 
-Once this completes, you're ready to run a build using fluid-run.
+Once this completes, you're ready to run a build using rcc-run.
 
 Manually Trigger a build
 ================================
-Cloud Build pipelines for a repository are specified in a `build configuration file <https://cloud.google.com/build/docs/build-config-file-schema>`_ written in YAML syntax. In this example, three build steps are provided that create a Docker image, create a Singularity image, and test the Singularity image on an ephemeral RCC cluster. A singularity image is created since, currently, fluid-run only supports testing of GCE VM images and Singularity images. However, as you can see, Singularity can convert a Docker image to a Singularity image that can be passed to fluid-run. 
+Cloud Build pipelines for a repository are specified in a `build configuration file <https://cloud.google.com/build/docs/build-config-file-schema>`_ written in YAML syntax. In this example, three build steps are provided that create a Docker image, create a Singularity image, and test the Singularity image on an ephemeral RCC cluster. A singularity image is created since, currently, rcc-run only supports testing of GCE VM images and Singularity images. However, as you can see, Singularity can convert a Docker image to a Singularity image that can be passed to rcc-run. 
 
 .. code-block::  yaml
 
@@ -105,15 +105,13 @@ Cloud Build pipelines for a repository are specified in a `build configuration f
              'cowsay.sif',
              'docker-daemon://gcr.io/${PROJECT_ID}/cowsay:latest']
     
-    - id: CI/CB
-      name: 'gcr.io/research-computing-cloud/fluid-run'
+    - id: Benchmark Application
+      name: 'gcr.io/research-computing-cloud/rcc-run'
       args: 
       - '--build-id=${BUILD_ID}'
       - '--git-sha=${COMMIT_SHA}'
-      - '--surface-nonzero-exit-code'
       - '--artifact-type=singularity'
       - '--singularity-image=cowsay.sif'
-      - '--image=${_IMAGE}'
       - '--project=${PROJECT_ID}'
       - '--zone=${_ZONE}'
       - '--cluster-type=rcc-ephemeral'
@@ -124,14 +122,13 @@ Cloud Build pipelines for a repository are specified in a `build configuration f
     
     substitutions:
       _ZONE: 'us-west1-b'
-      _IMAGE: 'projects/research-computing-cloud/global/images/family/rcc-centos-7-v3'
 
 
 To manually trigger a build, you can use the :code:`gcloud builds submit` command in your cloud shell. Navigate to the :code:`rcc-ephemeral` example directory, and submit the build
 
 .. code-block:: shell
 
-    $ cd ~/fluid-run/examples/rcc-ephemeral/
+    $ cd ~/rcc-run/examples/rcc-ephemeral/
     $ gcloud builds submit . --config=ci/cloudbuild.yaml
 
 Note that the cloud build can be run asynchronously by passing the :code:`--async` flag as well. If you run asynchronously, you can view the status of the build at the `Cloud Build Console <https://console.cloud.google.com/cloud-build/builds>`_. 
@@ -153,7 +150,7 @@ Find the fluid-cicb dataset and the app_runs table. Once you've selected the app
    :width: 800
    :alt: Big Query App Runs data set in preview
 
-At this point, you now have a dataset hosted in Google Cloud. The fluid-run build step with Google Cloud Build will allow you to automate testing and benchmarking of your application and will post results to this dataset. 
+At this point, you now have a dataset hosted in Google Cloud. The rcc-run build step with Google Cloud Build will allow you to automate testing and benchmarking of your application and will post results to this dataset. 
 
 
 Dashboarding and other post-processing
@@ -182,7 +179,7 @@ If you've worked through this tutorial on a Google Cloud project where you will 
 
 .. code-block:: shell
 
-    $ cd ~/fluid-run/examples/rcc-ephemeral/ci/build_iac
+    $ cd ~/rcc-run/examples/rcc-ephemeral/ci/build_iac
     $ terraform destroy --auto-approve
   
 
