@@ -8,6 +8,7 @@
 #        that points to your singularity image (full path)
 #       
 
+source /etc/profile.d/z10_spack_environment.sh
+
 cd ${WORKSPACE}
-spack load singularity
 singularity exec ${SINGULARITY_IMAGE} /usr/games/cowsay "Great.. I'm self aware."

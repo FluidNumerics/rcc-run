@@ -16,18 +16,15 @@ steps:
          'docker-daemon://gcr.io/${PROJECT_ID}/cowsay:latest']
 
 - id: Fluid CI/CB
-  name: 'gcr.io/research-computing-cloud/fluid-cicb'
+  name: 'gcr.io/research-computing-cloud/fluid-run:latest'
   args: 
   - '--build-id=${BUILD_ID}'
   - '--git-sha=${COMMIT_SHA}'
-  - '--surface-nonzero-exit-code'
-  - '--service-account=fluid-cicb@${PROJECT_ID}.iam.gserviceaccount.com'
   - '--artifact-type=singularity'
   - '--singularity-image=cowsay.sif'
-  - '--image=${_IMAGE}'
   - '--project=${PROJECT_ID}'
   - '--zone=${_ZONE}'
-  - '--ci-file=fluid-ci.json'
+  - '--ci-file=fluid-run.yaml'
   - '--cluster-type=rcc-ephemeral'
   - '--rcc-tfvars=ci/fluid.auto.tfvars'
 
@@ -35,4 +32,3 @@ timeout: 1800s
 
 substitutions:
   _ZONE: 'us-west1-b'
-  _IMAGE: 'projects/research-computing-cloud/global/images/family/rcc-centos-7-v3'
