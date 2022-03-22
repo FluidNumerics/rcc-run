@@ -14,7 +14,7 @@ import jsonschema
 import yaml
 
 WORKSPACE='/workspace/'
-TFPATH='/opt/fluid-run/etc/'
+TFPATH='/opt/rcc-run/etc/'
 SLEEP_INTERVAL=5
 SSH_TIMEOUT=300
 N_RETRIES=SSH_TIMEOUT/SLEEP_INTERVAL
@@ -57,7 +57,7 @@ def validateTests():
         settings = json.load(f)
 
     try:
-        with open('/opt/fluid-run/etc/fluid-run.schema.json') as f:
+        with open('/opt/rcc-run/etc/rcc-run.schema.json') as f:
             schema = json.load(f)
     except:
         print('Error opening CI Schema'.format(settings['ci_file']))
@@ -347,7 +347,7 @@ def createSettingsJson(args):
         settings['bq_table'] = args.bq_dataset
 
     if not args.service_account :
-        settings['service_account'] = 'fluid-run@{}.iam.gserviceaccount.com'.format(args.project)
+        settings['service_account'] = 'rcc-run@{}.iam.gserviceaccount.com'.format(args.project)
 
     if args.cluster_type == 'rcc-ephemeral':
         settings['hostname'] = 'frun-{}-controller'.format(args.build_id[0:7])
@@ -384,7 +384,7 @@ def concretizeTfvars():
     tfvars = tfvars.replace('<gpu_count>',str(settings['gpu_count']))
     tfvars = tfvars.replace('<build_id>',settings['build_id'][0:7])
     tfvars = tfvars.replace('<vpc_subnet>',settings['vpc_subnet'])
-    tfvars = tfvars.replace('<tags>','fluid-run')
+    tfvars = tfvars.replace('<tags>','rcc-run')
     tfvars = tfvars.replace('<service_account>',settings['service_account'])
 
     print(tfvars,flush=True)
@@ -671,12 +671,12 @@ def parseCli():
     parser.add_argument('--docker-image', help='The name of the docker image. Only used if --artifact-type=docker', type=str)
     parser.add_argument('--singularity-image', help='The name of the singularity image. Only used if --artifact-type=singularity', type=str)
     parser.add_argument('--env-file', help='The path to a file to use to set environment variables', type=str)
-    parser.add_argument('--gce-image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='projects/research-computing-cloud/global/images/family/fluid-run-foss')
+    parser.add_argument('--gce-image', help='GCE VM image selfLink to use or deploying the GCE cluster.', type=str, default='projects/research-computing-cloud/global/images/family/rcc-run-foss')
     parser.add_argument('--project', help='Google Cloud project ID to deploy the cluster to', type=str)
     parser.add_argument('--zone', help='Google Cloud zone to deploy the cluster to', type=str, default="us-west1-b")
     parser.add_argument('--rcc-controller', help='The name of a slurm controller to schedule CI tasks as jobs on. Only used if cluster-type=rcc-static', type=str)
     parser.add_argument('--ci-file', help='Path to tests file in your repository', type=str, default="./fluidci.json")
-    parser.add_argument('--rcc-tfvars', help='Path to research computing cluster tfvars file', type=str, default="/opt/fluid-run/etc/rcc-ephemeral/default/fluid.auto.tfvars")
+    parser.add_argument('--rcc-tfvars', help='Path to research computing cluster tfvars file', type=str, default="/opt/rcc-run/etc/rcc-ephemeral/default/fluid.auto.tfvars")
     parser.add_argument('--save-results', help='Boolean flag to save results to {project-id}:fluid-cicb.app_runs Big Query Table', default=False, action='store_true')
     parser.add_argument('--ignore-exit-code', help='Boolean flag to ignore nonzero exit code (true) if any of the tests fail', default=False, action='store_true')
     parser.add_argument('--ignore-job-dependencies', help='Boolean flag to enable ignorance of job dependencies assumed within a command_group.', default=False, action='store_true')
@@ -723,7 +723,7 @@ def rccWorkflow():
         try:
             clusterRun('mkdir -p {}'.format(workspace))
 
-            uploadDirectory(localdir='/opt/fluid-run',remotedir='{}/'.format(workspace))
+            uploadDirectory(localdir='/opt/rcc-run',remotedir='{}/'.format(workspace))
 
             uploadDirectory(localdir='/workspace',remotedir='{}/'.format(workspace))
 
