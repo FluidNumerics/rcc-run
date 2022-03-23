@@ -97,7 +97,7 @@ This is the maximum number of nodes that can be created in this partition. When 
 
 image
 =======
-The :code:`image` expects a self-link to a VM image for the cluster. It is recommended that you leave this field set to the template variable :code:`"<image>"` so that rcc-run can set this field for you.
+The :code:`image` expects a self-link to a VM image for the cluster. It is recommended that you leave this field set to the template variable :code:`"<image>"` so that rcc-run can set this field for you. The default image that RCC uses is :code:`projects/research-computing-cloud/global/images/family/rcc-run-foss`, which includes Singularity and OpenMPI 4.0.5.
 
 gpu_type / gpu_count
 ========================
