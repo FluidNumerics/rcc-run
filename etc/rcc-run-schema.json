@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "",
-  "title": "Fluid-Run Test Job Specification Schema",
+  "title": "RCC Run Test Job Specification Schema",
   "description": "",
   "type": "object",
   "required":[],

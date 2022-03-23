@@ -5,13 +5,13 @@ steps:
   args: ['build',
          '.',
          '-t',
-         'gcr.io/${PROJECT_ID}/fluid-run:${SHORT_SHA}',
+         'gcr.io/${PROJECT_ID}/rcc-run:${SHORT_SHA}',
          '-t',
-         'gcr.io/${PROJECT_ID}/fluid-run:${_ARTIFACT_TAG}'
+         'gcr.io/${PROJECT_ID}/rcc-run:${_ARTIFACT_TAG}'
   ]
 
-images: ['gcr.io/${PROJECT_ID}/fluid-run:${SHORT_SHA}',
-         'gcr.io/${PROJECT_ID}/fluid-run:${_ARTIFACT_TAG}']
+images: ['gcr.io/${PROJECT_ID}/rcc-run:${SHORT_SHA}',
+         'gcr.io/${PROJECT_ID}/rcc-run:${_ARTIFACT_TAG}']
 
 substitutions:
   _ARTIFACT_TAG: 'dev'
