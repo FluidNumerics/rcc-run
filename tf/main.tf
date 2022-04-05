@@ -33,7 +33,7 @@ resource "google_project_iam_member" "project" {
 // provide cloudbuild sa the project Big Query Admin, Compute Admin roles.
 
 // Service account for CI tests
-resource "google_service_account" "fluid_run" {
+resource "google_service_account" "rcc_run" {
   account_id = "rcc-run"
   display_name = "Continuous Integration Service account"
   project = var.project
@@ -94,7 +94,7 @@ resource "google_bigquery_dataset" "rcc_run" {
 }
 
 resource "google_bigquery_table" "benchmarks" {
-  dataset_id = google_bigquery_dataset.fluid_run.dataset_id
+  dataset_id = google_bigquery_dataset.rcc_run.dataset_id
   table_id = "app_runs"
   project = var.project
   deletion_protection=false
