@@ -9,6 +9,7 @@ variable "services" {
   type=list(string)
   description="List of services to enable for use with RCC-Run"
   default=["bigquery.googleapis.com",
+           "cloudbuild.googleapis.com",
            "compute.googleapis.com",
            "containerregistry.googleapis.com",
            "iam.googleapis.com"]
