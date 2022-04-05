@@ -18,7 +18,18 @@ resource "google_project_service" "project" {
 // SA has email address : {PROJECT NUMBER}@cloudbuild.gserviceaccount.com
 //
 // Get project number
-// Create cloubuild service account address
+data "google_project" "project" {
+  project_id = var.project
+}
+
+resource "google_project_iam_member" "project" {
+  count = var.cloudbuild_roles
+  project = var.project
+  role = var.cloudbuild_roles[count.index]
+  member = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+  depends_on = [google_project_service.project]
+}
+
 // provide cloudbuild sa the project Big Query Admin, Compute Admin roles.
 
 // Service account for CI tests
@@ -26,6 +37,7 @@ resource "google_service_account" "fluid_run" {
   account_id = "rcc-run"
   display_name = "Continuous Integration Service account"
   project = var.project
+  depends_on = [google_project_service.project]
 }
 
 // **** Create the Shared VPC Network **** //
@@ -33,6 +45,7 @@ resource "google_compute_network" "vpc_network" {
   name = "rcc-run"
   project = var.project
   auto_create_subnetworks = true
+  depends_on = [google_project_service.project]
 }
 
 resource "google_compute_firewall" "default_ssh_firewall_rules" {
@@ -71,12 +84,13 @@ resource "google_compute_firewall" "default_internal_firewall_rules" {
 
 
 // Big Query Dataset for CICB Data
-resource "google_bigquery_dataset" "fluid_run" {
-  dataset_id = "fluid_cicb"
+resource "google_bigquery_dataset" "rcc_run" {
+  dataset_id = "rcc_run"
   friendly_name = "Fluid CI/CB data"
   description = "A dataset containing build information for the Fluid CI/CB pipeline."
   location = var.bq_location
   project = var.project
+  depends_on = [google_project_service.project]
 }
 
 resource "google_bigquery_table" "benchmarks" {

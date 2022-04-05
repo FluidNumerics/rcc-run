@@ -1,4 +1,10 @@
 
+variable "cloudbuild_roles" {
+  type = list(string)
+  description = "List of IAM roles to grant your Cloud Build service Account"
+  default = ["roles/editor"]
+}
+
 variable "services" {
   type=list(string)
   description="List of services to enable for use with RCC-Run"
