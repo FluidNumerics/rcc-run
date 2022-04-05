@@ -393,7 +393,7 @@ resource "google_bigquery_table" "benchmarks" {
     "type": "INT64",
     "mode": "NULLABLE",
     "description": "The number of MPI tasks used to run the benchmark"
-  },
+  }
 ]
 EOF
 }
