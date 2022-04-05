@@ -2,7 +2,10 @@
 variable "cloudbuild_roles" {
   type = list(string)
   description = "List of IAM roles to grant your Cloud Build service Account"
-  default = ["roles/editor"]
+  default = ["roles/compute.admin",
+             "roles/bigquery.admin",
+             "roles/iam.serviceAccountUser",
+             "roles/compute.osAdminLogin"]
 }
 
 variable "services" {
