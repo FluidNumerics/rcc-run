@@ -23,7 +23,7 @@ data "google_project" "project" {
 }
 
 resource "google_project_iam_member" "project" {
-  count = var.cloudbuild_roles
+  count = length(var.cloudbuild_roles)
   project = var.project
   role = var.cloudbuild_roles[count.index]
   member = "serviceAccount:${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
