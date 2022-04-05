@@ -1,21 +1,44 @@
+// APIs
+
+resource "google_project_service" "project" {
+  count = length(var.services)
+  project = var.project
+  service = var.services[count.index]
+
+  timeouts {
+    create = "30m"
+    update = "40m"
+  }
+
+  disable_dependent_services = true
+}
+
+
+// Set IAM permissions for cloud build service account
+// SA has email address : {PROJECT NUMBER}@cloudbuild.gserviceaccount.com
+//
+// Get project number
+// Create cloubuild service account address
+// provide cloudbuild sa the project Big Query Admin, Compute Admin roles.
+
 // Service account for CI tests
 resource "google_service_account" "fluid_run" {
-  account_id = "fluid-run"
+  account_id = "rcc-run"
   display_name = "Continuous Integration Service account"
   project = var.project
 }
 
 // **** Create the Shared VPC Network **** //
 resource "google_compute_network" "vpc_network" {
-  name = "fluid-run"
+  name = "rcc-run"
   project = var.project
   auto_create_subnetworks = true
 }
 
 resource "google_compute_firewall" "default_ssh_firewall_rules" {
-  name = "fluid-run-ssh"
+  name = "rcc-run-ssh"
   network = google_compute_network.vpc_network.self_link
-  target_tags = ["fluid-run","controller","login","compute"]
+  target_tags = ["rcc-run","controller","login","compute"]
   source_ranges = var.whitelist_ssh_ips
   project = var.project
 
@@ -26,10 +49,10 @@ resource "google_compute_firewall" "default_ssh_firewall_rules" {
 }
 
 resource "google_compute_firewall" "default_internal_firewall_rules" {
-  name = "fluid-run-all-internal"
+  name = "rcc-run-all-internal"
   network = google_compute_network.vpc_network.self_link
-  source_tags = ["fluid-run","controller","login","compute"]
-  target_tags = ["fluid-run","controller","login","compute"]
+  source_tags = ["rcc-run","controller","login","compute"]
+  target_tags = ["rcc-run","controller","login","compute"]
   project = var.project
 
   allow {
@@ -76,6 +99,12 @@ resource "google_bigquery_table" "benchmarks" {
     "description": "The number of GPUs that are allocated to run the execution_command."
   },
   {
+    "name": "application_name",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The name of the application being benchmarked"
+  },
+  {
     "name": "artifact_type",
     "type": "STRING",
     "mode": "NULLABLE",
@@ -86,6 +115,12 @@ resource "google_bigquery_table" "benchmarks" {
     "type": "STRING",
     "mode": "NULLABLE",
     "description": "Additional options sent to the batch scheduler."
+  },
+  {
+    "name": "benchmark_name",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The name for the benchmark being executed"
   },
   {
     "name": "command_group",
@@ -337,8 +372,14 @@ resource "google_bigquery_table" "benchmarks" {
     "name": "vm_image",
     "type": "STRING",
     "mode": "NULLABLE",
-    "description": "VM image used for the GCE instance running the fluid-run cluster." 
-  }
+    "description": "VM image used for the GCE instance running the rcc-run cluster." 
+  },
+  {
+    "name": "ntasks",
+    "type": "INT64",
+    "mode": "NULLABLE",
+    "description": "The number of MPI tasks used to run the benchmark"
+  },
 ]
 EOF
 }
