@@ -622,8 +622,10 @@ def appendSystemInfo(test):
 def formatResults():
     """Formats the results.json to Newline Delimited JSON for loading into big query"""
 
+    print("Formatting results",flush=True)
     with open(WORKSPACE+'results.json','r')as f:          
         tests = json.load(f)
+        print(tests,flush=True)
 
     with open(WORKSPACE+'bq-results.json','w')as f:          
         for test in tests['tests'] :
