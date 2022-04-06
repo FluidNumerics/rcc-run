@@ -746,8 +746,9 @@ def rccWorkflow():
 
             checkExitCodes()
 
-        except:
+        except Exception as e:
 
+            print(e)
             deprovisionCluster()
 
 #END rccWorkflow
