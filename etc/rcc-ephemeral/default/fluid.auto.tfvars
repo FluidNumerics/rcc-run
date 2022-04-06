@@ -1,8 +1,6 @@
 cluster_name = "<name>"
 project = "<project>"
 zone = "<zone>"
-network_name = "rcc-run"
-subnetwork_name = "rcc-run"
 
 controller_image = "<image>"
 disable_controller_public_ips = false
