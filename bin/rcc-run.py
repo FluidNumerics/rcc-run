@@ -583,10 +583,17 @@ def appendSystemInfo(test):
 
     res = test
 
+
     if settings['rcc_tfvars']:
         rccFile = settings['rcc_tfvars']
-        with open(WORKSPACE+'/'+rccFile, 'r') as f:
-            rcc = hcl.load(f)
+        # if the rccFile start with a `/`, we assume that the default
+        # file is used and we don't need to prepend the workspace
+        if rccFile[0] == '/' :
+            with open(rccFile, 'r') as f:
+                rcc = hcl.load(f)
+        else:
+            with open(WORKSPACE+'/'+rccFile, 'r') as f:
+                rcc = hcl.load(f)
 
         # Filestore
         if 'create_filestore' in rcc.keys():
