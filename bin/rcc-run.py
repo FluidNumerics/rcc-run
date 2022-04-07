@@ -340,7 +340,7 @@ def createSettingsJson(args):
                 'workspace':'@HOMEDIR@/workspace/{}/'.format(args.build_id[0:7]),
                 'zone':args.zone,
                 'ci_file':args.ci_file,
-                'bq_table':'{}:fluid_cicb.app_runs'.format(args.project),
+                'bq_table':'{}:rcc_run.app_runs'.format(args.project),
                 'hostname':hostname}
 
     if args.bq_dataset:
